@@ -7,30 +7,43 @@ import android.widget.CheckBox
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class TaskAdapter(private val taskList: Array<String>) :
-    RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
-    class TaskViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        private val checkBox = view.findViewById<CheckBox>(R.id.task_check)
-        private val textView = view.findViewById<TextView>(R.id.task_text)
+class TaskAdapter(
+   /* private val taskList: MutableList<Task>,*/ private val onClick: (Task) -> Unit
+) : RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
+    //private val taskList: MutableList<Task> = mutableListOf()
 
-        fun bind(todo: String) {
-            textView.text = todo
-            checkBox.isChecked = false
+    class TaskViewHolder(itemView: View, val onClick: (Task) -> Unit) :
+        RecyclerView.ViewHolder(itemView) {
+        private val checkBox = itemView.findViewById<CheckBox>(R.id.task_check)
+        private val textView = itemView.findViewById<TextView>(R.id.task_text)
+        private var currentTask: Task? = null
+
+        init {
+            itemView.setOnClickListener {
+                currentTask?.let {
+                    onClick(it)
+                }
+            }
+        }
+
+        fun bind(task: Task) {
+            currentTask = task
+            checkBox.isChecked = task.isDone
+            textView.text = task.content
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.task_item, parent, false)
-
-        return TaskViewHolder(view)
+        return TaskViewHolder(view, onClick)
     }
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
-        holder.bind(taskList[position])
+        holder.bind(TaskManager.getTaskList()[position])
     }
 
     override fun getItemCount(): Int {
-        return taskList.size
+        return TaskManager.getTaskList().size
     }
 }

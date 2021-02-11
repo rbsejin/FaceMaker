@@ -2,37 +2,4 @@
     <string name="app_name">FaceMaker</string>
     <string name="fab_content_description">fab</string>
 
-    <!-- temporary-->
-    <string-array name="task_array">
-        <item>todo1</item>
-        <item>todo2</item>
-        <item>todo3</item>
-        <item>todo4</item>
-        <item>todo5</item>
-        <item>todo6</item>
-        <item>todo7</item>
-        <item>todo8</item>
-        <item>todo9</item>
-        <item>todo10</item>
-        <item>todo11</item>
-        <item>todo12</item>
-        <item>todo13</item>
-        <item>todo14</item>
-        <item>todo15</item>
-        <item>todo16</item>
-        <item>todo17</item>
-        <item>todo18</item>
-        <item>todo19</item>
-        <item>todo20</item>
-        <item>todo21</item>
-        <item>todo22</item>
-        <item>todo23</item>
-        <item>todo24</item>
-        <item>todo25</item>
-        <item>todo26</item>
-        <item>todo27</item>
-        <item>todo28</item>
-        <item>todo29</item>
-        <item>todo30</item>
-    </string-array>
 </resources>

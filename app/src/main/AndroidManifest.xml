@@ -9,7 +9,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.FaceMaker">
-        <activity android:name=".DisplayTasksActivity"
+        <activity android:name=".AddTaskActivity"></activity>
+        <activity
+            android:name=".TaskDetailActivity"
+            android:parentActivityName=".TaskListActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".TaskListActivity" />
+        </activity>
+        <activity
+            android:name=".TaskListActivity"
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
