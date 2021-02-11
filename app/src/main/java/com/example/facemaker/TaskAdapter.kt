@@ -21,6 +21,13 @@ class TaskAdapter(private val onClick: (Task) -> Unit) :
                     onClick(it)
                 }
             }
+
+            val checkBox: CheckBox = itemView.findViewById(R.id.task_checkBox)
+            checkBox.setOnClickListener {
+                currentTask?.let {
+                    it.isDone = checkBox.isChecked
+                }
+            }
         }
 
         fun bind(task: Task) {
