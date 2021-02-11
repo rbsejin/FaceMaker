@@ -7,14 +7,11 @@ import android.widget.CheckBox
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class TaskAdapter(
-   /* private val taskList: MutableList<Task>,*/ private val onClick: (Task) -> Unit
-) : RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
-    //private val taskList: MutableList<Task> = mutableListOf()
-
+class TaskAdapter(private val onClick: (Task) -> Unit) :
+    RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
     class TaskViewHolder(itemView: View, val onClick: (Task) -> Unit) :
         RecyclerView.ViewHolder(itemView) {
-        private val checkBox = itemView.findViewById<CheckBox>(R.id.task_check)
+        private val checkBox = itemView.findViewById<CheckBox>(R.id.task_checkBox)
         private val textView = itemView.findViewById<TextView>(R.id.task_text)
         private var currentTask: Task? = null
 
