@@ -1,6 +1,7 @@
 package com.example.facemaker
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.widget.CheckBox
@@ -56,10 +57,18 @@ class TaskDetailActivity : AppCompatActivity() {
                 // Task 삭제하기
                 val deleteButton: ImageButton = findViewById(R.id.task_detail_delete_button)
                 deleteButton.setOnClickListener {
-                    val resultIntent = Intent()
-                    resultIntent.putExtra(REMOVED_TASK_ID, currentTaskId)
-                    setResult(Activity.RESULT_OK, resultIntent)
-                    finish()
+                    val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+                    builder.setMessage("삭제하시겠습니까?")
+                        .setTitle("계속할까요?")
+                        .setNegativeButton("취소", null)
+                        .setPositiveButton("삭제") { _, _ ->
+                            val resultIntent = Intent()
+                            resultIntent.putExtra(REMOVED_TASK_ID, currentTaskId)
+                            setResult(Activity.RESULT_OK, resultIntent)
+                            finish()
+                        }
+                    val dialog: AlertDialog = builder.create()
+                    dialog.show()
                 }
             }
         }
