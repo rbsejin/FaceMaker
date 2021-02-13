@@ -1,11 +1,16 @@
 package com.example.facemaker
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.widget.CheckBox
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
+
+const val REMOVED_TASK_ID = "removedTaskId"
 
 class TaskDetailActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,6 +51,15 @@ class TaskDetailActivity : AppCompatActivity() {
                 val editText: EditText = findViewById(R.id.task_detail_content)
                 editText.addTextChangedListener {
                     currentTask.content = editText.text.toString()
+                }
+
+                // Task 삭제하기
+                val deleteButton: ImageButton = findViewById(R.id.task_detail_delete_button)
+                deleteButton.setOnClickListener {
+                    val resultIntent = Intent()
+                    resultIntent.putExtra(REMOVED_TASK_ID, currentTaskId)
+                    setResult(Activity.RESULT_OK, resultIntent)
+                    finish()
                 }
             }
         }

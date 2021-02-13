@@ -4,11 +4,15 @@ object TaskManager {
     private val taskList = mutableListOf<Task>()
 
     fun addTask(task: Task) {
-        taskList.add(taskList.size, task)
+        taskList.add(task)
     }
 
     fun removeTask(task: Task): Boolean {
         return taskList.remove(task)
+    }
+
+    fun removeTaskForId(id : Long): Boolean {
+        return taskList.removeAll { it.id == id }
     }
 
     fun getTaskForId(id: Long): Task? {

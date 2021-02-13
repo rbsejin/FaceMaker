@@ -27,5 +27,5 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="sendMessage"
-        android:text="Add To do" />
+        android:text="안드로이드 프로젝트" />
 </LinearLayout>

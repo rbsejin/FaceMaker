@@ -2,7 +2,7 @@ package com.example.facemaker
 
 import java.util.*
 
-class Task(
+data class Task(
     var id: Long, // private set
     var content: String,
     val createdDateTime: Date, // private set

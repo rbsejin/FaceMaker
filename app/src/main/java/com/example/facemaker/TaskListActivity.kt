@@ -12,6 +12,7 @@ const val TASK_ID = "task id"
 
 class TaskListActivity : AppCompatActivity() {
     private val newTaskActivityRequestCode = 1
+    private val taskDetailRequestCode = 2
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,7 +36,8 @@ class TaskListActivity : AppCompatActivity() {
     private fun adapterOnClick(task: Task) {
         val intent = Intent(this, TaskDetailActivity()::class.java)
         intent.putExtra(TASK_ID, task.id)
-        startActivity(intent)
+        //startActivity(intent)
+        startActivityForResult(intent, taskDetailRequestCode)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -51,6 +53,14 @@ class TaskListActivity : AppCompatActivity() {
                     TaskManager.addTask(task)
                 }
             }
+        } else if (requestCode == taskDetailRequestCode && resultCode == Activity.RESULT_OK) {
+            data?.let { data ->
+                val id = data.getLongExtra(REMOVED_TASK_ID, 0)
+                TaskManager.removeTaskForId(id)
+            }
         }
+
+        val recyclerView: RecyclerView = findViewById(R.id.task_recycler_view)
+        (recyclerView.adapter as TaskAdapter).notifyDataSetChanged()
     }
 }
