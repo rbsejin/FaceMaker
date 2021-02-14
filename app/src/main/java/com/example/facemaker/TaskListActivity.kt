@@ -32,7 +32,7 @@ class TaskListActivity : AppCompatActivity() {
         startActivityForResult(intent, newTaskActivityRequestCode)
     }
 
-    /* Opens FlowerDetailActivity when RecyclerView item is clicked. */
+    /* Opens TaskDetailActivity when RecyclerView item is clicked. */
     private fun adapterOnClick(task: Task) {
         val intent = Intent(this, TaskDetailActivity()::class.java)
         intent.putExtra(TASK_ID, task.id)

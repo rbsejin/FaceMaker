@@ -42,7 +42,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/task_detail_statement"
         app:layout_constraintTop_toBottomOf="@+id/task_detail_recycler_view"
-        app:srcCompat="@mipmap/baseline_delete_outline_black_18dp"
+        app:srcCompat="@drawable/baseline_delete_outline_black_24"
         android:background="#00ffffff"/>
 
     <androidx.recyclerview.widget.RecyclerView

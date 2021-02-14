@@ -10,6 +10,7 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
+import androidx.recyclerview.widget.RecyclerView
 
 const val REMOVED_TASK_ID = "removedTaskId"
 
@@ -70,5 +71,8 @@ class TaskDetailActivity : AppCompatActivity() {
                 }
             }
         }
+
+        val recyclerView = findViewById<RecyclerView>(R.id.task_detail_recycler_view)
+        recyclerView.adapter = TaskDateAdapter()
     }
 }
