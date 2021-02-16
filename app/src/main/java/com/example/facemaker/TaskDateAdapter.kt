@@ -94,23 +94,23 @@ class TaskDateAdapter(private val currentTaskId: Long) :
                 // 미리 알림
                 0 -> {
                     PopupMenu(parentContext, holder.itemView).apply {
-                        menuInflater.inflate(R.menu.date_item_menu, menu)
+                        menuInflater.inflate(R.menu.notification_item_menu, menu)
                         setOnMenuItemClickListener {
                             val ret = when (it.itemId) {
-                                R.id.today_later_item -> {
+                                R.id.notification_today_later_item -> {
                                     calendar.add(Calendar.HOUR_OF_DAY, 3)
                                     calendar.set(Calendar.MINUTE, 0)
                                     currentTask.notificationDateTime = calendar.time
                                     true
                                 }
-                                R.id.tomorrow_item -> {
+                                R.id.notification_tomorrow_item -> {
                                     calendar.add(Calendar.DATE, 1)
                                     calendar.set(Calendar.HOUR_OF_DAY, 9)
                                     calendar.set(Calendar.MINUTE, 0)
                                     currentTask.notificationDateTime = calendar.time
                                     true
                                 }
-                                R.id.next_week_item -> {
+                                R.id.notification_next_week_item -> {
                                     calendar.add(Calendar.DATE, 7)
                                     calendar.set(Calendar.HOUR_OF_DAY, 9)
                                     calendar.set(Calendar.MINUTE, 0)
@@ -149,19 +149,19 @@ class TaskDateAdapter(private val currentTaskId: Long) :
                 // 기한 설정
                 1 -> {
                     PopupMenu(parentContext, holder.itemView).apply {
-                        menuInflater.inflate(R.menu.date_item_menu, menu)
+                        menuInflater.inflate(R.menu.deadline_item_menu, menu)
                         setOnMenuItemClickListener {
                             val ret = when (it.itemId) {
-                                R.id.today_later_item -> {
+                                R.id.deadline_today_item -> {
                                     currentTask.deadline = calendar.time
                                     true
                                 }
-                                R.id.tomorrow_item -> {
+                                R.id.deadline_tomorrow_item -> {
                                     calendar.add(Calendar.DATE, 1)
                                     currentTask.deadline = calendar.time
                                     true
                                 }
-                                R.id.next_week_item -> {
+                                R.id.deadline_next_week_item -> {
                                     calendar.add(Calendar.DATE, 7)
                                     currentTask.deadline = calendar.time
                                     true

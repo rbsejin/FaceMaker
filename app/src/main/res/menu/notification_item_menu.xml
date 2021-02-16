@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/notification_today_later_item"
+        android:title="오늘 나중에"/>
+    <item android:id="@+id/notification_tomorrow_item"
+        android:title="내일"/>
+    <item android:id="@+id/notification_next_week_item"
+        android:title="다음 주"/>
+    <item android:id="@+id/notification_direct_selection_item"
+        android:title="날짜 및 시간 선택"/>
+</menu>
