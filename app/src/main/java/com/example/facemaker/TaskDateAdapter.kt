@@ -93,6 +93,10 @@ class TaskDateAdapter(private val currentTaskId: Long) :
             when (position) {
                 // 미리 알림
                 0 -> {
+                    if (currentTask.notificationDateTime != null) {
+                        calendar.time = currentTask.notificationDateTime
+                    }
+
                     PopupMenu(parentContext, holder.itemView).apply {
                         menuInflater.inflate(R.menu.notification_item_menu, menu)
                         setOnMenuItemClickListener {
@@ -149,6 +153,10 @@ class TaskDateAdapter(private val currentTaskId: Long) :
                 }
                 // 기한 설정
                 1 -> {
+                    if (currentTask.deadline != null) {
+                        calendar.time = currentTask.deadline
+                    }
+
                     PopupMenu(parentContext, holder.itemView).apply {
                         menuInflater.inflate(R.menu.deadline_item_menu, menu)
                         setOnMenuItemClickListener {
