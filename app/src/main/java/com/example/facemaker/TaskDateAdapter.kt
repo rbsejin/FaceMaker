@@ -203,6 +203,16 @@ class TaskDateAdapter(private val currentTaskId: Long) :
                 }
             }
         }
+
+        holder.deleteButton.setOnClickListener {
+            when (position) {
+                0 -> currentTask.notificationDateTime = null
+                1 -> currentTask.deadline = null
+                2 -> currentTask.repeatCycle = null
+                else -> assert(false)
+            }
+            notifyItemChanged(position)
+        }
     }
 
     override fun getItemCount(): Int {
