@@ -117,7 +117,7 @@ class TaskDateAdapter(private val currentTaskId: Long) :
                                     currentTask.notificationDateTime = calendar.time
                                     true
                                 }
-                                R.id.direct_selection_item -> {
+                                R.id.notification_direct_selection_item -> {
                                     val datePickerDialog = DatePickerDialog(
                                         parentContext,
                                         { _, year, month, dayOfMonth ->
@@ -166,7 +166,7 @@ class TaskDateAdapter(private val currentTaskId: Long) :
                                     currentTask.deadline = calendar.time
                                     true
                                 }
-                                R.id.direct_selection_item -> {
+                                R.id.daedline_direct_selection_itemtion_item -> {
                                     val datePickerDialog = DatePickerDialog(
                                         parentContext,
                                         { _, year, month, dayOfMonth ->
@@ -200,27 +200,27 @@ class TaskDateAdapter(private val currentTaskId: Long) :
                         menuInflater.inflate(R.menu.repeat_cycle_item_menu, menu)
                         setOnMenuItemClickListener {
                             val ret = when (it.itemId) {
-                                R.id.every_day_item -> {
+                                R.id.repeat_every_day_item -> {
                                     currentTask.repeatCycle = "매일"
                                     true
                                 }
-                                R.id.every_weekday_item -> {
+                                R.id.repeat_every_weekday_item -> {
                                     currentTask.repeatCycle = "평일"
                                     true
                                 }
-                                R.id.every_week_item -> {
+                                R.id.repeat_every_week_item -> {
                                     currentTask.repeatCycle = "매주"
                                     true
                                 }
-                                R.id.every_month_item -> {
+                                R.id.repeat_every_month_item -> {
                                     currentTask.repeatCycle = "매월"
                                     true
                                 }
-                                R.id.every_year_item -> {
+                                R.id.repeat_every_year_item -> {
                                     currentTask.repeatCycle = "매년"
                                     true
                                 }
-                                R.id.direct_selection_item -> {
+                                R.id.repeat_direct_selection_item -> {
                                     currentTask.repeatCycle = "사용자 지정"
                                     true
                                 }
