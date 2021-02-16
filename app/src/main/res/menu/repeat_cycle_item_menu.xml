@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/every_day_item"
+        android:title="매일"/>
+    <item android:id="@+id/every_weekday_item"
+        android:title="평일"/>
+    <item android:id="@+id/every_week_item"
+        android:title="1주마다"/>
+    <item android:id="@+id/every_month_item"
+        android:title="1달마다"/>
+    <item android:id="@+id/every_year_item"
+        android:title="1년마다"/>
+    <item android:id="@+id/direct_selection_item"
+        android:title="사용자 지정"/>
+</menu>

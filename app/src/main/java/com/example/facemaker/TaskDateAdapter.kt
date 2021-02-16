@@ -74,6 +74,8 @@ class TaskDateAdapter(private val currentTaskId: Long) :
                         contentTextView.text = "반복"
                         deleteButton.visibility = RecyclerView.INVISIBLE
                     } else {
+                        contentTextView.text = currentTask.repeatCycle
+                        deleteButton.visibility = RecyclerView.VISIBLE
                     }
 
                     icon.setImageResource(R.drawable.baseline_repeat_black_24)
@@ -94,12 +96,11 @@ class TaskDateAdapter(private val currentTaskId: Long) :
                     PopupMenu(parentContext, holder.itemView).apply {
                         menuInflater.inflate(R.menu.date_item_menu, menu)
                         setOnMenuItemClickListener {
-                            when (it.itemId) {
+                            val ret = when (it.itemId) {
                                 R.id.today_later_item -> {
                                     calendar.add(Calendar.HOUR_OF_DAY, 3)
                                     calendar.set(Calendar.MINUTE, 0)
                                     currentTask.notificationDateTime = calendar.time
-                                    notifyDataSetChanged()
                                     true
                                 }
                                 R.id.tomorrow_item -> {
@@ -107,7 +108,6 @@ class TaskDateAdapter(private val currentTaskId: Long) :
                                     calendar.set(Calendar.HOUR_OF_DAY, 9)
                                     calendar.set(Calendar.MINUTE, 0)
                                     currentTask.notificationDateTime = calendar.time
-                                    notifyDataSetChanged()
                                     true
                                 }
                                 R.id.next_week_item -> {
@@ -115,7 +115,6 @@ class TaskDateAdapter(private val currentTaskId: Long) :
                                     calendar.set(Calendar.HOUR_OF_DAY, 9)
                                     calendar.set(Calendar.MINUTE, 0)
                                     currentTask.notificationDateTime = calendar.time
-                                    notifyDataSetChanged()
                                     true
                                 }
                                 R.id.direct_selection_item -> {
@@ -128,7 +127,7 @@ class TaskDateAdapter(private val currentTaskId: Long) :
                                             calendar.set(Calendar.HOUR_OF_DAY, 9)
                                             calendar.set(Calendar.MINUTE, 0)
                                             currentTask.notificationDateTime = calendar.time
-                                            notifyDataSetChanged()
+                                            notifyItemChanged(position)
                                         },
                                         calendar.get(Calendar.YEAR),
                                         calendar.get(Calendar.MONTH),
@@ -140,6 +139,9 @@ class TaskDateAdapter(private val currentTaskId: Long) :
                                 }
                                 else -> false
                             }
+
+                            notifyItemChanged(position)
+                            ret
                         }
                         show()
                     }
@@ -149,22 +151,19 @@ class TaskDateAdapter(private val currentTaskId: Long) :
                     PopupMenu(parentContext, holder.itemView).apply {
                         menuInflater.inflate(R.menu.date_item_menu, menu)
                         setOnMenuItemClickListener {
-                            when (it.itemId) {
+                            val ret = when (it.itemId) {
                                 R.id.today_later_item -> {
                                     currentTask.deadline = calendar.time
-                                    notifyDataSetChanged()
                                     true
                                 }
                                 R.id.tomorrow_item -> {
                                     calendar.add(Calendar.DATE, 1)
                                     currentTask.deadline = calendar.time
-                                    notifyDataSetChanged()
                                     true
                                 }
                                 R.id.next_week_item -> {
                                     calendar.add(Calendar.DATE, 7)
                                     currentTask.deadline = calendar.time
-                                    notifyDataSetChanged()
                                     true
                                 }
                                 R.id.direct_selection_item -> {
@@ -177,7 +176,6 @@ class TaskDateAdapter(private val currentTaskId: Long) :
                                             calendar.set(Calendar.HOUR_OF_DAY, 9)
                                             calendar.set(Calendar.MINUTE, 0)
                                             currentTask.deadline = calendar.time
-                                            notifyDataSetChanged()
                                         },
                                         calendar.get(Calendar.YEAR),
                                         calendar.get(Calendar.MONTH),
@@ -185,17 +183,63 @@ class TaskDateAdapter(private val currentTaskId: Long) :
                                     )
                                     datePickerDialog.show()
 
-                                    notifyDataSetChanged()
                                     true
                                 }
                                 else -> false
                             }
+
+                            notifyItemChanged(position)
+                            ret
                         }
                         show()
                     }
                 }
                 // 반복
                 2 -> {
+                    PopupMenu(parentContext, holder.itemView).apply {
+                        menuInflater.inflate(R.menu.repeat_cycle_item_menu, menu)
+                        setOnMenuItemClickListener {
+                            val ret = when (it.itemId) {
+                                R.id.every_day_item -> {
+                                    currentTask.repeatCycle = "매일"
+                                    true
+                                }
+                                R.id.every_weekday_item -> {
+                                    currentTask.repeatCycle = "평일"
+                                    true
+                                }
+                                R.id.every_week_item -> {
+                                    currentTask.repeatCycle = "매주"
+                                    true
+                                }
+                                R.id.every_month_item -> {
+                                    currentTask.repeatCycle = "매월"
+                                    true
+                                }
+                                R.id.every_year_item -> {
+                                    currentTask.repeatCycle = "매년"
+                                    true
+                                }
+                                R.id.direct_selection_item -> {
+                                    currentTask.repeatCycle = "사용자 지정"
+                                    true
+                                }
+                                else -> false
+                            }
+
+                            // 반복 선택하면 기한 설정도 기본값(오늘)로 같이 설정
+                            currentTask.repeatCycle?.let {
+                                if (currentTask.deadline == null) {
+                                    currentTask.deadline = calendar.time // 오늘로 설정
+                                }
+
+                                notifyDataSetChanged()
+                            }
+
+                            ret
+                        }
+                        show()
+                    }
                 }
                 // else 에 들어올 수 없다.
                 else -> {
@@ -207,11 +251,16 @@ class TaskDateAdapter(private val currentTaskId: Long) :
         holder.deleteButton.setOnClickListener {
             when (position) {
                 0 -> currentTask.notificationDateTime = null
-                1 -> currentTask.deadline = null
+                1 -> {
+                    currentTask.deadline = null
+                    currentTask.repeatCycle = null
+                }
                 2 -> currentTask.repeatCycle = null
                 else -> assert(false)
             }
-            notifyItemChanged(position)
+
+            // 기한 설정 제거하면 반복도 같이 제거
+            notifyDataSetChanged()
         }
     }
 

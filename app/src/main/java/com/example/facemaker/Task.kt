@@ -8,7 +8,7 @@ data class Task(
     val createdDateTime: Date, // private set
     var deadline: Date? = null,
     var notificationDateTime: Date? = null,
-    var repeatCycle: RepeatCycle? = null
+    var repeatCycle: String? = null // 추후 RepeatCycle 클래스 만들 것
 ) {
     var isDone = false // 완수 여부
     val stepList = mutableListOf<String>() // 단계
