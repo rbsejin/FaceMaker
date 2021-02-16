@@ -3,12 +3,12 @@ package com.example.facemaker
 import java.util.*
 
 data class Task(
-    var id: Long, // private set
+    val id: Long, // private set
     var content: String,
     val createdDateTime: Date, // private set
-    var deadLine: Date? = null,
-    val alarmDateTime: Date? = null,
-    val repeatCycle: RepeatCycle? = null
+    var deadline: Date? = null,
+    var notificationDateTime: Date? = null,
+    var repeatCycle: RepeatCycle? = null
 ) {
     var isDone = false // 완수 여부
     val stepList = mutableListOf<String>() // 단계

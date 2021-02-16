@@ -47,7 +47,7 @@ class TaskDetailActivity : AppCompatActivity() {
                 }*/
 
                 // 변경될 때마다가 아니라 초점을 잃었을 때만 변경해야하지만
-                // 임시로 EditText가 변경될 때 이벤트 추가
+                // 임시로 EditText 가 변경될 때 이벤트 추가
                 val editText: EditText = findViewById(R.id.task_detail_content)
                 editText.addTextChangedListener {
                     currentTask.content = editText.text.toString()
@@ -73,6 +73,8 @@ class TaskDetailActivity : AppCompatActivity() {
         }
 
         val recyclerView = findViewById<RecyclerView>(R.id.task_detail_recycler_view)
-        recyclerView.adapter = TaskDateAdapter()
+        currentTaskId?.let {
+            recyclerView.adapter = TaskDateAdapter(currentTaskId)
+        }
     }
 }

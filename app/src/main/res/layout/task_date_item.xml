@@ -32,12 +32,12 @@
         android:text="TextView"
         android:textSize="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/task_date_item_close"
+        app:layout_constraintEnd_toStartOf="@+id/task_date_item_delete"
         app:layout_constraintStart_toEndOf="@+id/task_date_item_icon"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
-        android:id="@+id/task_date_item_close"
+        android:id="@+id/task_date_item_delete"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
