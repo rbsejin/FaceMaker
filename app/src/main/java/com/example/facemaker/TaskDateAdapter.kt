@@ -20,51 +20,10 @@ import java.util.*
 // id를 넘기지 않고 객체를 직접 넘기면 어떨까?
 class TaskDateAdapter(private val currentTaskId: Long) :
     Adapter<TaskDateAdapter.TaskDateViewHolder>() {
-    //private val taskDateList: List<TaskDateItem>
     // 객체가 아닌 id를 넘겨서 getTaskForId() 를 사용하게 되어
     // Task 를 찾는데 비용 발생하고, null 체크 문제까지 있다.
     private var currentTask: Task = TaskManager.getTaskForId(currentTaskId)!!
     private lateinit var parentContext: Context
-
-    /*init {
-        var notificationItem: TaskDateItem = if (currentTask.notificationDateTime != null) {
-            TaskDateItem(
-                R.drawable.baseline_notifications_none_black_24,
-                currentTask.notificationDateTime.toString(), true
-            )
-        } else {
-            TaskDateItem(
-                R.drawable.baseline_notifications_none_black_24,
-                "미리 알림", false
-            )
-        }
-
-        var deadlineItem: TaskDateItem = if (currentTask.deadline != null) {
-            TaskDateItem(
-                R.drawable.baseline_calendar_today_black_24,
-                currentTask.deadline.toString(), true
-            )
-        } else {
-            TaskDateItem(
-                R.drawable.baseline_calendar_today_black_24,
-                "기한 설정", false
-            )
-        }
-
-        var repeatCycle: TaskDateItem = if (currentTask.repeatCycle != null) {
-            TaskDateItem(
-                R.drawable.baseline_repeat_black_24,
-                currentTask.repeatCycle.toString(), true
-            )
-        } else {
-            TaskDateItem(
-                R.drawable.baseline_repeat_black_24,
-                "반복", false
-            )
-        }
-
-        taskDateList = listOf(notificationItem, deadlineItem, repeatCycle)
-    }*/
 
     class TaskDateViewHolder(itemView: View, private val currentTask: Task) :
         RecyclerView.ViewHolder(itemView) {
@@ -82,7 +41,6 @@ class TaskDateAdapter(private val currentTaskId: Long) :
 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onBindViewHolder(holder: TaskDateViewHolder, position: Int) {
-        //holder.bind(taskDateList[position], position)
 
         // bind
         holder.apply {
@@ -129,8 +87,6 @@ class TaskDateAdapter(private val currentTaskId: Long) :
         // 알림, 기한, 반복 아이템 클릭했을 때 이벤트 처리
         holder.itemView.setOnClickListener {
             val calendar = Calendar.getInstance()
-/*            val now: Long = System.currentTimeMillis()
-            calendar.time = Date(now)*/
 
             when (position) {
                 // 미리 알림
