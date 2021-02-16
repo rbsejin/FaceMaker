@@ -117,6 +117,7 @@ class TaskDateAdapter(private val currentTaskId: Long) :
                                     currentTask.notificationDateTime = calendar.time
                                     true
                                 }
+
                                 R.id.notification_direct_selection_item -> {
                                     val datePickerDialog = DatePickerDialog(
                                         parentContext,
@@ -166,7 +167,7 @@ class TaskDateAdapter(private val currentTaskId: Long) :
                                     currentTask.deadline = calendar.time
                                     true
                                 }
-                                R.id.daedline_direct_selection_itemtion_item -> {
+                                R.id.daedline_direct_selection_item -> {
                                     val datePickerDialog = DatePickerDialog(
                                         parentContext,
                                         { _, year, month, dayOfMonth ->
