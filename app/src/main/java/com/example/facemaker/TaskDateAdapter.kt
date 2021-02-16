@@ -1,6 +1,8 @@
 package com.example.facemaker
 
+import android.app.DatePickerDialog
 import android.content.Context
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +11,7 @@ import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.annotation.DrawableRes
+import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import java.text.SimpleDateFormat
@@ -77,7 +80,8 @@ class TaskDateAdapter(private val currentTaskId: Long) :
         return TaskDateViewHolder(view, currentTask)
     }
 
-    override fun onBindViewHolder(holder: TaskDateViewHolder, position: Int) {        
+    @RequiresApi(Build.VERSION_CODES.N)
+    override fun onBindViewHolder(holder: TaskDateViewHolder, position: Int) {
         //holder.bind(taskDateList[position], position)
 
         // bind
@@ -136,28 +140,46 @@ class TaskDateAdapter(private val currentTaskId: Long) :
                         setOnMenuItemClickListener {
                             when (it.itemId) {
                                 R.id.today_later_item -> {
-                                    calendar.add(Calendar.HOUR, 3)
+                                    calendar.add(Calendar.HOUR_OF_DAY, 3)
+                                    calendar.set(Calendar.MINUTE, 0)
                                     currentTask.notificationDateTime = calendar.time
                                     notifyDataSetChanged()
                                     true
                                 }
                                 R.id.tomorrow_item -> {
                                     calendar.add(Calendar.DATE, 1)
-                                    calendar.set(Calendar.HOUR, 9)
-                                    //calendar.set(Calendar.MINUTE, 0)
+                                    calendar.set(Calendar.HOUR_OF_DAY, 9)
+                                    calendar.set(Calendar.MINUTE, 0)
                                     currentTask.notificationDateTime = calendar.time
                                     notifyDataSetChanged()
                                     true
                                 }
                                 R.id.next_week_item -> {
                                     calendar.add(Calendar.DATE, 7)
-                                    calendar.set(Calendar.HOUR, 9)
+                                    calendar.set(Calendar.HOUR_OF_DAY, 9)
+                                    calendar.set(Calendar.MINUTE, 0)
                                     currentTask.notificationDateTime = calendar.time
                                     notifyDataSetChanged()
                                     true
                                 }
                                 R.id.direct_selection_item -> {
-                                    notifyDataSetChanged()
+                                    val datePickerDialog = DatePickerDialog(
+                                        parentContext,
+                                        { _, year, month, dayOfMonth ->
+                                            calendar.set(Calendar.YEAR, year)
+                                            calendar.set(Calendar.MONTH, month)
+                                            calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+                                            calendar.set(Calendar.HOUR_OF_DAY, 9)
+                                            calendar.set(Calendar.MINUTE, 0)
+                                            currentTask.notificationDateTime = calendar.time
+                                            notifyDataSetChanged()
+                                        },
+                                        calendar.get(Calendar.YEAR),
+                                        calendar.get(Calendar.MONTH),
+                                        calendar.get(Calendar.DAY_OF_MONTH)
+                                    )
+                                    datePickerDialog.show()
+
                                     true
                                 }
                                 else -> false
@@ -190,6 +212,23 @@ class TaskDateAdapter(private val currentTaskId: Long) :
                                     true
                                 }
                                 R.id.direct_selection_item -> {
+                                    val datePickerDialog = DatePickerDialog(
+                                        parentContext,
+                                        { _, year, month, dayOfMonth ->
+                                            calendar.set(Calendar.YEAR, year)
+                                            calendar.set(Calendar.MONTH, month)
+                                            calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+                                            calendar.set(Calendar.HOUR_OF_DAY, 9)
+                                            calendar.set(Calendar.MINUTE, 0)
+                                            currentTask.deadline = calendar.time
+                                            notifyDataSetChanged()
+                                        },
+                                        calendar.get(Calendar.YEAR),
+                                        calendar.get(Calendar.MONTH),
+                                        calendar.get(Calendar.DAY_OF_MONTH)
+                                    )
+                                    datePickerDialog.show()
+
                                     notifyDataSetChanged()
                                     true
                                 }
