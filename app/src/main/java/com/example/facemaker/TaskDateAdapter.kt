@@ -10,7 +10,6 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.TextView
-import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
@@ -273,10 +272,3 @@ class TaskDateAdapter(private val currentTask: Task) :
         return 3
     }
 }
-
-data class TaskDateItem(
-    @DrawableRes
-    val image: Int?,
-    var defaultContent: String,
-    var canDelete: Boolean
-)

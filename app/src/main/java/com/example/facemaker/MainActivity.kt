@@ -5,8 +5,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.RecyclerView
 import java.util.*
+
 
 const val EXTRA_MESSAGE = "com.example.facemaker.MESSAGE"
 const val PROJECT_ID = "project id"
@@ -20,7 +22,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val recyclerView = findViewById<RecyclerView>(R.id.project_list_recycler_view)
-        recyclerView.adapter = ProjectAdapter { project -> adapterOnClick(project) }
+        val headerAdapter = ProjectHeaderAdapter()
+        val projectAdapter = ProjectAdapter { project -> adapterOnClick(project) }
+        recyclerView.adapter = ConcatAdapter(headerAdapter, projectAdapter)
 
         val bottomButton: View = findViewById(R.id.project_bottom)
         bottomButton.setOnClickListener {
@@ -60,9 +64,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         val recyclerView: RecyclerView = findViewById(R.id.project_list_recycler_view)
-        (recyclerView.adapter as ProjectAdapter).notifyDataSetChanged()
-
-
-
+        (recyclerView.adapter as ConcatAdapter).adapters[1].notifyDataSetChanged()
     }
 }
