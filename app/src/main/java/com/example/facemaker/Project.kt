@@ -1,13 +1,17 @@
 package com.example.facemaker
 
+import com.google.gson.annotations.SerializedName
 import java.util.*
 
 class Project(
+    @SerializedName("id")
     val id: Long, // private set
+    @SerializedName("content")
     var content: String,
+    @SerializedName("createdDateTime")
     val createdDateTime: Date
 ) {
-
+    @SerializedName("taskList")
     private val taskList = mutableListOf<Task>()
 
     fun addTask(task: Task) {

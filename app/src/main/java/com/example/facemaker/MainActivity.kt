@@ -21,6 +21,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        ProjectManager.load(filesDir)
+
         val recyclerView = findViewById<RecyclerView>(R.id.project_list_recycler_view)
         val headerAdapter = ProjectHeaderAdapter()
         val projectAdapter = ProjectAdapter { project -> adapterOnClick(project) }
@@ -65,5 +67,6 @@ class MainActivity : AppCompatActivity() {
 
         val recyclerView: RecyclerView = findViewById(R.id.project_list_recycler_view)
         (recyclerView.adapter as ConcatAdapter).adapters[1].notifyDataSetChanged()
+        ProjectManager.save(filesDir)
     }
 }

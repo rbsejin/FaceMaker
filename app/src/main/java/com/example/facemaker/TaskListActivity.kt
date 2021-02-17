@@ -37,6 +37,7 @@ class TaskListActivity() : AppCompatActivity() {
                 .setPositiveButton("저장") { _, _ ->
                     currentProject.content = "바뀐 이름"
                     projectContent.text = currentProject.content
+                    ProjectManager.save(filesDir)
                 }
             val dialog: AlertDialog = builder.create()
             dialog.show()
@@ -86,5 +87,6 @@ class TaskListActivity() : AppCompatActivity() {
 
         val recyclerView: RecyclerView = findViewById(R.id.task_recycler_view)
         (recyclerView.adapter as TaskAdapter).notifyDataSetChanged()
+        ProjectManager.save(filesDir)
     }
 }

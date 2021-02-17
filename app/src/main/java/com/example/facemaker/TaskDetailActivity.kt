@@ -41,6 +41,7 @@ class TaskDetailActivity : AppCompatActivity() {
         val checkBox: CheckBox = findViewById(R.id.task_detail_checkBox)
         checkBox.setOnClickListener {
             currentTask.isDone = checkBox.isChecked
+            ProjectManager.save(filesDir)
         }
 
         // EditText focus 가 변경될 때 이벤트 추가
