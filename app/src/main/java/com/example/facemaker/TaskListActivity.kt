@@ -47,16 +47,16 @@ class TaskListActivity : AppCompatActivity() {
             data?.let { data ->
                 val content = data.getStringExtra(TASK_CONTENT)
                 content?.let {
-                    val lastId = TaskManager.getLastId()
+                    val lastId = Project.getLastId()
                     val id = if (lastId == null) 0L else lastId + 1
                     val task = Task(id, content, Calendar.getInstance().time)
-                    TaskManager.addTask(task)
+                    Project.addTask(task)
                 }
             }
         } else if (requestCode == taskDetailRequestCode && resultCode == Activity.RESULT_OK) {
             data?.let { data ->
                 val id = data.getLongExtra(REMOVED_TASK_ID, 0)
-                TaskManager.removeTaskForId(id)
+                Project.removeTaskForId(id)
             }
         }
 

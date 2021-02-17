@@ -44,10 +44,10 @@ class TaskAdapter(private val onClick: (Task) -> Unit) :
     }
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
-        holder.bind(TaskManager.getTaskList()[position])
+        holder.bind(Project.getTaskList()[position])
     }
 
     override fun getItemCount(): Int {
-        return TaskManager.getTaskList().size
+        return Project.getTaskList().size
     }
 }

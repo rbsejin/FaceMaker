@@ -27,7 +27,7 @@ class TaskDetailActivity : AppCompatActivity() {
         var currentTaskId : Long? = bundle?.getLong(TASK_ID)
 
         currentTaskId?.let {
-            val currentTask = TaskManager.getTaskForId(it)
+            val currentTask = Project.getTaskForId(it)
             currentTask?.let {
                 taskContent.text = currentTask.content
                 taskCheckBox.isChecked = currentTask.isDone

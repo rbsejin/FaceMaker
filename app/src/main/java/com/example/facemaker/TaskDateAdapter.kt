@@ -22,7 +22,7 @@ class TaskDateAdapter(private val currentTaskId: Long) :
     Adapter<TaskDateAdapter.TaskDateViewHolder>() {
     // 객체가 아닌 id를 넘겨서 getTaskForId() 를 사용하게 되어
     // Task 를 찾는데 비용 발생하고, null 체크 문제까지 있다.
-    private var currentTask: Task = TaskManager.getTaskForId(currentTaskId)!!
+    private var currentTask: Task = Project.getTaskForId(currentTaskId)!!
     private lateinit var parentContext: Context
 
     class TaskDateViewHolder(itemView: View, private val currentTask: Task) :
