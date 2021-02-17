@@ -27,7 +27,6 @@
     <TextView        android:id="@+id/task_detail_statement"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="TextView"
         android:textSize="25dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/task_detail_delete_button"

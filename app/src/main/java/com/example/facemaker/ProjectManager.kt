@@ -1,11 +1,7 @@
 package com.example.facemaker
 
-import java.util.*
-
 object ProjectManager {
-    private val projectList = mutableListOf<Project>(
-        Project(1, "안드로이드 프로젝트", Calendar.getInstance().time)
-    )
+    private val projectList = mutableListOf<Project>()
 
     fun addProject(project: Project) {
         projectList.add(project)

@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import java.util.*
 
 const val TASK_ID = "task id"
+const val REMOVED_PROJECT_ID = "removedTaskId"
 
 class TaskListActivity() : AppCompatActivity() {
     private val newTaskActivityRequestCode = 1
@@ -78,7 +79,7 @@ class TaskListActivity() : AppCompatActivity() {
             }
         } else if (requestCode == taskDetailRequestCode && resultCode == Activity.RESULT_OK) {
             data?.let { data ->
-                val id = data.getLongExtra(REMOVED_TASK_ID, 0)
+                val id = data.getLongExtra(REMOVED_PROJECT_ID, 0)
                 currentProject.removeTaskForId(id)
             }
         }
