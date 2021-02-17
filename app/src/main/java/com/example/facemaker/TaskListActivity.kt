@@ -9,6 +9,8 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import java.util.*
 
@@ -47,6 +49,13 @@ class TaskListActivity() : AppCompatActivity() {
 
         val recyclerView = findViewById<RecyclerView>(R.id.task_recycler_view)
         recyclerView.adapter = TaskAdapter(currentProject) { task -> adapterOnClick(task) }
+
+        // 아이템간 구분선
+        val dividerItemDecoration = DividerItemDecoration(
+            recyclerView.context,
+            LinearLayoutManager.VERTICAL
+        )
+        recyclerView.addItemDecoration(dividerItemDecoration)
 
         val fab: View = findViewById(R.id.fab)
         fab.setOnClickListener {
@@ -100,7 +109,7 @@ class TaskListActivity() : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.project_delete_item-> {
+            R.id.project_delete_item -> {
                 val builder: AlertDialog.Builder = AlertDialog.Builder(this)
                 builder.setMessage("삭제하시겠습니까?")
                     .setTitle("계속할까요?")
