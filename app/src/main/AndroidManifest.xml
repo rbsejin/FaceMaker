@@ -10,20 +10,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FaceMaker">
         <activity android:name=".AddTaskActivity"></activity>
-        <activity
-            android:name=".TaskDetailActivity"
-            android:parentActivityName=".TaskListActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".TaskListActivity" />
-        </activity>
-        <activity
-            android:name=".TaskListActivity"
-            android:parentActivityName=".MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
-        </activity>
+        <activity android:name=".TaskDetailActivity" />
+        <activity android:name=".TaskListActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

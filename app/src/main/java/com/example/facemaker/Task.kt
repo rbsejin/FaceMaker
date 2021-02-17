@@ -4,6 +4,7 @@ import java.util.*
 
 data class Task(
     val id: Long, // private set
+    var projectId: Long,
     var content: String,
     val createdDateTime: Date, // private set
     var deadline: Date? = null,

@@ -20,61 +20,62 @@ class TaskDetailActivity : AppCompatActivity() {
         setContentView(R.layout.activity_task_detail)
 
         /* Connect variables to UI elements. */
-        val taskContent: TextView = findViewById(R.id.task_detail_content)
+        val taskContent: EditText = findViewById(R.id.task_detail_content)
         val taskCheckBox: CheckBox = findViewById(R.id.task_detail_checkBox)
 
         val bundle: Bundle? = intent.extras
-        var currentTaskId : Long? = bundle?.getLong(TASK_ID)
+        val currentTaskId: Long? = bundle?.getLong(TASK_ID)
+        val currentProjectId: Long? = bundle?.getLong(PROJECT_ID)
 
-        currentTaskId?.let {
-            val currentTask = Project.getTaskForId(it)
-            currentTask?.let {
-                taskContent.text = currentTask.content
-                taskCheckBox.isChecked = currentTask.isDone
+        if (currentTaskId == null || currentProjectId == null) {
+            return
+        }
 
-                // 체크박스 클릭했을 때 이벤트 추가
-                val checkBox: CheckBox = findViewById(R.id.task_detail_checkBox)
-                checkBox.setOnClickListener {
-                    currentTask.isDone = checkBox.isChecked
-                }
+        val currentProject = ProjectManager.getProjectForId(currentProjectId) ?: return
+        val currentTask = currentProject.getTaskForId(currentTaskId) ?: return
 
-                // EditText focus 가 변경될 때 이벤트 추가
-                /*val editText: EditText = findViewById(R.id.task_detail_content)
-                editText.setOnFocusChangeListener { v, hasFocus ->
-                    if (!hasFocus) {
-                        currentTask.content = editText.text.toString()
-                    }
-                }*/
+        taskContent.setText(currentTask.content, TextView.BufferType.EDITABLE)
+        taskCheckBox.isChecked = currentTask.isDone
 
-                // 변경될 때마다가 아니라 초점을 잃었을 때만 변경해야하지만
-                // 임시로 EditText 가 변경될 때 이벤트 추가
-                val editText: EditText = findViewById(R.id.task_detail_content)
-                editText.addTextChangedListener {
-                    currentTask.content = editText.text.toString()
-                }
+        // 체크박스 클릭했을 때 이벤트 추가
+        val checkBox: CheckBox = findViewById(R.id.task_detail_checkBox)
+        checkBox.setOnClickListener {
+            currentTask.isDone = checkBox.isChecked
+        }
 
-                // Task 삭제하기
-                val deleteButton: ImageButton = findViewById(R.id.task_detail_delete_button)
-                deleteButton.setOnClickListener {
-                    val builder: AlertDialog.Builder = AlertDialog.Builder(this)
-                    builder.setMessage("삭제하시겠습니까?")
-                        .setTitle("계속할까요?")
-                        .setNegativeButton("취소", null)
-                        .setPositiveButton("삭제") { _, _ ->
-                            val resultIntent = Intent()
-                            resultIntent.putExtra(REMOVED_TASK_ID, currentTaskId)
-                            setResult(Activity.RESULT_OK, resultIntent)
-                            finish()
-                        }
-                    val dialog: AlertDialog = builder.create()
-                    dialog.show()
-                }
+        // EditText focus 가 변경될 때 이벤트 추가
+        /*val editText: EditText = findViewById(R.id.task_detail_content)
+        editText.setOnFocusChangeListener { v, hasFocus ->
+            if (!hasFocus) {
+                currentTask.content = editText.text.toString()
             }
+        }*/
+
+        // 변경될 때마다가 아니라 초점을 잃었을 때만 변경해야하지만
+        // 임시로 EditText 가 변경될 때 이벤트 추가
+        val editText: EditText = findViewById(R.id.task_detail_content)
+        editText.addTextChangedListener {
+            currentTask.content = editText.text.toString()
+        }
+
+        // Task 삭제하기
+        val deleteButton: ImageButton = findViewById(R.id.task_detail_delete_button)
+        deleteButton.setOnClickListener {
+            val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+            builder.setMessage("삭제하시겠습니까?")
+                .setTitle("계속할까요?")
+                .setNegativeButton("취소", null)
+                .setPositiveButton("삭제") { _, _ ->
+                    val resultIntent = Intent()
+                    resultIntent.putExtra(REMOVED_TASK_ID, currentTaskId)
+                    setResult(Activity.RESULT_OK, resultIntent)
+                    finish()
+                }
+            val dialog: AlertDialog = builder.create()
+            dialog.show()
         }
 
         val recyclerView = findViewById<RecyclerView>(R.id.task_detail_recycler_view)
-        currentTaskId?.let {
-            recyclerView.adapter = TaskDateAdapter(currentTaskId)
-        }
+        recyclerView.adapter = TaskDateAdapter(currentTask)
     }
 }

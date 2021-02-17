@@ -7,7 +7,7 @@ import android.widget.CheckBox
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class TaskAdapter(private val onClick: (Task) -> Unit) :
+class TaskAdapter(private val project: Project, private val onClick: (Task) -> Unit) :
     RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
     class TaskViewHolder(itemView: View, val onClick: (Task) -> Unit) :
         RecyclerView.ViewHolder(itemView) {
@@ -44,10 +44,10 @@ class TaskAdapter(private val onClick: (Task) -> Unit) :
     }
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
-        holder.bind(Project.getTaskList()[position])
+        holder.bind(project.getTaskList()[position])
     }
 
     override fun getItemCount(): Int {
-        return Project.getTaskList().size
+        return project.getTaskList().size
     }
 }

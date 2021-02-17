@@ -17,12 +17,8 @@ import androidx.recyclerview.widget.RecyclerView.Adapter
 import java.text.SimpleDateFormat
 import java.util.*
 
-// id를 넘기지 않고 객체를 직접 넘기면 어떨까?
-class TaskDateAdapter(private val currentTaskId: Long) :
+class TaskDateAdapter(private val currentTask: Task) :
     Adapter<TaskDateAdapter.TaskDateViewHolder>() {
-    // 객체가 아닌 id를 넘겨서 getTaskForId() 를 사용하게 되어
-    // Task 를 찾는데 비용 발생하고, null 체크 문제까지 있다.
-    private var currentTask: Task = Project.getTaskForId(currentTaskId)!!
     private lateinit var parentContext: Context
 
     class TaskDateViewHolder(itemView: View, private val currentTask: Task) :

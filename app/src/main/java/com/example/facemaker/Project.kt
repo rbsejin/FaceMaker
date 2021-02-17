@@ -1,11 +1,13 @@
 package com.example.facemaker
 
-object Project/*(
-    // 일단은 Project 별로 id를 두었지만 모든 task id 를 다르게 해야하지 않을까?
+import java.util.*
+
+class Project(
     val id: Long, // private set
     var content: String,
     val createdDateTime: Date
-)*/ {
+) {
+
     private val taskList = mutableListOf<Task>()
 
     fun addTask(task: Task) {
@@ -28,11 +30,11 @@ object Project/*(
         return taskList
     }
 
-    fun getLastId(): Long? {
+    fun createId(): Long {
         if (taskList.size == 0) {
-            return null
+            return 1
         }
 
-        return taskList[taskList.size - 1].id
+        return taskList[taskList.size - 1].id + 1
     }
 }
