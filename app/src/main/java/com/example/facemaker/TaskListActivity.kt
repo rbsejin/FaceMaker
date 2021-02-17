@@ -4,6 +4,8 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -88,5 +90,32 @@ class TaskListActivity() : AppCompatActivity() {
         val recyclerView: RecyclerView = findViewById(R.id.task_recycler_view)
         (recyclerView.adapter as TaskAdapter).notifyDataSetChanged()
         ProjectManager.save(filesDir)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        menuInflater.inflate(R.menu.project_option_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.project_delete_item-> {
+                val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+                builder.setMessage("삭제하시겠습니까?")
+                    .setTitle("계속할까요?")
+                    .setNegativeButton("취소", null)
+                    .setPositiveButton("삭제") { _, _ ->
+                        val resultIntent = Intent()
+                        resultIntent.putExtra(REMOVED_PROJECT_ID, currentProject.id)
+                        setResult(Activity.RESULT_OK, resultIntent)
+                        finish()
+                    }
+                val dialog: AlertDialog = builder.create()
+                dialog.show()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 }
