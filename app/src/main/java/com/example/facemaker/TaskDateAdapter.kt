@@ -1,6 +1,7 @@
 package com.example.facemaker
 
 import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.content.Context
 import android.os.Build
 import android.view.LayoutInflater
@@ -41,7 +42,7 @@ class TaskDateAdapter(private val currentTask: Task) :
         holder.apply {
             when (position) {
                 0 -> {
-                    val dateFormat = SimpleDateFormat("yy년 MM월 dd일 HH시 알림")
+                    val dateFormat = SimpleDateFormat("yy년 MM월 dd일 HH시 mm분 알림")
                     if (currentTask.notificationDateTime == null) {
                         holder.contentTextView.text = "알림 설정"
                         deleteButton.visibility = RecyclerView.INVISIBLE
@@ -124,10 +125,23 @@ class TaskDateAdapter(private val currentTask: Task) :
                                             calendar.set(Calendar.YEAR, year)
                                             calendar.set(Calendar.MONTH, month)
                                             calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-                                            calendar.set(Calendar.HOUR_OF_DAY, 9)
-                                            calendar.set(Calendar.MINUTE, 0)
                                             currentTask.notificationDateTime = calendar.time
                                             notifyItemChanged(position)
+
+                                            val timePickerDialog = TimePickerDialog(
+                                                parentContext,
+                                                { _, hourOfDay, minute ->
+                                                    calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
+                                                    calendar.set(Calendar.MINUTE, minute)
+
+                                                    currentTask.notificationDateTime = calendar.time
+                                                    notifyItemChanged(position)
+                                                },
+                                                calendar.get(Calendar.HOUR_OF_DAY),
+                                                calendar.get(Calendar.MINUTE),
+                                                false
+                                            )
+                                            timePickerDialog.show()
                                         },
                                         calendar.get(Calendar.YEAR),
                                         calendar.get(Calendar.MONTH),
