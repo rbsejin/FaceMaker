@@ -127,4 +127,9 @@ class TaskListActivity() : AppCompatActivity() {
             else -> super.onOptionsItemSelected(item)
         }
     }
+
+    override fun onStop() {
+        ProjectManager.save(filesDir)
+        super.onStop()
+    }
 }

@@ -72,4 +72,9 @@ class TaskDetailActivity : AppCompatActivity() {
         val recyclerView = findViewById<RecyclerView>(R.id.task_detail_recycler_view)
         recyclerView.adapter = TaskDateAdapter(currentTask)
     }
+
+    override fun onStop() {
+        ProjectManager.save(filesDir)
+        super.onStop()
+    }
 }

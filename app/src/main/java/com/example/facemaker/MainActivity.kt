@@ -69,4 +69,9 @@ class MainActivity : AppCompatActivity() {
         (recyclerView.adapter as ConcatAdapter).adapters[1].notifyDataSetChanged()
         ProjectManager.save(filesDir)
     }
+
+    override fun onStop() {
+        ProjectManager.save(filesDir)
+        super.onStop()
+    }
 }
