@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity() {
             }
         } else if (requestCode == projectDetailRequestCode && resultCode == Activity.RESULT_OK) {
             data?.let { data ->
-                val id = data.getLongExtra(REMOVED_PROJECT_ID, 0)
+                val id = data.getIntExtra(REMOVED_PROJECT_ID, 0)
                 ProjectManager.removeProjectForId(id)
             }
         }

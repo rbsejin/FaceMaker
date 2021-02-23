@@ -15,11 +15,11 @@ object ProjectManager {
         return projectList.remove(project)
     }
 
-    fun removeProjectForId(id: Long): Boolean {
+    fun removeProjectForId(id: Int): Boolean {
         return projectList.removeAll { it.id == id }
     }
 
-    fun getProjectForId(id: Long): Project? {
+    fun getProjectForId(id: Int): Project? {
         return projectList.firstOrNull { it.id == id }
     }
 
@@ -27,7 +27,19 @@ object ProjectManager {
         return projectList
     }
 
-    fun createId(): Long {
+    fun getTaskForId(id: Int): Task? {
+        for (project in projectList) {
+            for (task in project.getTaskList()) {
+                if (task.id == id) {
+                    return task
+                }
+            }
+        }
+
+        return null
+    }
+
+    fun createId(): Int {
         if (projectList.size == 0) {
             return 1
         }

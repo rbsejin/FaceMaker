@@ -5,7 +5,7 @@ import java.util.*
 
 class Project(
     @SerializedName("id")
-    val id: Long, // private set
+    val id: Int, // private set
     @SerializedName("content")
     var content: String,
     @SerializedName("createdDateTime")
@@ -22,11 +22,11 @@ class Project(
         return taskList.remove(task)
     }
 
-    fun removeTaskForId(id: Long): Boolean {
+    fun removeTaskForId(id: Int): Boolean {
         return taskList.removeAll { it.id == id }
     }
 
-    fun getTaskForId(id: Long): Task? {
+    fun getTaskForId(id: Int): Task? {
         return taskList.firstOrNull { it.id == id }
     }
 
@@ -34,11 +34,15 @@ class Project(
         return taskList
     }
 
-    fun createId(): Long {
-        if (taskList.size == 0) {
-            return 1
+    fun createId(): Int {
+        var maxId = 0
+
+        for (project in ProjectManager.getProjectList()) {
+            for (task in project.getTaskList()) {
+                maxId = Math.max(maxId, task.id)
+            }
         }
 
-        return taskList[taskList.size - 1].id + 1
+        return maxId + 1
     }
 }

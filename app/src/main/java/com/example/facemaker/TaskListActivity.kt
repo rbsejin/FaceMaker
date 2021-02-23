@@ -28,7 +28,7 @@ class TaskListActivity() : AppCompatActivity() {
         setContentView(R.layout.activity_task_list)
 
         val bundle: Bundle? = intent.extras
-        val currentProjectId: Long = bundle?.getLong(PROJECT_ID) ?: return
+        val currentProjectId: Int = bundle?.getInt(PROJECT_ID) ?: return
         currentProject = ProjectManager.getProjectForId(currentProjectId) ?: return
 
         val projectContent: TextView = findViewById(R.id.task_list_project_content)
@@ -91,7 +91,7 @@ class TaskListActivity() : AppCompatActivity() {
             }
         } else if (requestCode == taskDetailRequestCode && resultCode == Activity.RESULT_OK) {
             data?.let { data ->
-                val id = data.getLongExtra(REMOVED_PROJECT_ID, 0)
+                val id = data.getIntExtra(REMOVED_PROJECT_ID, 0)
                 currentProject.removeTaskForId(id)
             }
         }

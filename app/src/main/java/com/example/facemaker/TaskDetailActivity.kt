@@ -24,15 +24,8 @@ class TaskDetailActivity : AppCompatActivity() {
         val taskCheckBox: CheckBox = findViewById(R.id.task_detail_checkBox)
 
         val bundle: Bundle? = intent.extras
-        val currentTaskId: Long? = bundle?.getLong(TASK_ID)
-        val currentProjectId: Long? = bundle?.getLong(PROJECT_ID)
-
-        if (currentTaskId == null || currentProjectId == null) {
-            return
-        }
-
-        val currentProject = ProjectManager.getProjectForId(currentProjectId) ?: return
-        val currentTask = currentProject.getTaskForId(currentTaskId) ?: return
+        val currentTaskId: Int = bundle?.getInt(TASK_ID) ?: return
+        val currentTask = ProjectManager.getTaskForId(currentTaskId) ?: return
 
         taskContent.setText(currentTask.content, TextView.BufferType.EDITABLE)
         taskCheckBox.isChecked = currentTask.isDone

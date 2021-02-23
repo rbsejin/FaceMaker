@@ -5,9 +5,9 @@ import java.util.*
 
 data class Task(
     @SerializedName("id")
-    val id: Long, // private set
+    val id: Int, // private set
     @SerializedName("projectId")
-    var projectId: Long,
+    var projectId: Int,
     @SerializedName("content")
     var content: String,
     @SerializedName("createdDateTime")
