@@ -68,6 +68,7 @@ object ProjectManager {
                 val projectType = object : TypeToken<List<Project>>() {}.type
                 val projectList = gson.fromJson<List<Project>>(output, projectType)
 
+                this.projectList.clear()
                 this.projectList.addAll(projectList)
                 assert(this.projectList.size == projectList.size)
             }

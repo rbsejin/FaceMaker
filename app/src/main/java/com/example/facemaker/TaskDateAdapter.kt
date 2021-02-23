@@ -1,17 +1,15 @@
 package com.example.facemaker
 
-import android.app.DatePickerDialog
-import android.app.TimePickerDialog
+import android.app.*
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.PopupMenu
-import android.widget.TextView
+import android.widget.*
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import java.text.SimpleDateFormat
@@ -89,18 +87,17 @@ class TaskDateAdapter(private val currentTask: Task) :
             when (position) {
                 // 미리 알림
                 0 -> {
-                    if (currentTask.notificationDateTime != null) {
-                        calendar.time = currentTask.notificationDateTime
-                    }
-
                     PopupMenu(parentContext, holder.itemView).apply {
                         menuInflater.inflate(R.menu.notification_item_menu, menu)
+                        var isAlarm: Boolean = false
+
                         setOnMenuItemClickListener {
                             val ret = when (it.itemId) {
                                 R.id.notification_today_later_item -> {
                                     calendar.add(Calendar.HOUR_OF_DAY, 3)
                                     calendar.set(Calendar.MINUTE, 0)
                                     currentTask.notificationDateTime = calendar.time
+                                    setAlarm(calendar)
                                     true
                                 }
                                 R.id.notification_tomorrow_item -> {
@@ -108,6 +105,7 @@ class TaskDateAdapter(private val currentTask: Task) :
                                     calendar.set(Calendar.HOUR_OF_DAY, 9)
                                     calendar.set(Calendar.MINUTE, 0)
                                     currentTask.notificationDateTime = calendar.time
+                                    setAlarm(calendar)
                                     true
                                 }
                                 R.id.notification_next_week_item -> {
@@ -115,10 +113,15 @@ class TaskDateAdapter(private val currentTask: Task) :
                                     calendar.set(Calendar.HOUR_OF_DAY, 9)
                                     calendar.set(Calendar.MINUTE, 0)
                                     currentTask.notificationDateTime = calendar.time
+                                    setAlarm(calendar)
                                     true
                                 }
 
                                 R.id.notification_direct_selection_item -> {
+                                    if (currentTask.notificationDateTime != null) {
+                                        calendar.time = currentTask.notificationDateTime
+                                    }
+
                                     val datePickerDialog = DatePickerDialog(
                                         parentContext,
                                         { _, year, month, dayOfMonth ->
@@ -136,6 +139,7 @@ class TaskDateAdapter(private val currentTask: Task) :
 
                                                     currentTask.notificationDateTime = calendar.time
                                                     notifyItemChanged(position)
+                                                    setAlarm(calendar)
                                                 },
                                                 calendar.get(Calendar.HOUR_OF_DAY),
                                                 calendar.get(Calendar.MINUTE),
@@ -268,7 +272,14 @@ class TaskDateAdapter(private val currentTask: Task) :
 
         holder.deleteButton.setOnClickListener {
             when (position) {
-                0 -> currentTask.notificationDateTime = null
+                0 -> {
+                    currentTask.notificationDateTime = null
+                    // deleteAlarm
+                    // notification 이 취소되지 않는다... 임시로 AlarmReceiver 에서 처리함
+                    val notificationManager: NotificationManager =
+                        parentContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                    notificationManager.cancel(currentTask.id)
+                }
                 1 -> {
                     currentTask.deadline = null
                     currentTask.repeatCycle = null
@@ -284,5 +295,46 @@ class TaskDateAdapter(private val currentTask: Task) :
 
     override fun getItemCount(): Int {
         return 3
+    }
+
+    // 알람설정
+    private fun setAlarm(calendar: Calendar) {
+        val simpleDateFormat = SimpleDateFormat(
+            "yyyy년 MM월 dd일 EE요일 a hh시 mm분",
+            Locale.getDefault()
+        )
+        val dateTimeMessage = simpleDateFormat.format(calendar.time)
+        Toast.makeText(parentContext, dateTimeMessage, Toast.LENGTH_SHORT)
+            .show()
+
+        // Preference 에 설정한 값 저장
+        val editor = parentContext.getSharedPreferences(
+            "alarm",
+            AppCompatActivity.MODE_PRIVATE
+        ).edit()
+        editor.putLong("nextNotifyTime", calendar.timeInMillis)
+        editor.apply()
+
+        val alarmIntent = Intent(parentContext, AlarmReceiver::class.java)
+        alarmIntent.putExtra("taskId", currentTask.id)
+        val pendingIntent: PendingIntent =
+            PendingIntent.getBroadcast(
+                parentContext,
+                currentTask.id,
+                alarmIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+            )
+        val alarmManager: AlarmManager =
+            parentContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+        alarmManager?.let {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                it.setExactAndAllowWhileIdle(
+                    AlarmManager.RTC_WAKEUP,
+                    calendar.timeInMillis,
+                    pendingIntent
+                )
+            }
+        }
     }
 }
