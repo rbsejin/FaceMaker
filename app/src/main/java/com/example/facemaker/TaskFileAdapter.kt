@@ -12,13 +12,14 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 
-class TaskFileAdapter(private val currentTask: Task) :
+class TaskFileAdapter(private val currentTask: Task, private val onClickCapture: () -> Unit) :
     RecyclerView.Adapter<TaskFileAdapter.TaskFileViewHolder>() {
     private lateinit var parentContext: Context
-    private val fileList: MutableList<String> = currentTask.fileList
+    val fileList: MutableList<String> = currentTask.fileList
     private val addFile: String = "파일추가"
 
-    class TaskFileViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class TaskFileViewHolder(itemView: View, private val onClickCapture: () -> Unit) :
+        RecyclerView.ViewHolder(itemView) {
         val iconImageView = itemView.findViewById<ImageView>(R.id.item_icon)
         val contentText = itemView.findViewById<TextView>(R.id.item_content)
         val deleteButton: ImageButton = itemView.findViewById(R.id.item_delete)
@@ -29,7 +30,7 @@ class TaskFileAdapter(private val currentTask: Task) :
         parentContext = parent.context
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.recycler_view_item, parent, false)
-        return TaskFileViewHolder(view)
+        return TaskFileViewHolder(view, onClickCapture)
     }
 
     override fun onBindViewHolder(holder: TaskFileViewHolder, position: Int) {
@@ -66,6 +67,7 @@ class TaskFileAdapter(private val currentTask: Task) :
                                 1 -> {
                                     // 카메라
                                     Toast.makeText(parentContext, "카메라", Toast.LENGTH_SHORT).show()
+                                    onClickCapture()
                                 }
                             }
 
@@ -93,5 +95,9 @@ class TaskFileAdapter(private val currentTask: Task) :
 
     override fun getItemCount(): Int {
         return fileList.size + 1
+    }
+
+    companion object {
+        const val REQUEST_TAKE_PHOTO = 1
     }
 }
