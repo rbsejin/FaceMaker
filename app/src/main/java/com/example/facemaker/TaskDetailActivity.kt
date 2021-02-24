@@ -1,8 +1,10 @@
 package com.example.facemaker
 
+import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Matrix
 import android.media.ExifInterface
@@ -12,6 +14,8 @@ import android.provider.MediaStore
 import android.util.Log
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.ConcatAdapter
@@ -26,7 +30,6 @@ import java.util.*
 const val REMOVED_TASK_ID = "removedTaskId"
 
 class TaskDetailActivity : AppCompatActivity() {
-    val REQUEST_TAKE_PHOTO = 1
     var mCurrentPhotoPath: String = ""
     var filename: String = ""
     lateinit var recyclerView: RecyclerView
@@ -86,9 +89,11 @@ class TaskDetailActivity : AppCompatActivity() {
         }
 
         val taskDateAdapter = TaskDateAdapter(currentTask)
-        val taskFileAdapter = TaskFileAdapter(currentTask, {captureCamera()}, {filename -> openImage(filename)})
+        val taskFileAdapter =
+            TaskFileAdapter(currentTask, { captureCamera() }, { filepath -> openImage(filepath) },
+                { addFileIntent() })
 
-        recyclerView = findViewById<RecyclerView>(R.id.task_detail_recycler_view)
+        recyclerView = findViewById(R.id.task_detail_recycler_view)
         recyclerView.adapter = ConcatAdapter(taskDateAdapter, taskFileAdapter)
     }
 
@@ -140,14 +145,37 @@ class TaskDetailActivity : AppCompatActivity() {
                         }
                     }
                 }
+                REQUEST_TAKE_FILE -> {
+                    if (resultCode == RESULT_OK) {
+                        var dataUri = data?.data
+
+                        // 리사이클러뷰 아이템에 추가
+                        val taskFileAdapter: TaskFileAdapter =
+                            (recyclerView.adapter as ConcatAdapter).adapters[1] as TaskFileAdapter
+
+                        val filepath = dataUri.toString()
+
+                        taskFileAdapter.fileList.add(filepath)
+                        taskFileAdapter.notifyDataSetChanged()
+                    }
+                }
             }
         } catch (e: Exception) {
             Log.w("waring", "onActivityResult Error !", e)
         }
     }
 
-    // 카메라, 저장소 접근 권한 요청 추가할 것
     fun captureCamera() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) !=
+            PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this, arrayOf(Manifest.permission.CAMERA),
+                REQUEST_TAKE_PHOTO
+            )
+            return
+        }
+
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
 
         // 인텐트를 처리 할 카메라 액티비티가 있는지 확인
@@ -237,7 +265,7 @@ class TaskDetailActivity : AppCompatActivity() {
             val taskFileAdapter: TaskFileAdapter =
                 (recyclerView.adapter as ConcatAdapter).adapters[1] as TaskFileAdapter
 
-            taskFileAdapter.fileList.add(this.filename)
+            taskFileAdapter.fileList.add("${storageDir.path}/$filename")
             taskFileAdapter.notifyDataSetChanged()
 
         } catch (e: java.lang.Exception) {
@@ -246,20 +274,61 @@ class TaskDetailActivity : AppCompatActivity() {
         }
     }
 
-    fun openImage(filename: String) {
-        this.filename = filename
-
+    fun openImage(filepath: String) {
         intent = Intent(Intent.ACTION_VIEW)
-        if ( filename.endsWith("jpg") || filename.endsWith("jpeg") ||
-             filename.endsWith("JPG") || filename.endsWith("gif") ||
-             filename.endsWith("png") || filename.endsWith("bmp")
+        if (filepath.endsWith("jpg") || filepath.endsWith("jpeg") ||
+            filepath.endsWith("JPG") || filepath.endsWith("gif") ||
+            filepath.endsWith("png") || filepath.endsWith("bmp")
         ) {
-            val storageDir: File = getExternalFilesDir(null) ?: return
-            val data =
-                Uri.parse("${storageDir.path}/${filename}")
+            val data = Uri.parse(filepath)
             intent.setDataAndType(data, "image/*")
-            //startActivityForResult(intent, 3)
             startActivity(intent)
         }
+    }
+
+    private fun addFileIntent() {
+        Intent(Intent.ACTION_VIEW)?.also {
+            var intent = Intent(Intent.ACTION_PICK)
+            intent.data = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+            intent.type = "image/*"
+            startActivityForResult(intent, REQUEST_TAKE_FILE)
+        }
+    }
+
+    // 권한 요청
+    // 카메라 권한 요청
+    private fun requestPermission() {
+        ActivityCompat.requestPermissions(
+            this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA),
+            REQUEST_TAKE_PHOTO
+        )
+    }
+
+    // 카메라 권한 체크
+    private fun checkPersmission(): Boolean {
+        return (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) ==
+                PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        ) == PackageManager.PERMISSION_GRANTED)
+    }
+
+    // 권한요청 결과
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            Log.d("TAG", "Permission: " + permissions[0] + "was " + grantResults[0] + "카메라 허가")
+        } else {
+            Log.d("TAG", "카메라 미허가")
+        }
+    }
+
+    companion object {
+        private const val REQUEST_TAKE_PHOTO = 1
+        private const val REQUEST_TAKE_FILE = 2
     }
 }

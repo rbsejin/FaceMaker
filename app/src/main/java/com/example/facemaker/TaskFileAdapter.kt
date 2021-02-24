@@ -9,13 +9,13 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 
 class TaskFileAdapter(
     private val currentTask: Task,
     private val onClickCapture: () -> Unit,
-    private val onOpenFile: (String) -> Unit
+    private val onOpenFile: (String) -> Unit,
+    private val onAddFile: () -> Unit
 ) :
     RecyclerView.Adapter<TaskFileAdapter.TaskFileViewHolder>() {
     private lateinit var parentContext: Context
@@ -25,7 +25,8 @@ class TaskFileAdapter(
     class TaskFileViewHolder(
         itemView: View,
         private val onClickCapture: () -> Unit,
-        private val onOpenFile: (String) -> Unit
+        private val onOpenFile: (String) -> Unit,
+        private val onAddFile: () -> Unit
     ) :
         RecyclerView.ViewHolder(itemView) {
         val iconImageView = itemView.findViewById<ImageView>(R.id.item_icon)
@@ -37,7 +38,7 @@ class TaskFileAdapter(
         parentContext = parent.context
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.recycler_view_item, parent, false)
-        return TaskFileViewHolder(view, onClickCapture, onOpenFile)
+        return TaskFileViewHolder(view, onClickCapture, onOpenFile, onAddFile)
     }
 
     override fun onBindViewHolder(holder: TaskFileViewHolder, position: Int) {
@@ -51,7 +52,7 @@ class TaskFileAdapter(
             fileList[position]
         }
 
-        holder.contentText.text = taskFile
+        holder.contentText.text = taskFile.substringAfterLast('/')
 
         // 아이템뷰 클릭했을 때
         holder.itemView.setOnClickListener {
@@ -67,17 +68,14 @@ class TaskFileAdapter(
                             when (which) {
                                 0 -> {
                                     // 장치 파일
-                                    Toast.makeText(parentContext, "장치파일", Toast.LENGTH_SHORT).show()
-                                    currentTask.fileList.add("file${fileList.size + 1}")
-                                    notifyDataSetChanged()
+                                    //currentTask.fileList.add("file${fileList.size + 1}")
+                                    onAddFile()
                                 }
                                 1 -> {
                                     // 카메라
-                                    Toast.makeText(parentContext, "카메라", Toast.LENGTH_SHORT).show()
                                     onClickCapture()
                                 }
                             }
-
                         })
                 builder.create().show()
 
