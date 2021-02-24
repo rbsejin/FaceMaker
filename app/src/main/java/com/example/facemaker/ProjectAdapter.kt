@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import java.util.*
 
 class ProjectAdapter(private val onClick: (Project) -> Unit) :
     RecyclerView.Adapter<ProjectAdapter.ProjectViewHolder>() {
@@ -48,5 +49,30 @@ class ProjectAdapter(private val onClick: (Project) -> Unit) :
 
     fun removeProject(adapterPosition: Int) {
         ProjectManager.removeAt(adapterPosition)
+    }
+
+    fun swapProejcts(from: Int, to: Int): Boolean {
+        val proejctList: List<Project> = ProjectManager.getProjectList()
+
+        if (from !in proejctList.indices) {
+            return false
+        }
+
+        if (to !in proejctList.indices) {
+            return false
+        }
+
+        if (from < to) {
+            for (i in from until to) {
+                Collections.swap(proejctList, i, i + 1)
+            }
+        } else {
+            for (i in from downTo to + 1) {
+                Collections.swap(proejctList, i, i - 1)
+            }
+        }
+
+        notifyItemMoved(from, to)
+        return true
     }
 }
