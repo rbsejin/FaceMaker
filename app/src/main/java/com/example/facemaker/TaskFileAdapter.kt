@@ -101,8 +101,4 @@ class TaskFileAdapter(
     override fun getItemCount(): Int {
         return fileList.size + 1
     }
-
-    companion object {
-        const val REQUEST_TAKE_PHOTO = 1
-    }
 }

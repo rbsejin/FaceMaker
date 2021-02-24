@@ -19,9 +19,13 @@ data class Task(
     @SerializedName("repeatCycle")
     var repeatCycle: String? = null // 추후 RepeatCycle 클래스 만들 것
 ) {
+    @SerializedName("isDone")
     var isDone = false // 완수 여부
+    @SerializedName("stepList")
     val stepList = mutableListOf<String>() // 단계
+    @SerializedName("fileList")
     val fileList = mutableListOf<String>() // 첨부 파일 리스트
+    @SerializedName("note")
     var note = "" // 메모
     //val completedDateTime : Date? = null // 완료된 날짜
 }

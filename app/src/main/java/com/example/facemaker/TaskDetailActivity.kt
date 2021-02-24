@@ -17,7 +17,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.RecyclerView
 import java.io.File
@@ -33,13 +32,14 @@ class TaskDetailActivity : AppCompatActivity() {
     var mCurrentPhotoPath: String = ""
     var filename: String = ""
     lateinit var recyclerView: RecyclerView
+    lateinit var taskContent: EditText
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_task_detail)
 
         /* Connect variables to UI elements. */
-        val taskContent: EditText = findViewById(R.id.task_detail_content)
+        taskContent = findViewById(R.id.task_detail_content)
         val taskCheckBox: CheckBox = findViewById(R.id.task_detail_checkBox)
 
         val bundle: Bundle? = intent.extras
@@ -66,9 +66,10 @@ class TaskDetailActivity : AppCompatActivity() {
 
         // 변경될 때마다가 아니라 초점을 잃었을 때만 변경해야하지만
         // 임시로 EditText 가 변경될 때 이벤트 추가
-        val editText: EditText = findViewById(R.id.task_detail_content)
-        editText.addTextChangedListener {
-            currentTask.content = editText.text.toString()
+        taskContent.setOnFocusChangeListener { v, hasFocus ->
+            if (!hasFocus) {
+                currentTask.content = taskContent.text.toString()
+            }
         }
 
         // Task 삭제하기
@@ -88,18 +89,27 @@ class TaskDetailActivity : AppCompatActivity() {
             dialog.show()
         }
 
+        val taskStepAdapter = TaskStepAdapter(currentTask)
         val taskDateAdapter = TaskDateAdapter(currentTask)
         val taskFileAdapter =
             TaskFileAdapter(currentTask, { captureCamera() }, { filepath -> openImage(filepath) },
                 { addFileIntent() })
 
         recyclerView = findViewById(R.id.task_detail_recycler_view)
-        recyclerView.adapter = ConcatAdapter(taskDateAdapter, taskFileAdapter)
+        recyclerView.adapter = ConcatAdapter(taskStepAdapter, taskDateAdapter, taskFileAdapter)
     }
 
     override fun onStop() {
+        recyclerView.clearFocus()
+        taskContent.clearFocus()
         ProjectManager.save(filesDir)
         super.onStop()
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        recyclerView.clearFocus()
+        taskContent.clearFocus()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -151,7 +161,7 @@ class TaskDetailActivity : AppCompatActivity() {
 
                         // 리사이클러뷰 아이템에 추가
                         val taskFileAdapter: TaskFileAdapter =
-                            (recyclerView.adapter as ConcatAdapter).adapters[1] as TaskFileAdapter
+                            (recyclerView.adapter as ConcatAdapter).adapters[2] as TaskFileAdapter
 
                         val filepath = dataUri.toString()
 
@@ -263,7 +273,7 @@ class TaskDetailActivity : AppCompatActivity() {
 
             // 리사이클러뷰 아이템에 추가
             val taskFileAdapter: TaskFileAdapter =
-                (recyclerView.adapter as ConcatAdapter).adapters[1] as TaskFileAdapter
+                (recyclerView.adapter as ConcatAdapter).adapters[2] as TaskFileAdapter
 
             taskFileAdapter.fileList.add("${storageDir.path}/$filename")
             taskFileAdapter.notifyDataSetChanged()
@@ -287,6 +297,16 @@ class TaskDetailActivity : AppCompatActivity() {
     }
 
     private fun addFileIntent() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                REQUEST_TAKE_FILE
+            )
+            return
+        }
+
         Intent(Intent.ACTION_VIEW)?.also {
             var intent = Intent(Intent.ACTION_PICK)
             intent.data = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
