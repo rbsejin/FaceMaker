@@ -86,7 +86,7 @@ class TaskDetailActivity : AppCompatActivity() {
         }
 
         val taskDateAdapter = TaskDateAdapter(currentTask)
-        val taskFileAdapter = TaskFileAdapter(currentTask) { captureCamera()}
+        val taskFileAdapter = TaskFileAdapter(currentTask, {captureCamera()}, {filename -> openImage(filename)})
 
         recyclerView = findViewById<RecyclerView>(R.id.task_detail_recycler_view)
         recyclerView.adapter = ConcatAdapter(taskDateAdapter, taskFileAdapter)
@@ -246,15 +246,17 @@ class TaskDetailActivity : AppCompatActivity() {
         }
     }
 
-    fun openImage() {
+    fun openImage(filename: String) {
+        this.filename = filename
+
         intent = Intent(Intent.ACTION_VIEW)
-        if (this.filename.endsWith("jpg") || this.filename.endsWith("jpeg") ||
-            this.filename.endsWith("JPG") || this.filename.endsWith("gif") ||
-            this.filename.endsWith("png") || this.filename.endsWith("bmp")
+        if ( filename.endsWith("jpg") || filename.endsWith("jpeg") ||
+             filename.endsWith("JPG") || filename.endsWith("gif") ||
+             filename.endsWith("png") || filename.endsWith("bmp")
         ) {
             val storageDir: File = getExternalFilesDir(null) ?: return
             val data =
-                Uri.parse("${storageDir.path}/${this.filename}")
+                Uri.parse("${storageDir.path}/${filename}")
             intent.setDataAndType(data, "image/*")
             //startActivityForResult(intent, 3)
             startActivity(intent)

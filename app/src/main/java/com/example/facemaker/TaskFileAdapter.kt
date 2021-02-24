@@ -12,25 +12,32 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 
-class TaskFileAdapter(private val currentTask: Task, private val onClickCapture: () -> Unit) :
+class TaskFileAdapter(
+    private val currentTask: Task,
+    private val onClickCapture: () -> Unit,
+    private val onOpenFile: (String) -> Unit
+) :
     RecyclerView.Adapter<TaskFileAdapter.TaskFileViewHolder>() {
     private lateinit var parentContext: Context
     val fileList: MutableList<String> = currentTask.fileList
     private val addFile: String = "파일추가"
 
-    class TaskFileViewHolder(itemView: View, private val onClickCapture: () -> Unit) :
+    class TaskFileViewHolder(
+        itemView: View,
+        private val onClickCapture: () -> Unit,
+        private val onOpenFile: (String) -> Unit
+    ) :
         RecyclerView.ViewHolder(itemView) {
         val iconImageView = itemView.findViewById<ImageView>(R.id.item_icon)
         val contentText = itemView.findViewById<TextView>(R.id.item_content)
         val deleteButton: ImageButton = itemView.findViewById(R.id.item_delete)
-        var currentTask: Task? = null
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskFileViewHolder {
         parentContext = parent.context
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.recycler_view_item, parent, false)
-        return TaskFileViewHolder(view, onClickCapture)
+        return TaskFileViewHolder(view, onClickCapture, onOpenFile)
     }
 
     override fun onBindViewHolder(holder: TaskFileViewHolder, position: Int) {
@@ -77,7 +84,7 @@ class TaskFileAdapter(private val currentTask: Task, private val onClickCapture:
 
             } else {
                 // 파일 아이템 선택했을 때 파일을 연다
-
+                onOpenFile(taskFile)
             }
         }
 
