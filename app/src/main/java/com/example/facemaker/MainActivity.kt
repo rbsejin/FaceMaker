@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.ConcatAdapter
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import java.util.*
 
@@ -16,6 +17,7 @@ const val PROJECT_ID = "project id"
 class MainActivity : AppCompatActivity() {
     private val projectDetailRequestCode = 1
     private val newProjectActivityRequestCode = 2
+    private lateinit var projectAdapter: ProjectAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,8 +27,21 @@ class MainActivity : AppCompatActivity() {
 
         val recyclerView = findViewById<RecyclerView>(R.id.project_list_recycler_view)
         val headerAdapter = ProjectHeaderAdapter()
-        val projectAdapter = ProjectAdapter { project -> adapterOnClick(project) }
+        projectAdapter = ProjectAdapter { project -> adapterOnClick(project) }
         recyclerView.adapter = ConcatAdapter(headerAdapter, projectAdapter)
+
+        // delete to swipe
+        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+                return true
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                projectAdapter.removeProject(viewHolder.adapterPosition)
+            }
+        }).apply {
+            attachToRecyclerView((recyclerView))
+        }
 
         val bottomButton: View = findViewById(R.id.project_bottom)
         bottomButton.setOnClickListener {

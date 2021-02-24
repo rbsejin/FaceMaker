@@ -50,4 +50,9 @@ class TaskAdapter(private val project: Project, private val onClick: (Task) -> U
     override fun getItemCount(): Int {
         return project.getTaskList().size
     }
+
+    fun removeTask(position: Int) {
+        project.removeTaskAt(position)
+        notifyDataSetChanged()
+    }
 }

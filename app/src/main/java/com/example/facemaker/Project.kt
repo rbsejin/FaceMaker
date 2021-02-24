@@ -45,4 +45,8 @@ class Project(
 
         return maxId + 1
     }
+
+    fun removeTaskAt(position: Int): Boolean {
+        return taskList.removeAt(position) != null
+    }
 }

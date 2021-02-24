@@ -96,4 +96,8 @@ object ProjectManager {
             e.printStackTrace()
         }
     }
+
+    fun removeAt(position: Int): Boolean {
+        return projectList.removeAt(position) != null
+    }
 }

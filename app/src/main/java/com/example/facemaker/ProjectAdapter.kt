@@ -45,4 +45,8 @@ class ProjectAdapter(private val onClick: (Project) -> Unit) :
     override fun getItemCount(): Int {
         return ProjectManager.getProjectList().size
     }
+
+    fun removeProject(adapterPosition: Int) {
+        ProjectManager.removeAt(adapterPosition)
+    }
 }
