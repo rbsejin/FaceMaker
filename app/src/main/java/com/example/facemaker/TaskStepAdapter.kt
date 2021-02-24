@@ -71,11 +71,17 @@ class TaskStepAdapter(
             }
         }
 
+        holder.contentText.setOnEditorActionListener { v, actionId, event ->
+            holder.contentText.clearFocus()
+            true
+        }
+
         // 삭제 버튼 클릭했을 때
         holder.deleteButton.setOnClickListener {
             // 파일 추가 아이템에서는 삭제버튼을 클릭 불가
             assert(position < stepList.size)
 
+            holder.contentText.clearFocus()
             // 파일 아이템 삭제한다.
             currentTask.stepList.removeAt(position)
 
