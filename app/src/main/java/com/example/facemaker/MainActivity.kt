@@ -17,6 +17,7 @@ const val PROJECT_ID = "project id"
 class MainActivity : AppCompatActivity() {
     private val projectDetailRequestCode = 1
     private val newProjectActivityRequestCode = 2
+    private val headItemRequestCode = 3
     private lateinit var projectAdapter: ProjectAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,7 +27,7 @@ class MainActivity : AppCompatActivity() {
         ProjectManager.load(filesDir)
 
         val recyclerView = findViewById<RecyclerView>(R.id.project_list_recycler_view)
-        val headerAdapter = ProjectHeaderAdapter()
+        val headerAdapter = ProjectHeaderAdapter { type -> headItemOnClick(type) }
         projectAdapter = ProjectAdapter { project -> adapterOnClick(project) }
         recyclerView.adapter = ConcatAdapter(headerAdapter, projectAdapter)
 
@@ -40,7 +41,10 @@ class MainActivity : AppCompatActivity() {
                 viewHolder: RecyclerView.ViewHolder,
                 target: RecyclerView.ViewHolder
             ): Boolean {
-                return projectAdapter.swapProejcts(viewHolder.adapterPosition, target.adapterPosition)
+                return projectAdapter.swapProejcts(
+                    viewHolder.adapterPosition,
+                    target.adapterPosition
+                )
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
@@ -61,6 +65,24 @@ class MainActivity : AppCompatActivity() {
         val intent = Intent(this, TaskListActivity()::class.java)
         intent.putExtra(PROJECT_ID, project.id)
         startActivityForResult(intent, projectDetailRequestCode)
+    }
+
+    private fun headItemOnClick(type: Int) {
+        when (type) {
+            0 -> {
+                // 오늘 할 일
+                val intent = Intent(this, TodayTaskListActivity()::class.java)
+                startActivityForResult(intent, headItemRequestCode)
+            }
+            1 -> {
+                // 중요
+                val intent = Intent(this, ImportantTaskListActivity()::class.java)
+                startActivityForResult(intent, headItemRequestCode)
+            }
+            2 -> {
+                // 계획된 일정
+            }
+        }
     }
 
     private fun addButtonOnClick() {
@@ -85,6 +107,8 @@ class MainActivity : AppCompatActivity() {
                 val id = data.getIntExtra(REMOVED_PROJECT_ID, 0)
                 ProjectManager.removeProjectForId(id)
             }
+        } else if (requestCode == headItemRequestCode && requestCode == Activity.RESULT_OK) {
+
         }
 
         val recyclerView: RecyclerView = findViewById(R.id.project_list_recycler_view)

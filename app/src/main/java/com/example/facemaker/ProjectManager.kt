@@ -3,6 +3,7 @@ package com.example.facemaker
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.*
+import java.util.*
 
 object ProjectManager {
     private val projectList = mutableListOf<Project>()
@@ -99,5 +100,59 @@ object ProjectManager {
 
     fun removeAt(position: Int): Boolean {
         return projectList.removeAt(position) != null
+    }
+
+    fun getTodayTaskList(): MutableList<Task> {
+        val todayTaskList = mutableListOf<Task>()
+        for (project in projectList) {
+            for (task in project.getTaskList()) {
+                if (task.todayTaskDate == null) {
+                    continue
+                }
+
+                val calendar = Calendar.getInstance()
+                val currentYear = calendar.get(Calendar.YEAR)
+                val currentMonth = calendar.get(Calendar.MONTH)
+                val currentDayOfWeek = calendar.get(Calendar.DAY_OF_MONTH)
+
+                Calendar.getInstance().time = task.todayTaskDate
+                val year = calendar.get(Calendar.YEAR)
+                val month = calendar.get(Calendar.MONTH)
+                val dayOfWeek = calendar.get(Calendar.DAY_OF_MONTH)
+
+                if (year == currentYear &&
+                    month == currentMonth &&
+                    dayOfWeek == currentDayOfWeek
+                ) {
+                    todayTaskList.add(task)
+                }
+            }
+        }
+
+        return todayTaskList
+    }
+
+    fun getImportantTaskList(): MutableList<Task> {
+        val importantTaskList = mutableListOf<Task>()
+        for (project in projectList) {
+            for (task in project.getTaskList()) {
+                if (task.isImportant) {
+                    importantTaskList.add(task)
+                }
+            }
+        }
+
+        return importantTaskList
+    }
+
+    fun removeTaskForId(id: Int) {
+        for (project in projectList) {
+            for (task in project.getTaskList()) {
+                if (task.id == id) {
+                    project.removeTask(task)
+                    return
+                }
+            }
+        }
     }
 }

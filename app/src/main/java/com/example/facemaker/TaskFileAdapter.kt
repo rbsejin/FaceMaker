@@ -48,7 +48,7 @@ class TaskFileAdapter(
             addFile
         } else {
             holder.deleteButton.visibility = RecyclerView.VISIBLE
-            holder.iconImageView.setImageResource(R.drawable.baseline_photo_24)
+            holder.iconImageView.setImageResource(R.drawable.baseline_photo_black_24)
             fileList[position]
         }
 

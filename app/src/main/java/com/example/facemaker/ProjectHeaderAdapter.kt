@@ -9,11 +9,11 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
 
-class ProjectHeaderAdapter() :
+class ProjectHeaderAdapter(private val onClick: (Int) -> Unit) :
     Adapter<ProjectHeaderAdapter.ProjectHeaderItemViewHolder>() {
     private lateinit var parentContext: Context
 
-    class ProjectHeaderItemViewHolder(itemView: View) :
+    class ProjectHeaderItemViewHolder(itemView: View, val onClick: (Int) -> Unit) :
         RecyclerView.ViewHolder(itemView) {
         val icon: ImageView = itemView.findViewById(R.id.project_header_item_icon)
         val contentTextView: TextView = itemView.findViewById(R.id.project_header_item_content)
@@ -24,7 +24,7 @@ class ProjectHeaderAdapter() :
         parentContext = parent.context
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.project_header_item, parent, false)
-        return ProjectHeaderItemViewHolder(view)
+        return ProjectHeaderItemViewHolder(view, onClick)
     }
 
     override fun onBindViewHolder(holder: ProjectHeaderItemViewHolder, position: Int) {
@@ -33,12 +33,12 @@ class ProjectHeaderAdapter() :
                 0 -> {
                     icon.setImageResource(R.drawable.baseline_calendar_today_black_24)
                     contentTextView.text = "오늘 할 일"
-                    countTextView.text = ""
+                    countTextView.text = ProjectManager.getTodayTaskList().size.toString()
                 }
                 1 -> {
-                    icon.setImageResource(R.drawable.baseline_calendar_today_black_24)
-                    contentTextView.text = "이번 주 할 일"
-                    countTextView.text = ""
+                    icon.setImageResource(R.drawable.baseline_star_24)
+                    contentTextView.text = "중요"
+                    countTextView.text = ProjectManager.getImportantTaskList().size.toString()
                 }
                 2 -> {
                     icon.setImageResource(R.drawable.baseline_calendar_today_black_24)
@@ -49,6 +49,10 @@ class ProjectHeaderAdapter() :
                     assert(false)
                 }
             }
+        }
+
+        holder.itemView.setOnClickListener {
+            onClick(position)
         }
     }
 

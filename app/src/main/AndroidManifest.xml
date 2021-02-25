@@ -18,6 +18,8 @@
         <activity android:name=".AddTaskActivity"/>
         <activity android:name=".TaskDetailActivity" />
         <activity android:name=".TaskListActivity" />
+        <activity android:name=".TodayTaskListActivity" />
+        <activity android:name=".ImportantTaskListActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

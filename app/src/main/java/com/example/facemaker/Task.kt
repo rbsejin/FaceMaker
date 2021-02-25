@@ -28,4 +28,8 @@ data class Task(
     @SerializedName("note")
     var note = "" // 메모
     //val completedDateTime : Date? = null // 완료된 날짜
+    @SerializedName("todayTaskDate")
+    var todayTaskDate: Date? = null // 오늘 할 일
+    @SerializedName("isImportant")
+    var isImportant: Boolean = false
 }

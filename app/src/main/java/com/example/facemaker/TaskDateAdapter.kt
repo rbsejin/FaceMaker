@@ -74,6 +74,18 @@ class TaskDateAdapter(private val currentTask: Task) :
 
                     icon.setImageResource(R.drawable.baseline_repeat_black_24)
                 }
+                3 -> {
+                    if (currentTask.todayTaskDate != null) {
+                        contentTextView.text = "나의 하루에 추가됨"
+                        deleteButton.visibility = RecyclerView.VISIBLE
+                    } else {
+                        contentTextView.text = "나의 하루에 추가"
+                        deleteButton.visibility = RecyclerView.INVISIBLE
+                    }
+
+                    icon.setImageResource(R.drawable.baseline_calendar_today_24)
+                }
+
                 else -> {
                     assert(false)
                 }
@@ -263,6 +275,11 @@ class TaskDateAdapter(private val currentTask: Task) :
                         show()
                     }
                 }
+                // 나의 하루
+                3 -> {
+                    currentTask.todayTaskDate = Calendar.getInstance().time
+                    notifyDataSetChanged()
+                }
                 // else 에 들어올 수 없다.
                 else -> {
                     assert(false)
@@ -285,6 +302,7 @@ class TaskDateAdapter(private val currentTask: Task) :
                     currentTask.repeatCycle = null
                 }
                 2 -> currentTask.repeatCycle = null
+                3 -> currentTask.todayTaskDate = null
                 else -> assert(false)
             }
 
@@ -294,7 +312,7 @@ class TaskDateAdapter(private val currentTask: Task) :
     }
 
     override fun getItemCount(): Int {
-        return 3
+        return 4
     }
 
     // 알람설정

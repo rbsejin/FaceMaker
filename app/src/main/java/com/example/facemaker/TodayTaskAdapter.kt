@@ -9,8 +9,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import java.util.*
 
-class TaskAdapter(private val project: Project, private val onClick: (Task) -> Unit) :
-    RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
+class TodayTaskAdapter(var todayTaskList: MutableList<Task>, private val onClick: (Task) -> Unit) :
+    RecyclerView.Adapter<TodayTaskAdapter.TaskViewHolder>() {
     class TaskViewHolder(itemView: View, val onClick: (Task) -> Unit) :
         RecyclerView.ViewHolder(itemView) {
         private val checkBox = itemView.findViewById<CheckBox>(R.id.task_checkBox)
@@ -25,6 +25,7 @@ class TaskAdapter(private val project: Project, private val onClick: (Task) -> U
                 }
             }
 
+            val checkBox: CheckBox = itemView.findViewById(R.id.task_checkBox)
             checkBox.setOnClickListener {
                 currentTask?.let {
                     it.isDone = checkBox.isChecked
@@ -63,36 +64,35 @@ class TaskAdapter(private val project: Project, private val onClick: (Task) -> U
     }
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
-        holder.bind(project.getTaskList()[position])
+        holder.bind(todayTaskList[position])
     }
 
     override fun getItemCount(): Int {
-        return project.getTaskList().size
+        return todayTaskList.size
     }
 
-    fun removeTask(position: Int) {
-        project.removeTaskAt(position)
+    fun removeTodayTask(position: Int) {
+        todayTaskList[position].todayTaskDate = null
+        todayTaskList.removeAt(position)
         notifyDataSetChanged()
     }
 
     fun swapTasks(from: Int, to: Int): Boolean {
-        val taskList: List<Task> = project.getTaskList()
-
-        if (from !in taskList.indices) {
+        if (from !in todayTaskList.indices) {
             return false
         }
 
-        if (to !in taskList.indices) {
+        if (to !in todayTaskList.indices) {
             return false
         }
 
         if (from < to) {
             for (i in from until to) {
-                Collections.swap(taskList, i, i + 1)
+                Collections.swap(todayTaskList, i, i + 1)
             }
         } else {
             for (i in from downTo to + 1) {
-                Collections.swap(taskList, i, i - 1)
+                Collections.swap(todayTaskList, i, i - 1)
             }
         }
 
