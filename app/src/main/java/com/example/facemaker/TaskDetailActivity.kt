@@ -99,6 +99,12 @@ class TaskDetailActivity : AppCompatActivity() {
         recyclerView.adapter = ConcatAdapter(taskStepAdapter, taskDateAdapter, taskFileAdapter)
     }
 
+    override fun onStart() {
+        super.onStart()
+        recyclerView = findViewById(R.id.task_detail_recycler_view)
+        recyclerView.adapter?.notifyDataSetChanged()
+    }
+
     override fun onStop() {
         recyclerView.clearFocus()
         taskContent.clearFocus()
