@@ -3,15 +3,14 @@ package com.example.facemaker
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import java.util.*
 
@@ -33,16 +32,16 @@ class TaskListActivity() : AppCompatActivity() {
         val currentProjectId: Int = bundle?.getInt(PROJECT_ID) ?: return
         currentProject = ProjectManager.getProjectForId(currentProjectId) ?: return
 
-        val projectContent: TextView = findViewById(R.id.task_list_project_content)
-        projectContent.text = currentProject.content
+        val projectName: TextView = findViewById(R.id.task_list_project_name)
+        projectName.text = currentProject.name
 
-        projectContent.setOnClickListener {
+        projectName.setOnClickListener {
             val builder: AlertDialog.Builder = AlertDialog.Builder(this)
             builder.setTitle("프로젝트 이름 바꾸기")
                 .setNegativeButton("취소", null)
                 .setPositiveButton("저장") { _, _ ->
-                    currentProject.content = "바뀐 이름"
-                    projectContent.text = currentProject.content
+                    currentProject.name = "바뀐 이름"
+                    projectName.text = currentProject.name
                     ProjectManager.save(filesDir)
                 }
             val dialog: AlertDialog = builder.create()
@@ -50,18 +49,21 @@ class TaskListActivity() : AppCompatActivity() {
         }
 
         val recyclerView = findViewById<RecyclerView>(R.id.task_recycler_view)
-        taskAdapter= TaskAdapter(currentProject) { task -> adapterOnClick(task) }
+        //taskAdapter= TaskAdapter(currentProject) { task -> adapterOnClick(task) }
+
+        taskAdapter = TaskAdapter(currentProject, TaskListener { task -> adapterOnClick(task) })
+
         recyclerView.adapter = taskAdapter
 
         // 아이템간 구분선
-        val dividerItemDecoration = DividerItemDecoration(
+/*        val dividerItemDecoration = DividerItemDecoration(
             recyclerView.context,
             LinearLayoutManager.VERTICAL
         )
-        recyclerView.addItemDecoration(dividerItemDecoration)
+        recyclerView.addItemDecoration(dividerItemDecoration)*/
 
         // delete to swipe
-        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP or ItemTouchHelper.DOWN, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+/*        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP or ItemTouchHelper.DOWN, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
             override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
                 return taskAdapter.swapTasks(viewHolder.adapterPosition, target.adapterPosition)
             }
@@ -71,7 +73,7 @@ class TaskListActivity() : AppCompatActivity() {
             }
         }).apply {
             attachToRecyclerView((recyclerView))
-        }
+        }*/
 
         val fab: View = findViewById(R.id.fab)
         fab.setOnClickListener {
@@ -93,22 +95,24 @@ class TaskListActivity() : AppCompatActivity() {
         startActivityForResult(intent, taskDetailRequestCode)
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == newTaskActivityRequestCode && resultCode == Activity.RESULT_OK) {
             data?.let { data ->
-                val content = data.getStringExtra(TASK_CONTENT)
-                content?.let {
+                val name = data.getStringExtra(TASK_NAME)
+                name?.let {
                     val taskId = currentProject.createId()
-                    val task = Task(taskId, currentProject.id, content, Calendar.getInstance().time)
-                    currentProject.addTask(task)
+                    val task = Task(taskId, currentProject.id, name, Calendar.getInstance().time)
+                    taskAdapter.addTask(task)
+                    taskAdapter.notifyDataSetChanged()
                 }
             }
         } else if (requestCode == taskDetailRequestCode && resultCode == Activity.RESULT_OK) {
             data?.let { data ->
                 val id = data.getIntExtra(REMOVED_PROJECT_ID, 0)
-                currentProject.removeTaskForId(id)
+                taskAdapter.removeTaskForId(id)
             }
         }
 

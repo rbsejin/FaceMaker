@@ -77,10 +77,10 @@ class TodayTaskListActivity() : AppCompatActivity() {
 
         if (requestCode == newTaskActivityRequestCode && resultCode == Activity.RESULT_OK) {
 /*            data?.let { data ->
-                val content = data.getStringExtra(TASK_CONTENT)
-                content?.let {
+                val name = data.getStringExtra(TASK_NAME)
+                name?.let {
                     val taskId = currentProject.createId()
-                    val task = Task(taskId, currentProject.id, content, Calendar.getInstance().time)
+                    val task = Task(taskId, currentProject.id, name, Calendar.getInstance().time)
                     currentProject.addTask(task)
                 }
             }*/

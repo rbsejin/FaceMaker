@@ -8,8 +8,8 @@ data class Task(
     val id: Int, // private set
     @SerializedName("projectId")
     var projectId: Int,
-    @SerializedName("content")
-    var content: String,
+    @SerializedName("name")
+    var name: String,
     @SerializedName("createdDateTime")
     val createdDateTime: Date, // private set
     @SerializedName("deadline")

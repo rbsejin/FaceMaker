@@ -39,14 +39,14 @@ class TaskDetailActivity : AppCompatActivity() {
         setContentView(R.layout.activity_task_detail)
 
         /* Connect variables to UI elements. */
-        taskContent = findViewById(R.id.task_detail_content)
+        taskContent = findViewById(R.id.task_detail_name)
         val taskCheckBox: CheckBox = findViewById(R.id.task_detail_checkBox)
 
         val bundle: Bundle? = intent.extras
         val currentTaskId: Int = bundle?.getInt(TASK_ID) ?: return
         val currentTask = ProjectManager.getTaskForId(currentTaskId) ?: return
 
-        taskContent.setText(currentTask.content, TextView.BufferType.EDITABLE)
+        taskContent.setText(currentTask.name, TextView.BufferType.EDITABLE)
         taskCheckBox.isChecked = currentTask.isDone
 
         // 체크박스 클릭했을 때 이벤트 추가
@@ -68,7 +68,7 @@ class TaskDetailActivity : AppCompatActivity() {
         // 임시로 EditText 가 변경될 때 이벤트 추가
         taskContent.setOnFocusChangeListener { v, hasFocus ->
             if (!hasFocus) {
-                currentTask.content = taskContent.text.toString()
+                currentTask.name = taskContent.text.toString()
             }
         }
 

@@ -7,10 +7,10 @@ import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputEditText
 
-const val TASK_CONTENT = "content"
+const val TASK_NAME = "name"
 
 class AddTaskActivity : AppCompatActivity() {
-    private lateinit var addTaskContent: TextInputEditText
+    private lateinit var addTaskName: TextInputEditText
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,17 +19,17 @@ class AddTaskActivity : AppCompatActivity() {
         findViewById<Button>(R.id.add_task_button).setOnClickListener {
             addTask()
         }
-        addTaskContent = findViewById(R.id.add_task_content)
+        addTaskName = findViewById(R.id.add_task_name)
     }
 
     private fun addTask() {
         val resultIntent = Intent()
 
-        if (addTaskContent.text.isNullOrEmpty()) {
+        if (addTaskName.text.isNullOrEmpty()) {
             setResult(Activity.RESULT_CANCELED, resultIntent)
         } else {
-            val content = addTaskContent.text.toString()
-            resultIntent.putExtra(TASK_CONTENT, content)
+            val name = addTaskName.text.toString()
+            resultIntent.putExtra(TASK_NAME, name)
             setResult(Activity.RESULT_OK, resultIntent)
         }
         finish()

@@ -16,7 +16,7 @@ class ProjectHeaderAdapter(private val onClick: (Int) -> Unit) :
     class ProjectHeaderItemViewHolder(itemView: View, val onClick: (Int) -> Unit) :
         RecyclerView.ViewHolder(itemView) {
         val icon: ImageView = itemView.findViewById(R.id.project_header_item_icon)
-        val contentTextView: TextView = itemView.findViewById(R.id.project_header_item_content)
+        val nameTextView: TextView = itemView.findViewById(R.id.project_header_item_name)
         val countTextView: TextView = itemView.findViewById(R.id.project_header_item_count)
     }
 
@@ -32,17 +32,17 @@ class ProjectHeaderAdapter(private val onClick: (Int) -> Unit) :
             when (position) {
                 0 -> {
                     icon.setImageResource(R.drawable.baseline_calendar_today_black_24)
-                    contentTextView.text = "오늘 할 일"
+                    nameTextView.text = "오늘 할 일"
                     countTextView.text = ProjectManager.getTodayTaskList().size.toString()
                 }
                 1 -> {
                     icon.setImageResource(R.drawable.baseline_star_24)
-                    contentTextView.text = "중요"
+                    nameTextView.text = "중요"
                     countTextView.text = ProjectManager.getImportantTaskList().size.toString()
                 }
                 2 -> {
                     icon.setImageResource(R.drawable.baseline_calendar_today_black_24)
-                    contentTextView.text = "계획된 일정"
+                    nameTextView.text = "계획된 일정"
                     countTextView.text = ""
                 }
                 else -> {

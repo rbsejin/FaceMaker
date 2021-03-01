@@ -30,7 +30,7 @@ class TaskFileAdapter(
     ) :
         RecyclerView.ViewHolder(itemView) {
         val iconImageView = itemView.findViewById<ImageView>(R.id.item_icon)
-        val contentText = itemView.findViewById<TextView>(R.id.item_content)
+        val nameTextView = itemView.findViewById<TextView>(R.id.item_name)
         val deleteButton: ImageButton = itemView.findViewById(R.id.item_delete)
     }
 
@@ -52,7 +52,7 @@ class TaskFileAdapter(
             fileList[position]
         }
 
-        holder.contentText.text = taskFile.substringAfterLast('/')
+        holder.nameTextView.text = taskFile.substringAfterLast('/')
 
         // 아이템뷰 클릭했을 때
         holder.itemView.setOnClickListener {

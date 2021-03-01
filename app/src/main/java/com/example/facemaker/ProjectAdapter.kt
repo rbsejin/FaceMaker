@@ -13,7 +13,7 @@ class ProjectAdapter(private val onClick: (Project) -> Unit) :
     class ProjectViewHolder(itemView: View, val onClick: (Project) -> Unit) :
         RecyclerView.ViewHolder(itemView) {
         private val iconImageView = itemView.findViewById<ImageView>(R.id.project_item_icon)
-        private val contentTextView = itemView.findViewById<TextView>(R.id.project_item_content)
+        private val nameTextView = itemView.findViewById<TextView>(R.id.project_item_name)
         private val taskCountTextView =
             itemView.findViewById<TextView>(R.id.project_item_task_count)
         private var currentProject: Project? = null
@@ -28,8 +28,8 @@ class ProjectAdapter(private val onClick: (Project) -> Unit) :
 
         fun bind(project: Project) {
             currentProject = project
-            contentTextView.text = project.content
-            taskCountTextView.text = project.getTaskList().size.toString()
+            nameTextView.text = project.name
+            taskCountTextView.text = project.getTaskList().count { !it.isDone}.toString()
         }
     }
 

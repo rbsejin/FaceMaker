@@ -58,7 +58,7 @@ class AlarmReceiver : BroadcastReceiver() {
             .setWhen(System.currentTimeMillis())
             .setTicker("{Ticker}")
             .setContentTitle("미리 알림")
-            .setContentText(task.content)
+            .setContentText(task.name)
             .setContentInfo("INFO")
             .setContentIntent(pendingIntent)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)

@@ -7,10 +7,10 @@ import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputEditText
 
-const val PROJECT_CONTENT = "project content"
+const val PROJECT_NAME = "project name"
 
 class AddProjectActivity : AppCompatActivity() {
-    private lateinit var addProjectContent: TextInputEditText
+    private lateinit var addProjectName: TextInputEditText
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,17 +19,17 @@ class AddProjectActivity : AppCompatActivity() {
         findViewById<Button>(R.id.add_project_button).setOnClickListener {
             addProject()
         }
-        addProjectContent = findViewById(R.id.add_project_content)
+        addProjectName = findViewById(R.id.add_project_name)
     }
 
     private fun addProject() {
         val resultIntent = Intent()
 
-        if (addProjectContent.text.isNullOrEmpty()) {
+        if (addProjectName.text.isNullOrEmpty()) {
             setResult(Activity.RESULT_CANCELED, resultIntent)
         } else {
-            val content = addProjectContent.text.toString()
-            resultIntent.putExtra(PROJECT_CONTENT, content)
+            val name = addProjectName.text.toString()
+            resultIntent.putExtra(PROJECT_NAME, name)
             setResult(Activity.RESULT_OK, resultIntent)
         }
         finish()

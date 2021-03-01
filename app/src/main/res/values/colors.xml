@@ -7,4 +7,9 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="task_list_background_color">#6175c4</color>
+    <color name="item_background">#FFFFFFFF</color>
+    <color name="icon_outline">#FF737373</color>
+    <color name="task_background">#FF5C70BE</color>
 </resources>

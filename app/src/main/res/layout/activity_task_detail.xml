@@ -9,12 +9,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toTopOf="@+id/task_detail_recycler_view"
-        app:layout_constraintEnd_toStartOf="@+id/task_detail_content"
+        app:layout_constraintEnd_toStartOf="@+id/task_detail_name"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/task_detail_content"
+        android:id="@+id/task_detail_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="ToDo"

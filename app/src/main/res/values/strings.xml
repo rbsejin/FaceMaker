@@ -2,4 +2,7 @@
     <string name="app_name">FaceMaker</string>
     <string name="fab_content_description">fab</string>
 
+    <string name="completed">완료됨</string>
+    <string name="task_name">task name</string>
+    <string name="task_description">task description</string>
 </resources>

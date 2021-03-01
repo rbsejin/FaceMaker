@@ -1,8 +1,10 @@
 package com.example.facemaker
 
 import android.app.*
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
@@ -22,7 +24,7 @@ class TaskDateAdapter(private val currentTask: Task) :
     class TaskDateViewHolder(itemView: View, private val currentTask: Task) :
         RecyclerView.ViewHolder(itemView) {
         val icon: ImageView = itemView.findViewById(R.id.task_date_item_icon)
-        val contentTextView: TextView = itemView.findViewById(R.id.task_date_item_content)
+        val nameTextView: TextView = itemView.findViewById(R.id.task_date_item_name)
         val deleteButton: ImageButton = itemView.findViewById(R.id.task_date_item_delete)
     }
 
@@ -42,10 +44,10 @@ class TaskDateAdapter(private val currentTask: Task) :
                 0 -> {
                     val dateFormat = SimpleDateFormat("yy년 MM월 dd일 HH시 mm분 알림")
                     if (currentTask.notificationDateTime == null) {
-                        holder.contentTextView.text = "알림 설정"
+                        holder.nameTextView.text = "알림 설정"
                         deleteButton.visibility = RecyclerView.INVISIBLE
                     } else {
-                        contentTextView.text = dateFormat.format(currentTask.notificationDateTime)
+                        nameTextView.text = dateFormat.format(currentTask.notificationDateTime)
                         deleteButton.visibility = RecyclerView.VISIBLE
                     }
 
@@ -54,10 +56,10 @@ class TaskDateAdapter(private val currentTask: Task) :
                 1 -> {
                     val dateFormat = SimpleDateFormat("yy년 MM월 dd일 까지")
                     if (currentTask.deadline == null) {
-                        contentTextView.text = "기한 설정"
+                        nameTextView.text = "기한 설정"
                         deleteButton.visibility = RecyclerView.INVISIBLE
                     } else {
-                        contentTextView.text = dateFormat.format(currentTask.deadline)
+                        nameTextView.text = dateFormat.format(currentTask.deadline)
                         deleteButton.visibility = RecyclerView.VISIBLE
                     }
 
@@ -65,10 +67,10 @@ class TaskDateAdapter(private val currentTask: Task) :
                 }
                 2 -> {
                     if (currentTask.repeatCycle == null) {
-                        contentTextView.text = "반복"
+                        nameTextView.text = "반복"
                         deleteButton.visibility = RecyclerView.INVISIBLE
                     } else {
-                        contentTextView.text = currentTask.repeatCycle
+                        nameTextView.text = currentTask.repeatCycle
                         deleteButton.visibility = RecyclerView.VISIBLE
                     }
 
@@ -76,10 +78,10 @@ class TaskDateAdapter(private val currentTask: Task) :
                 }
                 3 -> {
                     if (currentTask.todayTaskDate != null) {
-                        contentTextView.text = "나의 하루에 추가됨"
+                        nameTextView.text = "나의 하루에 추가됨"
                         deleteButton.visibility = RecyclerView.VISIBLE
                     } else {
-                        contentTextView.text = "나의 하루에 추가"
+                        nameTextView.text = "나의 하루에 추가"
                         deleteButton.visibility = RecyclerView.INVISIBLE
                     }
 
@@ -333,6 +335,7 @@ class TaskDateAdapter(private val currentTask: Task) :
         editor.putLong("nextNotifyTime", calendar.timeInMillis)
         editor.apply()
 
+        val receiver = ComponentName(parentContext, DeviceBootReceiver::class.java)
         val alarmIntent = Intent(parentContext, AlarmReceiver::class.java)
         alarmIntent.putExtra("taskId", currentTask.id)
         val pendingIntent: PendingIntent =
@@ -342,6 +345,7 @@ class TaskDateAdapter(private val currentTask: Task) :
                 alarmIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT
             )
+
         val alarmManager: AlarmManager =
             parentContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
@@ -354,5 +358,9 @@ class TaskDateAdapter(private val currentTask: Task) :
                 )
             }
         }
+
+        parentContext.packageManager.setComponentEnabledSetting(receiver,
+            PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+            PackageManager.DONT_KILL_APP);
     }
 }

@@ -6,8 +6,8 @@ import java.util.*
 class Project(
     @SerializedName("id")
     val id: Int, // private set
-    @SerializedName("content")
-    var content: String,
+    @SerializedName("name")
+    var name: String,
     @SerializedName("createdDateTime")
     val createdDateTime: Date
 ) {

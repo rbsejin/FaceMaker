@@ -18,7 +18,9 @@
         <activity android:name=".AddProjectActivity" />
         <activity android:name=".AddTaskActivity" />
         <activity android:name=".TaskDetailActivity" />
-        <activity android:name=".TaskListActivity" />
+        <activity
+            android:name=".TaskListActivity"
+            android:theme="@style/Theme.TaskList" />
         <activity android:name=".TodayTaskListActivity" />
         <activity android:name=".ImportantTaskListActivity" />
         <activity android:name=".MainActivity">
@@ -31,6 +33,13 @@
 
         <!-- 알람 리시버 -->
         <receiver android:name=".AlarmReceiver" />
+        <receiver
+            android:name=".DeviceBootReceiver"
+            android:enabled="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -42,6 +51,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_path" />
         </provider>
+
     </application>
 
 </manifest>

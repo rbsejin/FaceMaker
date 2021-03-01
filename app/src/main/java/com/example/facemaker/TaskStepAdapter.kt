@@ -22,7 +22,7 @@ class TaskStepAdapter(
     ) :
         RecyclerView.ViewHolder(itemView) {
         val iconImageView = itemView.findViewById<ImageView>(R.id.item_icon)
-        val contentText = itemView.findViewById<EditText>(R.id.item_content)
+        val nameTextView = itemView.findViewById<EditText>(R.id.item_name)
         val deleteButton: ImageButton = itemView.findViewById(R.id.item_delete)
     }
 
@@ -38,27 +38,27 @@ class TaskStepAdapter(
         if (position == stepList.size) {
             holder.deleteButton.visibility = RecyclerView.INVISIBLE
             holder.iconImageView.setImageResource(R.drawable.baseline_add_24)
-            holder.contentText.hint = "다음단계"
-            holder.contentText.setText("")
+            holder.nameTextView.hint = "다음단계"
+            holder.nameTextView.setText("")
         } else {
             holder.deleteButton.visibility = RecyclerView.VISIBLE
             holder.iconImageView.setImageResource(R.drawable.baseline_check_box_outline_blank_24)
-            holder.contentText.setText(stepList[position])
+            holder.nameTextView.setText(stepList[position])
         }
 
-        holder.contentText.setOnFocusChangeListener { v, hasFocus ->
+        holder.nameTextView.setOnFocusChangeListener { v, hasFocus ->
             if (!hasFocus) {
                 Log.d("focus", "$position 포커스 잃음")
 
                 if (position == stepList.size) {
-                    val text: String = holder.contentText.text.toString()
+                    val text: String = holder.nameTextView.text.toString()
                     if (text.isNotEmpty()) {
                         stepList.add(text)
                         ProjectManager.save(parentContext.filesDir)
                         notifyDataSetChanged()
                     }
                 } else {
-                    val text: String = holder.contentText.text.toString()
+                    val text: String = holder.nameTextView.text.toString()
                     if (text.isEmpty()) {
                         stepList.removeAt(position)
                         notifyDataSetChanged()
@@ -71,8 +71,8 @@ class TaskStepAdapter(
             }
         }
 
-        holder.contentText.setOnEditorActionListener { v, actionId, event ->
-            holder.contentText.clearFocus()
+        holder.nameTextView.setOnEditorActionListener { v, actionId, event ->
+            holder.nameTextView.clearFocus()
             true
         }
 
@@ -81,7 +81,7 @@ class TaskStepAdapter(
             // 파일 추가 아이템에서는 삭제버튼을 클릭 불가
             assert(position < stepList.size)
 
-            holder.contentText.clearFocus()
+            holder.nameTextView.clearFocus()
             // 파일 아이템 삭제한다.
             currentTask.stepList.removeAt(position)
 

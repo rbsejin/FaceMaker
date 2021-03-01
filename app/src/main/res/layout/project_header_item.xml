@@ -19,12 +19,12 @@
         android:layout_marginBottom="16dp"
         android:src="@drawable/baseline_calendar_today_24"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/project_header_item_content"
+        app:layout_constraintEnd_toStartOf="@+id/project_header_item_name"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/project_header_item_content"
+        android:id="@+id/project_header_item_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="TextView"
@@ -44,6 +44,6 @@
         android:text="000"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/project_header_item_content"
+        app:layout_constraintStart_toEndOf="@+id/project_header_item_name"
         app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

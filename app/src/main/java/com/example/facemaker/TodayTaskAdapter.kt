@@ -48,7 +48,7 @@ class TodayTaskAdapter(var todayTaskList: MutableList<Task>, private val onClick
         fun bind(task: Task) {
             currentTask = task
             checkBox.isChecked = task.isDone
-            textView.text = task.content
+            textView.text = task.name
             if (task.isImportant) {
                 importantButton.setImageResource(R.drawable.baseline_star_24)
             } else {
@@ -59,7 +59,7 @@ class TodayTaskAdapter(var todayTaskList: MutableList<Task>, private val onClick
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.task_item, parent, false)
+            .inflate(R.layout.task_item2, parent, false)
         return TaskViewHolder(view, onClick)
     }
 

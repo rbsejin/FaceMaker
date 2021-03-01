@@ -95,10 +95,10 @@ class MainActivity : AppCompatActivity() {
 
         if (requestCode == newProjectActivityRequestCode && resultCode == Activity.RESULT_OK) {
             data?.let { data ->
-                val content = data.getStringExtra(PROJECT_CONTENT)
-                content?.let {
+                val name = data.getStringExtra(PROJECT_NAME)
+                name?.let {
                     val projectId = ProjectManager.createId()
-                    val project = Project(projectId, content, Calendar.getInstance().time)
+                    val project = Project(projectId, name, Calendar.getInstance().time)
                     ProjectManager.addProject(project)
                 }
             }
