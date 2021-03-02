@@ -4,10 +4,13 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import java.util.*
 
 
@@ -57,6 +60,13 @@ class MainActivity : AppCompatActivity() {
         val bottomButton: View = findViewById(R.id.project_bottom)
         bottomButton.setOnClickListener {
             addButtonOnClick()
+        }
+
+        val logoutButton: Button = findViewById(R.id.logout_button)
+        logoutButton.setOnClickListener {
+            Firebase.auth.signOut()
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
         }
     }
 

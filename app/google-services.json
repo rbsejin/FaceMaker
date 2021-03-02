@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1039254607457",
+    "project_id": "facemaker-415cc",
+    "storage_bucket": "facemaker-415cc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1039254607457:android:440e24dd6a5094a9313c20",
+        "android_client_info": {
+          "package_name": "com.example.facemaker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1039254607457-h1j8uffi4cegkibkd4j2iire2mjriqm8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9b10ZMJFTvj7VJMgh4p-T-HGNfGxLjWU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1039254607457-h1j8uffi4cegkibkd4j2iire2mjriqm8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
