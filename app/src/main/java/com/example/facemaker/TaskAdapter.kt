@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.facemaker.databinding.HeaderItemBinding
 import com.example.facemaker.databinding.TaskItemBinding
 
-private const val ITEM_VIEW_TYPE_GROUP = 0
+private const val ITEM_VIEW_TYPE_HEADER = 0
 private const val ITEM_VIEW_TYPE_ITEM = 1
 
 class TaskAdapter(
@@ -86,7 +86,7 @@ class TaskAdapter(
 
         itemList.addAll(undoneList)
         if (doneList.size > 0) {
-            doneHeaderItem = DataItem.HeaderItem
+            doneHeaderItem = DataItem.HeaderItem(Header(true, "완료됨", 0))
             doneHeaderItem!!.header.childCount = doneList.size
             itemList.add(doneHeaderItem!!)
             itemList.addAll(doneList)
@@ -95,7 +95,7 @@ class TaskAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
-            ITEM_VIEW_TYPE_GROUP -> HeaderViewHolder.from(parent)
+            ITEM_VIEW_TYPE_HEADER -> HeaderViewHolder.from(parent)
             ITEM_VIEW_TYPE_ITEM -> ViewHolder.from(parent)
             else -> throw ClassCastException("Unknown viewType $viewType")
         }
@@ -147,7 +147,7 @@ class TaskAdapter(
 
                     if (task.isDone) {
                         if (doneHeaderItem == null) {
-                            doneHeaderItem = DataItem.HeaderItem
+                            doneHeaderItem = DataItem.HeaderItem(Header(true, "완료됨", 0))
                             itemList.add(doneHeaderItem!!)
                         }
 
@@ -183,7 +183,7 @@ class TaskAdapter(
 
     override fun getItemViewType(position: Int): Int {
         return when (itemList[position]) {
-            is DataItem.HeaderItem -> ITEM_VIEW_TYPE_GROUP
+            is DataItem.HeaderItem -> ITEM_VIEW_TYPE_HEADER
             is DataItem.ChildItem -> ITEM_VIEW_TYPE_ITEM
         }
     }
@@ -261,8 +261,8 @@ class TaskAdapter(
 sealed class DataItem {
     data class ChildItem(val task: Task) : DataItem()
 
-    object HeaderItem : DataItem() {
-        val header = Header(true, "완료됨", 0)
+    class HeaderItem(val header: Header) : DataItem() {
+        /*val header = Header(true, "완료됨", 0)*/
         val childList = mutableListOf<ChildItem>()
     }
 }

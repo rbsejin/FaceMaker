@@ -81,6 +81,8 @@ class MainActivity : AppCompatActivity() {
             }
             2 -> {
                 // 계획된 일정
+                val intent = Intent(this, PlannedScheduleActivity()::class.java)
+                startActivityForResult(intent, headItemRequestCode)
             }
         }
     }
