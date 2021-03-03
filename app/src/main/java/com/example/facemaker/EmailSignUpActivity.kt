@@ -26,7 +26,7 @@ class EmailSignUpActivity : AppCompatActivity() {
             val email: String = binding.editTextEmailAddress.text.toString()
             val password: String = binding.editTextPassword.text.toString()
             val confirmPassword: String = binding.editTextConfirmPassword.text.toString()
-            val nickname: String = binding.editTextNickname.text.toString()
+            val userName: String = binding.editTextUserName.text.toString()
 
             if (email.isEmpty()) {
                 Toast.makeText(this, "이메일을 입력해주세요.", Toast.LENGTH_SHORT).show()
@@ -43,16 +43,16 @@ class EmailSignUpActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            if (nickname.isEmpty()) {
-                Toast.makeText(this, "닉네임을 입력해주세요.", Toast.LENGTH_SHORT).show()
+            if (userName.isEmpty()) {
+                Toast.makeText(this, "이름을 입력해주세요.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            createUser(email, password, nickname)
+            createUser(email, password, userName)
         }
     }
 
-    private fun createUser(email: String, password: String, nickname: String) {
+    private fun createUser(email: String, password: String, userName: String) {
         Firebase.auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
@@ -62,7 +62,7 @@ class EmailSignUpActivity : AppCompatActivity() {
                     val resultIntent = Intent()
                     resultIntent.putExtra(SIGN_UP_EMAIL, email)
                     resultIntent.putExtra(SIGN_UP_PASSWORD, password)
-                    resultIntent.putExtra(SIGN_UP_NICKNAME, nickname)
+                    resultIntent.putExtra(SIGN_UP_NICKNAME, userName)
                     setResult(Activity.RESULT_OK, resultIntent)
                     finish()
                 } else {

@@ -65,13 +65,13 @@
             android:ems="10"
             android:hint="비밀번호 확인"
             android:inputType="textPassword"
-            app:layout_constraintBottom_toTopOf="@+id/editTextNickname"
+            app:layout_constraintBottom_toTopOf="@+id/editTextUserName"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editTextPassword" />
 
         <EditText
-            android:id="@+id/editTextNickname"
+            android:id="@+id/editTextUserName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
@@ -95,6 +95,6 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editTextNickname" />
+            app:layout_constraintTop_toBottomOf="@+id/editTextUserName" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

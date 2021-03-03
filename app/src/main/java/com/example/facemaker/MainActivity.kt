@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.example.facemaker.databinding.ActivityMainBinding
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import java.util.*
@@ -23,9 +24,17 @@ class MainActivity : AppCompatActivity() {
     private val headItemRequestCode = 3
     private lateinit var projectAdapter: ProjectAdapter
 
+    private lateinit var binding: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        binding.profileUserNameText.text = Firebase.auth.currentUser.displayName
+        binding.profileEmailText.text = Firebase.auth.currentUser.email
 
         ProjectManager.load(filesDir)
 
