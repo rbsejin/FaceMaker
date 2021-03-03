@@ -31,4 +31,8 @@
     <string name="login_failed">"Login failed"</string>
 
     <string name="kakao_native_app_key">"0457381696664cd47588999d9e0fbb01"</string>
+
+    <string name="facebook_app_id">417172042918845</string>
+    <string name="fb_login_protocol_scheme">fb417172042918845</string>
+
 </resources>

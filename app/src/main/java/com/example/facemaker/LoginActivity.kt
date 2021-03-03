@@ -7,17 +7,25 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.example.facemaker.databinding.ActivityLoginBinding
+import com.facebook.AccessToken
+import com.facebook.CallbackManager
+import com.facebook.FacebookCallback
+import com.facebook.FacebookException
+import com.facebook.login.LoginManager
+import com.facebook.login.LoginResult
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.kakao.sdk.common.KakaoSdk
+import java.util.*
 
 const val RC_SIGN_IN = 1
 const val RC_SIGN_OUT = 2
@@ -25,6 +33,7 @@ const val RC_SIGN_OUT = 2
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
     private lateinit var auth: FirebaseAuth
+    private lateinit var callbackManager: CallbackManager
 
     // GoogleLogin 관리 클래스
     private lateinit var googleSignInClient: GoogleSignInClient
@@ -47,6 +56,7 @@ class LoginActivity : AppCompatActivity() {
         googleSignInClient.signOut().addOnCompleteListener {
             updateUI(null)
         }
+        callbackManager = CallbackManager.Factory.create()
 
         // kakao
         KakaoSdk.init(this, getString(R.string.kakao_native_app_key))
@@ -62,7 +72,7 @@ class LoginActivity : AppCompatActivity() {
             }
 
             facebookLoginButton.setOnClickListener {
-                updateUI(null)
+                facebookLogin()
             }
 
             twitterLoginButton.setOnClickListener {
@@ -102,8 +112,65 @@ class LoginActivity : AppCompatActivity() {
         startActivityForResult(signInIntent, RC_SIGN_IN)
     }
 
+    private fun facebookLogin() {
+        LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile", "email"))
+
+        LoginManager.getInstance().registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
+            override fun onSuccess(result: LoginResult?) {
+                handleFacebookAccessToken(result?.accessToken)
+            }
+
+            override fun onCancel() {
+
+            }
+
+            override fun onError(error: FacebookException?) {
+
+            }
+
+        })
+    }
+
+    private fun handleFacebookAccessToken(accessToken: AccessToken?) {
+        var credential = FacebookAuthProvider.getCredential(accessToken?.token!!)
+        auth.signInWithCredential(credential)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    // Sign in success, update UI with the signed-in user's information
+                    Log.d("login", "signInWithCredential:success")
+                    val user = auth.currentUser
+                    updateUI(user)
+                } else {
+                    // If sign in fails, display a message to the user.
+                    Log.w("login", "signInWithCredential:failure", task.exception)
+                    // ...
+                    Snackbar.make(binding.root, "Authentication Failed.", Snackbar.LENGTH_SHORT)
+                        .show()
+                    updateUI(null)
+                }
+
+                // ...
+            }
+    }
+
+/*    fun generateSSHKey(context: Context){
+        try {
+            val info = context.packageManager.getPackageInfo(context.packageName, PackageManager.GET_SIGNATURES)
+            for (signature in info.signatures) {
+                val md = MessageDigest.getInstance("SHA")
+                md.update(signature.toByteArray())
+                val hashKey = String(Base64.encode(md.digest(), 0))
+                Log.i("AppLog", "key:$hashKey=")
+            }
+        } catch (e: Exception) {
+            Log.e("AppLog", "error:", e)
+        }
+    }*/
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
+        callbackManager.onActivityResult(requestCode, resultCode, data)
 
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
