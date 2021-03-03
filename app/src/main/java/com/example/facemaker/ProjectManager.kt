@@ -145,6 +145,16 @@ object ProjectManager {
         return importantTaskList
     }
 
+    fun getPlanedScheduleTaskList(): MutableList<Task> {
+        val taskList = mutableListOf<Task>()
+        for (project in projectList) {
+            val list = project.getTaskList().filter { it.deadline != null}
+            taskList.addAll(list)
+        }
+
+        return taskList
+    }
+
     fun removeTaskForId(id: Int) {
         for (project in projectList) {
             for (task in project.getTaskList()) {

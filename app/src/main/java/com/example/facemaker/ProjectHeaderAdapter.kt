@@ -43,7 +43,7 @@ class ProjectHeaderAdapter(private val onClick: (Int) -> Unit) :
                 2 -> {
                     icon.setImageResource(R.drawable.baseline_calendar_today_black_24)
                     nameTextView.text = "계획된 일정"
-                    countTextView.text = ""
+                    countTextView.text = ProjectManager.getPlanedScheduleTaskList().size.toString()
                 }
                 else -> {
                     assert(false)

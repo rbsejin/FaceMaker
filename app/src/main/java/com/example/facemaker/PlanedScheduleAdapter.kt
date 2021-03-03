@@ -65,19 +65,12 @@ class PlanedScheduleAdapter(
     }
 
     private val itemList = mutableListOf<DataItem>()
-    private val taskList = mutableListOf<Task>()
+    private val taskList = ProjectManager.getPlanedScheduleTaskList()
 
     init {
-        for (project in ProjectManager.getProjectList()) {
-            val list = project.getTaskList().filter {it.deadline != null}
-            taskList.addAll(list)
-        }
-        
         taskList.sortBy {
             it.deadline
         }
-
-        val dateList = mutableListOf<Date?>()
 
         var headerItem: DataItem.HeaderItem? = null
 
