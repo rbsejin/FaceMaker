@@ -69,11 +69,10 @@ class PlanedScheduleAdapter(
 
     init {
         for (project in ProjectManager.getProjectList()) {
-            taskList.addAll(project.getTaskList())
+            val list = project.getTaskList().filter {it.deadline != null}
+            taskList.addAll(list)
         }
-
-        taskList.filter { it.deadline != null }
-
+        
         taskList.sortBy {
             it.deadline
         }
@@ -86,7 +85,7 @@ class PlanedScheduleAdapter(
             val task = taskList[i]
 
             val calendar = Calendar.getInstance()
-            calendar.time = task.deadline
+            calendar.time = task.deadline ?: continue
 
             val dateFormat = SimpleDateFormat("M월 d일 (EE)")
 
