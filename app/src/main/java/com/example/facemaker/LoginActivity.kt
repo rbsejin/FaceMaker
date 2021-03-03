@@ -17,6 +17,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.kakao.sdk.common.KakaoSdk
 
 const val RC_SIGN_IN = 1
 const val RC_SIGN_OUT = 2
@@ -47,6 +48,10 @@ class LoginActivity : AppCompatActivity() {
             updateUI(null)
         }
 
+        // kakao
+        KakaoSdk.init(this, getString(R.string.kakao_native_app_key))
+        // update kakao login UI
+
         binding.apply {
             emailLoginButton.setOnClickListener {
                 updateUI(null)
@@ -62,6 +67,31 @@ class LoginActivity : AppCompatActivity() {
 
             twitterLoginButton.setOnClickListener {
                 updateUI(null)
+            }
+
+            kakaoSignInButton.setOnClickListener {
+                // 로그인 공통 callback 구성
+//                val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
+//                    if (error != null) {
+//                        Log.e("login", "로그인 실패", error)
+//                    } else if (token != null) {
+//                        Log.i("login", "로그인 성공 ${token.accessToken}")
+//                        updateUI(null)
+//                    }
+//                }
+//
+//                // 카카오톡이 설치되어 있으면 카카오톡으로 로그인, 아니면 카카오계정으로 로그인
+//                if (UserApiClient.instance.isKakaoTalkLoginAvailable(this@LoginActivity)) {
+//                    UserApiClient.instance.loginWithKakaoTalk(
+//                        this@LoginActivity,
+//                        callback = callback
+//                    )
+//                } else {
+//                    UserApiClient.instance.loginWithKakaoAccount(
+//                        this@LoginActivity,
+//                        callback = callback
+//                    )
+//                }
             }
         }
     }
