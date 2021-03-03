@@ -9,7 +9,7 @@
     <!-- Sign In -->
     <string name="email">Email</string>
     <string name="password">Password</string>
-    <string name="signin_email">회원가입 및 이메일 로그인</string>
+    <string name="signin_email">이메일 로그인</string>
     <string name="signin_google">Google으로 로그인</string>
     <string name="signin_facebook">Facebook으로 로그인</string>
     <string name="signin_twitter">Twitter으로 로그인</string>
@@ -34,5 +34,6 @@
 
     <string name="facebook_app_id">417172042918845</string>
     <string name="fb_login_protocol_scheme">fb417172042918845</string>
+    <string name="email_sign_up">이메일 회원가입</string>
 
 </resources>

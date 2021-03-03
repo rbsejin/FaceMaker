@@ -1,9 +1,11 @@
 package com.example.facemaker
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.example.facemaker.databinding.ActivityLoginBinding
@@ -29,6 +31,11 @@ import java.util.*
 
 const val RC_SIGN_IN = 1
 const val RC_SIGN_OUT = 2
+const val RC_SIGN_UP = 3
+
+const val SIGN_UP_EMAIL = "sign up email"
+const val SIGN_UP_PASSWORD = "sign up password"
+const val SIGN_UP_NICKNAME = "sign up nickname"
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
@@ -37,6 +44,7 @@ class LoginActivity : AppCompatActivity() {
 
     // GoogleLogin 관리 클래스
     private lateinit var googleSignInClient: GoogleSignInClient
+    private lateinit var authStateListener: FirebaseAuth.AuthStateListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,6 +64,16 @@ class LoginActivity : AppCompatActivity() {
         googleSignInClient.signOut().addOnCompleteListener {
             updateUI(null)
         }
+
+        authStateListener = FirebaseAuth.AuthStateListener {
+            val user = it.currentUser
+            if (user != null) {
+                Log.d("TAG", "onAuthStateChanged:signed_in:" + user.uid)
+            } else {
+                Log.d("TAG", "onAuthStateChanged:signed_out")
+            }
+        }
+
         callbackManager = CallbackManager.Factory.create()
 
         // kakao
@@ -63,8 +81,29 @@ class LoginActivity : AppCompatActivity() {
         // update kakao login UI
 
         binding.apply {
+            emailSignUp.setOnClickListener {
+                val intent = Intent(this@LoginActivity, EmailSignUpActivity()::class.java)
+                startActivityForResult(intent, RC_SIGN_UP)
+            }
+
             emailLoginButton.setOnClickListener {
-                updateUI(null)
+                binding.loading.visibility = View.VISIBLE
+
+                val email = binding.emailText.text.toString()
+                val password = binding.passwordText.text.toString()
+                //createUser(email, password)
+
+                if (email.isEmpty()) {
+                    binding.loading.visibility = View.GONE
+                    return@setOnClickListener
+                }
+
+                if (password.isEmpty()) {
+                    binding.loading.visibility = View.GONE
+                    return@setOnClickListener
+                }
+
+                emailLogin(email, password)
             }
 
             googleSignInButton.setOnClickListener {
@@ -106,6 +145,29 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    private fun emailLogin(email: String, password: String) {
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    // Sign in success, update UI with the signed-in user's information
+                    Log.d("TAG", "signInWithEmail:success")
+                    val user = auth.currentUser
+                    updateUI(user)
+                } else {
+                    // If sign in fails, display a message to the user.
+                    Log.w("TAG", "signInWithEmail:failure", task.exception)
+                    Toast.makeText(
+                        baseContext, "Authentication failed.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    updateUI(null)
+                    // ...
+                }
+
+                // ...
+            }
+    }
+
     private fun googleLogin() {
         binding.loading.visibility = View.VISIBLE
         val signInIntent = googleSignInClient.signInIntent
@@ -113,22 +175,24 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun facebookLogin() {
-        LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile", "email"))
+        LoginManager.getInstance()
+            .logInWithReadPermissions(this, Arrays.asList("public_profile", "email"))
 
-        LoginManager.getInstance().registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
-            override fun onSuccess(result: LoginResult?) {
-                handleFacebookAccessToken(result?.accessToken)
-            }
+        LoginManager.getInstance()
+            .registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
+                override fun onSuccess(result: LoginResult?) {
+                    handleFacebookAccessToken(result?.accessToken)
+                }
 
-            override fun onCancel() {
+                override fun onCancel() {
 
-            }
+                }
 
-            override fun onError(error: FacebookException?) {
+                override fun onError(error: FacebookException?) {
 
-            }
+                }
 
-        })
+            })
     }
 
     private fun handleFacebookAccessToken(accessToken: AccessToken?) {
@@ -173,7 +237,7 @@ class LoginActivity : AppCompatActivity() {
         callbackManager.onActivityResult(requestCode, resultCode, data)
 
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        if (requestCode == RC_SIGN_IN) {
+        if (requestCode == RC_SIGN_IN && resultCode == Activity.RESULT_OK) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             //val task = Auth.GoogleSignInApi.getSignInResultFromIntent(data)
             try {
@@ -187,6 +251,10 @@ class LoginActivity : AppCompatActivity() {
                 Log.w("login", "Google sign in failed", e)
                 // ...
             }
+        } else if (requestCode == RC_SIGN_UP && resultCode == Activity.RESULT_OK) {
+            val email: String = data!!.getStringExtra(SIGN_UP_EMAIL)!!
+            val password: String = data!!.getStringExtra(SIGN_UP_PASSWORD)!!
+            emailLogin(email, password)
         }
     }
 
@@ -220,6 +288,14 @@ class LoginActivity : AppCompatActivity() {
         // Check if user is signed in (non-null) and update UI accordingly.
         val currentUser = auth.currentUser
         updateUI(currentUser)
+
+        auth.addAuthStateListener(authStateListener)
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        auth.removeAuthStateListener(authStateListener)
     }
 
     private fun updateUI(currentUser: FirebaseUser?) {
