@@ -6,7 +6,7 @@
     <data>
         <variable
             name="task"
-            type="com.example.facemaker.Task" />
+            type="com.example.facemaker.data.Task" />
 
         <variable
             name="clickListener"
