@@ -3,15 +3,15 @@
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <data>
-        <variable
-            name="task"
-            type="com.example.facemaker.data.Task" />
+<!--    <data>-->
+<!--        <variable-->
+<!--            name="task"-->
+<!--            type="com.example.facemaker.data.Task" />-->
 
-        <variable
-            name="clickListener"
-            type="com.example.facemaker.TaskListener" />
-    </data>
+<!--        <variable-->
+<!--            name="clickListener"-->
+<!--            type="com.example.facemaker.TaskListener" />-->
+<!--    </data>-->
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
@@ -23,68 +23,68 @@
         android:focusable="true"
         card_view:cardCornerRadius="@dimen/item_corner_radius">
 
-        <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:onClick="@{() -> clickListener.onClick(task)}">
+<!--        <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--            xmlns:app="http://schemas.android.com/apk/res-auto"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:onClick="@{() -> clickListener.onClick(task)}">-->
 
-            <ToggleButton
-                android:id="@+id/checkButton"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp"
-                android:background="@drawable/rounded_rectangle_solid"
-                android:textOff=""
-                android:textOn=""
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:taskCheckButton="@{task}" />
+<!--            <ToggleButton-->
+<!--                android:id="@+id/checkButton"-->
+<!--                android:layout_width="30dp"-->
+<!--                android:layout_height="30dp"-->
+<!--                android:layout_marginLeft="16dp"-->
+<!--                android:layout_marginTop="16dp"-->
+<!--                android:layout_marginBottom="16dp"-->
+<!--                android:background="@drawable/rounded_rectangle_solid"-->
+<!--                android:textOff=""-->
+<!--                android:textOn=""-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                app:taskCheckButton="@{task}" />-->
 
-            <TextView
-                android:id="@+id/task_name_text"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/layout_margin"
-                android:layout_marginEnd="@dimen/layout_margin"
-                android:text="@string/task_name"
-                android:textColor="@color/black"
-                android:textSize="@dimen/task_item_text_size"
-                app:layout_constraintBottom_toTopOf="@+id/task_description_text"
-                app:layout_constraintEnd_toStartOf="@+id/importantButton"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/checkButton"
-                app:layout_constraintTop_toTopOf="parent"
-                app:taskNameString="@{task}" />
+<!--            <TextView-->
+<!--                android:id="@+id/task_name_text"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginStart="@dimen/layout_margin"-->
+<!--                android:layout_marginEnd="@dimen/layout_margin"-->
+<!--                android:text="@string/task_name"-->
+<!--                android:textColor="@color/black"-->
+<!--                android:textSize="@dimen/task_item_text_size"-->
+<!--                app:layout_constraintBottom_toTopOf="@+id/task_description_text"-->
+<!--                app:layout_constraintEnd_toStartOf="@+id/importantButton"-->
+<!--                app:layout_constraintHorizontal_bias="0.5"-->
+<!--                app:layout_constraintStart_toEndOf="@+id/checkButton"-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                app:taskNameString="@{task}" />-->
 
-            <ToggleButton
-                android:id="@+id/importantButton"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginRight="@dimen/layout_margin"
-                android:background="@drawable/star"
-                android:textOff=""
-                android:textOn=""
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:taskImportantButton="@{task}" />
+<!--            <ToggleButton-->
+<!--                android:id="@+id/importantButton"-->
+<!--                android:layout_width="30dp"-->
+<!--                android:layout_height="30dp"-->
+<!--                android:layout_marginRight="@dimen/layout_margin"-->
+<!--                android:background="@drawable/star"-->
+<!--                android:textOff=""-->
+<!--                android:textOn=""-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                app:taskImportantButton="@{task}" />-->
 
-            <TextView
-                android:id="@+id/task_description_text"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="@string/task_description"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@+id/task_name_text"
-                app:layout_constraintStart_toStartOf="@+id/task_name_text"
-                app:layout_constraintTop_toBottomOf="@+id/task_name_text" />
+<!--            <TextView-->
+<!--                android:id="@+id/task_description_text"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="@string/task_description"-->
+<!--                android:visibility="gone"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                app:layout_constraintEnd_toEndOf="@+id/task_name_text"-->
+<!--                app:layout_constraintStart_toStartOf="@+id/task_name_text"-->
+<!--                app:layout_constraintTop_toBottomOf="@+id/task_name_text" />-->
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+<!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
 
     </androidx.cardview.widget.CardView>
 </layout>

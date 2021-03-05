@@ -1,50 +1,43 @@
-//package com.example.facemaker
-//
-//import android.app.Activity
-//import android.content.Intent
-//import android.os.Bundle
-//import android.view.View
-//import android.widget.Button
-//import androidx.appcompat.app.AppCompatActivity
-//import androidx.recyclerview.widget.ConcatAdapter
-//import androidx.recyclerview.widget.ItemTouchHelper
-//import androidx.recyclerview.widget.RecyclerView
-//import com.example.facemaker.data.Project
-//import com.example.facemaker.databinding.ActivityMainBinding
-//import com.google.firebase.auth.ktx.auth
-//import com.google.firebase.ktx.Firebase
-//import java.util.*
-//
-//
-//const val EXTRA_MESSAGE = "com.example.facemaker.MESSAGE"
-//const val PROJECT_ID = "project id"
-//
-//class MainActivity : AppCompatActivity() {
-//    private val projectDetailRequestCode = 1
-//    private val newProjectActivityRequestCode = 2
-//    private val headItemRequestCode = 3
+package com.example.facemaker
+
+import android.content.Intent
+import android.os.Bundle
+import android.widget.Button
+import androidx.appcompat.app.AppCompatActivity
+import com.example.facemaker.databinding.ActivityMainBinding
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
+
+
+const val EXTRA_MESSAGE = "com.example.facemaker.MESSAGE"
+const val PROJECT_ID = "project id"
+
+class MainActivity : AppCompatActivity() {
+    private val projectDetailRequestCode = 1
+    private val newProjectActivityRequestCode = 2
+    private val headItemRequestCode = 3
 //    private lateinit var projectAdapter: ProjectAdapter
-//
-//    private lateinit var binding: ActivityMainBinding
-//
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        setContentView(R.layout.activity_main)
-//
-//        binding = ActivityMainBinding.inflate(layoutInflater)
-//        setContentView(binding.root)
-//
-//        binding.profileUserNameText.text = Firebase.auth.currentUser.displayName
-//        binding.profileEmailText.text = Firebase.auth.currentUser.email
-//
+
+    private lateinit var binding: ActivityMainBinding
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        binding.profileUserNameText.text = Firebase.auth.currentUser.displayName
+        binding.profileEmailText.text = Firebase.auth.currentUser.email
+
 //        ProjectManager.load(filesDir)
 //
 //        val recyclerView = findViewById<RecyclerView>(R.id.project_list_recycler_view)
 //        val headerAdapter = ProjectHeaderAdapter { type -> headItemOnClick(type) }
 //        projectAdapter = ProjectAdapter { project -> adapterOnClick(project) }
 //        recyclerView.adapter = ConcatAdapter(headerAdapter, projectAdapter)
-//
-//        // delete to swipe
+
+        // delete to swipe
 //        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
 //            ItemTouchHelper.UP or ItemTouchHelper.DOWN,
 //            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
@@ -71,15 +64,15 @@
 //        bottomButton.setOnClickListener {
 //            addButtonOnClick()
 //        }
-//
-//        val logoutButton: Button = findViewById(R.id.logout_button)
-//        logoutButton.setOnClickListener {
-//            Firebase.auth.signOut()
-//            startActivity(Intent(this, LoginActivity::class.java))
-//            finish()
-//        }
-//    }
-//
+
+        val logoutButton: Button = findViewById(R.id.logout_button)
+        logoutButton.setOnClickListener {
+            Firebase.auth.signOut()
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+        }
+    }
+
 //    /* Opens ProjectDetailActivity when RecyclerView item is clicked. */
 //    private fun adapterOnClick(project: Project) {
 //        val intent = Intent(this, TaskListActivity()::class.java)
@@ -142,4 +135,4 @@
 //        ProjectManager.save(filesDir)
 //        super.onStop()
 //    }
-//}
+}
