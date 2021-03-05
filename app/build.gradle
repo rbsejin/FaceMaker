@@ -54,17 +54,19 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
+    // log library
+    implementation 'com.jakewharton.timber:timber:4.7.1'
+
     // Import the BoM for the Firebase platform
-    implementation platform('com.google.firebase:firebase-bom:26.6.0')
-    // Declare the dependency for the Firebase Authentication library
-    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation platform('com.google.firebase:firebase-bom:26.5.0')
+    // Declare the dependency for the Firebase SDK for Google Analytics
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+
+    // auth
+    implementation 'com.firebaseui:firebase-ui-auth:6.4.0'
+//    implementation 'com.facebook.android:facebook-android-sdk:4.x'
+//    implementation 'com.twitter.sdk.android:twitter-core:3.x'
+    implementation 'com.google.android.gms:play-services-auth:19.0.0' // Google Play services library
     implementation 'com.google.firebase:firebase-auth-ktx'
-
-    // Also declare the dependency for the Google Play services library and specify its version
-    implementation 'com.google.android.gms:play-services-auth:19.0.0'
-
-    implementation 'com.kakao.sdk:v2-user:2.4.0' // 카카오 로그인
-    implementation 'com.facebook.android:facebook-android-sdk:[4,5)' // 페이스북 로그인
-
-    implementation 'com.google.firebase:firebase-database-ktx:19.6.0' // Realtime Database library
+    implementation 'com.google.firebase:firebase-database-ktx'
 }

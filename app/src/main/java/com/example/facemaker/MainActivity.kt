@@ -1,10 +1,12 @@
 package com.example.facemaker
 
-import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.widget.ConcatAdapter
+import androidx.recyclerview.widget.RecyclerView
 import com.example.facemaker.databinding.ActivityMainBinding
+import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
@@ -13,9 +15,9 @@ const val EXTRA_MESSAGE = "com.example.facemaker.MESSAGE"
 const val PROJECT_ID = "project id"
 
 class MainActivity : AppCompatActivity() {
-    private val projectDetailRequestCode = 1
-    private val newProjectActivityRequestCode = 2
-    private val headItemRequestCode = 3
+//    private val projectDetailRequestCode = 1
+//    private val newProjectActivityRequestCode = 2
+//    private val headItemRequestCode = 3
 //    private lateinit var projectAdapter: ProjectAdapter
 
     private lateinit var binding: ActivityMainBinding
@@ -32,10 +34,10 @@ class MainActivity : AppCompatActivity() {
 
 //        ProjectManager.load(filesDir)
 //
-//        val recyclerView = findViewById<RecyclerView>(R.id.project_list_recycler_view)
-//        val headerAdapter = ProjectHeaderAdapter { type -> headItemOnClick(type) }
-//        projectAdapter = ProjectAdapter { project -> adapterOnClick(project) }
-//        recyclerView.adapter = ConcatAdapter(headerAdapter, projectAdapter)
+        val recyclerView = findViewById<RecyclerView>(R.id.project_list_recycler_view)
+        val headerAdapter = ProjectHeaderAdapter { type -> headItemOnClick(type) }
+        //projectAdapter = ProjectAdapter { project -> adapterOnClick(project) }
+        recyclerView.adapter = ConcatAdapter(headerAdapter/*, projectAdapter*/)
 
         // delete to swipe
 //        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
@@ -65,11 +67,21 @@ class MainActivity : AppCompatActivity() {
 //            addButtonOnClick()
 //        }
 
-        val logoutButton: Button = findViewById(R.id.logout_button)
-        logoutButton.setOnClickListener {
-            Firebase.auth.signOut()
-            startActivity(Intent(this, LoginActivity::class.java))
-            finish()
+        val profile: ConstraintLayout = findViewById(R.id.project_top)
+        profile.setOnClickListener {
+            // 로그아웃
+            AuthUI.getInstance()
+                .signOut(this)
+                .addOnCompleteListener {
+                    // ...MySuperAppTheme
+                }
+
+//            // 계정 삭제
+//            AuthUI.getInstance()
+//                .delete(this)
+//                .addOnCompleteListener {
+//                    // ...
+//                }
         }
     }
 
@@ -80,8 +92,8 @@ class MainActivity : AppCompatActivity() {
 //        startActivityForResult(intent, projectDetailRequestCode)
 //    }
 //
-//    private fun headItemOnClick(type: Int) {
-//        when (type) {
+    private fun headItemOnClick(type: Int) {
+        when (type) {
 //            0 -> {
 //                // 오늘 할 일
 //                val intent = Intent(this, TodayTaskListActivity()::class.java)
@@ -97,8 +109,8 @@ class MainActivity : AppCompatActivity() {
 //                val intent = Intent(this, PlannedScheduleActivity()::class.java)
 //                startActivityForResult(intent, headItemRequestCode)
 //            }
-//        }
-//    }
+        }
+    }
 //
 //    private fun addButtonOnClick() {
 //        val intent = Intent(this, AddProjectActivity::class.java)

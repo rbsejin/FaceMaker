@@ -6,6 +6,14 @@
     <string name="task_name">task name</string>
     <string name="task_description">task description</string>
 
+    <!-- Facebook application ID and custom URL scheme (app ID prefixed by 'fb'). -->
+    <string name="facebook_application_id" translatable="false">YOUR_APP_ID</string>
+    <string name="facebook_login_protocol_scheme" translatable="false">fbYOUR_APP_ID</string>
+    <!-- Twitter consumer key and secret -->
+    <string name="twitter_consumer_key" translatable="false">YOUR_CONSUMER_KEY</string>
+    <string name="twitter_consumer_secret" translatable="false">YOUR_CONSUMER_SECRET</string>
+
+
     <!-- Sign In -->
     <string name="email">Email</string>
     <string name="password">Password</string>
@@ -35,5 +43,12 @@
     <string name="facebook_app_id">417172042918845</string>
     <string name="fb_login_protocol_scheme">fb417172042918845</string>
     <string name="email_sign_up">이메일 회원가입</string>
+    <string name="new_project">새 프로젝트</string>
+    <string name="todo">TODO</string>
+    <string name="user_name">user name</string>
+    <string name="project">프로젝트</string>
+    <string name="today_task">오늘 할 일</string>
+    <string name="important">중요</string>
+    <string name="planed_schedule">계획된 일정</string>
 
 </resources>

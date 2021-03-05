@@ -2,10 +2,10 @@
 <resources>
     <dimen name="task_item_text_size">16sp</dimen>
     <dimen name="layout_margin">16dp</dimen>
+    <dimen name="small_layout_margin">8dp</dimen>
     <dimen name="item_corner_radius">4dp</dimen>
     <dimen name="item_margin">2dp</dimen>
     <dimen name="padding">16dp</dimen>
-    <dimen name="small_layout_margin">8dp</dimen>
-    <dimen name="category_text_size">14sp</dimen>
     <dimen name="small_padding">8dp</dimen>
+    <dimen name="category_text_size">14sp</dimen>
 </resources>
