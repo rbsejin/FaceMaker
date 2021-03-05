@@ -1,10 +1,12 @@
 package com.example.facemaker
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.facemaker.databinding.ActivityMainBinding
 import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.ktx.auth
@@ -29,8 +31,9 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.profileUserNameText.text = Firebase.auth.currentUser.displayName
-        binding.profileEmailText.text = Firebase.auth.currentUser.email
+        // 프로필 정보 업데이트
+        updateProfileUI()
+
 
 //        ProjectManager.load(filesDir)
 //
@@ -67,13 +70,14 @@ class MainActivity : AppCompatActivity() {
 //            addButtonOnClick()
 //        }
 
-        val profile: ConstraintLayout = findViewById(R.id.project_top)
+        val profile: ConstraintLayout = findViewById(R.id.profile_item)
         profile.setOnClickListener {
             // 로그아웃
             AuthUI.getInstance()
                 .signOut(this)
                 .addOnCompleteListener {
-                    // ...MySuperAppTheme
+                    startActivity(Intent(this, FirebaseUIActivity()::class.java))
+                    finish()
                 }
 
 //            // 계정 삭제
@@ -85,7 +89,19 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-//    /* Opens ProjectDetailActivity when RecyclerView item is clicked. */
+    private fun updateProfileUI() {
+        binding.profileUserNameText.text = Firebase.auth.currentUser.displayName
+        binding.profileEmailText.text = Firebase.auth.currentUser.email
+
+        Firebase.auth.currentUser.photoUrl?.let {
+            Glide.with(applicationContext)
+                .load(it)
+                .circleCrop()
+                .into(binding.profileImage)
+        }
+    }
+
+    //    /* Opens ProjectDetailActivity when RecyclerView item is clicked. */
 //    private fun adapterOnClick(project: Project) {
 //        val intent = Intent(this, TaskListActivity()::class.java)
 //        intent.putExtra(PROJECT_ID, project.id)
@@ -147,4 +163,10 @@ class MainActivity : AppCompatActivity() {
 //        ProjectManager.save(filesDir)
 //        super.onStop()
 //    }
+
+    override fun onStart() {
+        super.onStart()
+
+        updateProfileUI()
+    }
 }

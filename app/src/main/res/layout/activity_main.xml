@@ -15,7 +15,7 @@
         tools:context=".MainActivity">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/project_top"
+            android:id="@+id/profile_item"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:background="?attr/selectableItemBackground"
@@ -29,22 +29,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-
-            <ImageButton
-                android:id="@+id/search_button"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_marginEnd="@dimen/small_padding"
-                android:background="#00FFFFFF"
-                android:contentDescription="@string/todo"
-                android:scaleType="fitXY"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_search_24px" />
-
             <ImageView
-                android:id="@+id/imageView"
+                android:id="@+id/profile_image"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:layout_marginStart="@dimen/small_padding"
@@ -70,7 +56,7 @@
                 android:text="@string/user_name"
                 app:drawableRightCompat="@drawable/ic_keyboard_arrow_down_24px"
                 app:layout_constraintBottom_toTopOf="@+id/profile_email_text"
-                app:layout_constraintStart_toEndOf="@+id/imageView"
+                app:layout_constraintStart_toEndOf="@+id/profile_image"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
@@ -83,6 +69,19 @@
                 app:layout_constraintStart_toStartOf="@+id/profile_user_name_text"
                 app:layout_constraintTop_toBottomOf="@+id/profile_user_name_text" />
 
+            <ImageButton
+                android:id="@+id/search_button"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginEnd="@dimen/small_padding"
+                android:background="#00FFFFFF"
+                android:contentDescription="@string/todo"
+                android:scaleType="fitXY"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_search_24px" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.recyclerview.widget.RecyclerView
@@ -93,7 +92,7 @@
             app:layout_constraintBottom_toTopOf="@+id/add_project_button"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/project_top">
+            app:layout_constraintTop_toBottomOf="@+id/profile_item">
 
         </androidx.recyclerview.widget.RecyclerView>
 
