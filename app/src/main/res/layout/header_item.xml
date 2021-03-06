@@ -3,12 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-<!--    <data>-->
+    <data>
 
-<!--        <variable-->
-<!--            name="header"-->
-<!--            type="com.example.facemaker.Header" />-->
-<!--    </data>-->
+        <variable
+            name="header"
+            type="com.example.facemaker.Header" />
+    </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -18,29 +18,29 @@
         android:padding="@dimen/small_padding"
         tools:background="@color/task_background">
 
-<!--        <ImageView-->
-<!--            android:id="@+id/arrow_image"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginLeft="@dimen/small_layout_margin"-->
-<!--            android:src="@drawable/ic_keyboard_arrow_down_24px"-->
-<!--            app:headerArrowImage="@{header}"-->
-<!--            app:layout_constraintBottom_toBottomOf="@+id/header_name_and_count"-->
-<!--            app:layout_constraintEnd_toStartOf="@+id/header_name_and_count"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toTopOf="@+id/header_name_and_count" />-->
+        <ImageView
+            android:id="@+id/arrow_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/small_layout_margin"
+            android:src="@drawable/ic_keyboard_arrow_down_24px"
+            app:headerArrowImage="@{header}"
+            app:layout_constraintBottom_toBottomOf="@+id/header_name_and_count"
+            app:layout_constraintEnd_toStartOf="@+id/header_name_and_count"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/header_name_and_count" />
 
-<!--        <TextView-->
-<!--            android:id="@+id/header_name_and_count"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_margin="@dimen/small_layout_margin"-->
-<!--            android:text="@string/completed"-->
-<!--            android:textColor="@color/white"-->
-<!--            android:textSize="@dimen/category_text_size"-->
-<!--            app:headerNameAndCountText="@{header}"-->
-<!--            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--            app:layout_constraintStart_toEndOf="@+id/arrow_image"-->
-<!--            app:layout_constraintTop_toTopOf="parent" />-->
+        <TextView
+            android:id="@+id/header_name_and_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/small_layout_margin"
+            android:text="@string/completed"
+            android:textColor="@color/white"
+            android:textSize="@dimen/category_text_size"
+            app:headerNameAndCountText="@{header}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/arrow_image"
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

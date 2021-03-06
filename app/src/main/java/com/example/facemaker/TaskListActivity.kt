@@ -13,6 +13,7 @@ import androidx.databinding.DataBindingUtil
 import com.example.facemaker.data.Project
 import com.example.facemaker.data.Task
 import com.example.facemaker.databinding.ActivityTaskListBinding
+import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
@@ -87,19 +88,17 @@ class TaskListActivity() : AppCompatActivity(),
                     dialog.show(supportFragmentManager, ProjectCreationDialogFragment.UPDATE_PROJECT_NAME_TAG)
                 }
             }
+
+            findViewById<CollapsingToolbarLayout>(R.id.toolbar_layout).title = currentProject.name
+            binding.taskRecyclerView.adapter =  TaskAdapter(currentProject, TaskListener { task -> adapterOnClick(task) })
         }.addOnFailureListener {
             if (BuildConfig.DEBUG) {
                 error("project 를 DB에서 가져오지 못함")
             }
         }
 
-
-        //taskAdapter= TaskAdapter(currentProject) { task -> adapterOnClick(task) }
-
-//        taskAdapter = TaskAdapter(currentProject, TaskListener { task -> adapterOnClick(task) })
-
-//        recyclerView.adapter = taskAdapter
-
+        setSupportActionBar(findViewById(R.id.toolbar))
+        
         // 아이템간 구분선
 /*        val dividerItemDecoration = DividerItemDecoration(
             recyclerView.context,
@@ -122,13 +121,9 @@ class TaskListActivity() : AppCompatActivity(),
 
         val fab: View = findViewById(R.id.fab)
         fab.setOnClickListener {
-            fabOnClick()
+//            val intent = Intent(this, AddTaskActivity::class.java)
+//            startActivityForResult(intent, newTaskActivityRequestCode)
         }
-    }
-
-    private fun fabOnClick() {
-//        val intent = Intent(this, AddTaskActivity::class.java)
-//        startActivityForResult(intent, newTaskActivityRequestCode)
     }
 
     /* Opens TaskDetailActivity when RecyclerView item is clicked. */
