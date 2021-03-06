@@ -52,7 +52,7 @@ class TaskListActivity() : AppCompatActivity(),
             val key: String? = database.child("projects").push().key
             if (key == null) {
                 if (BuildConfig.DEBUG) {
-                    error("key must be not null")
+                    error("key must not be null")
                 }
                 return
             }

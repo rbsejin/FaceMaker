@@ -63,7 +63,7 @@ class MainActivity : AppCompatActivity() {
                     val project = projectSnapshot.getValue<Project>()
                     if (project == null) {
                         if (BuildConfig.DEBUG) {
-                            error("must be not null")
+                            error("must not be null")
                         }
 
                         continue
