@@ -50,5 +50,13 @@
     <string name="today_task">오늘 할 일</string>
     <string name="important">중요</string>
     <string name="planed_schedule">계획된 일정</string>
+    <string name="none_name_project">제목 없는 프로젝트</string>
+    <string name="fab">fab</string>
+    <string name="cancel">취소</string>
+    <string name="add">추가</string>
+    <string name="project_add">프로젝트 추가하기</string>
+    <string name="project_name">프로젝트명</string>
+    <string name="project_name_input">프로젝트명 입력</string>
+    <string name="save">저장</string>
 
 </resources>

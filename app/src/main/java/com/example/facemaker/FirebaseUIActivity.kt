@@ -21,7 +21,7 @@ class FirebaseUIActivity : AppCompatActivity() {
 
         val providers = arrayListOf(
             AuthUI.IdpConfig.EmailBuilder().build(),
-            AuthUI.IdpConfig.PhoneBuilder().build(),
+//            AuthUI.IdpConfig.PhoneBuilder().build(),
             AuthUI.IdpConfig.GoogleBuilder().build(),
 //            AuthUI.IdpConfig.FacebookBuilder().build(),
 //            AuthUI.IdpConfig.TwitterBuilder().build()
@@ -53,23 +53,14 @@ class FirebaseUIActivity : AppCompatActivity() {
             if (resultCode == Activity.RESULT_OK) {
                 // Successfully signed in
                 val user = FirebaseAuth.getInstance().currentUser
-                val key = Firebase.database.reference.child("users").push().key
-                if (BuildConfig.DEBUG && key == null) {
-                    error("key must be not null")
-                    return
-                } else {
-                    key!!
-                }
-
                 user?.let {
-                    val user = Firebase.database.reference.child("users").child(key).setValue(
+                    Firebase.database.reference.child("users").child(user.uid).setValue(
                         User(
-                            key,
-                            user.displayName,
+                            user.uid,
+                            user.displayName, //
                             user.email,
                             /*user.photoUrl,*/
-                            user.isEmailVerified,
-                            user.uid
+                            user.isEmailVerified
                         )
                     )
                 }

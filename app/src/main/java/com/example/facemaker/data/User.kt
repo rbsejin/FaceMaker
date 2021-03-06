@@ -10,7 +10,6 @@ data class User(
     val email: String = "",
     /*var photoUrl: Uri? = null,*/
     var emailVerified: Boolean = false,
-    val uid: String = ""
 ) {
 
     @Exclude
@@ -21,7 +20,6 @@ data class User(
             "email" to email,
             /*"photoUrl" to photoUrl,*/
             "emailVerified" to emailVerified,
-            "uid" to uid
         )
     }
 }

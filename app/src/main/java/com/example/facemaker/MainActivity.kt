@@ -4,43 +4,86 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.facemaker.data.Project
 import com.example.facemaker.databinding.ActivityMainBinding
 import com.firebase.ui.auth.AuthUI
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import timber.log.Timber
 
 
 const val EXTRA_MESSAGE = "com.example.facemaker.MESSAGE"
 const val PROJECT_ID = "project id"
+const val ADD_PROJECT = "add project"
 
 class MainActivity : AppCompatActivity() {
-//    private val projectDetailRequestCode = 1
-//    private val newProjectActivityRequestCode = 2
+    private val taskListRequestCode = 1
 //    private val headItemRequestCode = 3
-//    private lateinit var projectAdapter: ProjectAdapter
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var database: DatabaseReference
+    private lateinit var auth: FirebaseAuth
+
+    private val projects = mutableListOf<Project>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        database = Firebase.database.reference
+        auth = Firebase.auth
 
         // 프로필 정보 업데이트
         updateProfileUI()
 
-
-//        ProjectManager.load(filesDir)
-//
         val recyclerView = findViewById<RecyclerView>(R.id.project_list_recycler_view)
         val headerAdapter = ProjectHeaderAdapter { type -> headItemOnClick(type) }
-        //projectAdapter = ProjectAdapter { project -> adapterOnClick(project) }
-        recyclerView.adapter = ConcatAdapter(headerAdapter/*, projectAdapter*/)
+        val projectAdapter = ProjectAdapter(projects) { project -> adapterOnClick(project) }
+        recyclerView.adapter = ConcatAdapter(headerAdapter, projectAdapter)
+
+        //
+        val projectListener = object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                // Get Project object and use the values to update the UI
+
+                projects.clear()
+
+                for (projectSnapshot in dataSnapshot.children) {
+                    val project = projectSnapshot.getValue<Project>()
+                    if (project == null) {
+                        if (BuildConfig.DEBUG) {
+                            error("must be not null")
+                        }
+
+                        continue
+                    }
+
+                    // 추후 공유할 때 호스트 아이디가 아니라 참가자 아이디로 변경해야함
+                    if (project.hostUserId == auth.currentUser.uid) {
+                        projects.add(project)
+                    }
+                }
+
+                projectAdapter.notifyDataSetChanged()
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Getting Project failed, log a message
+                Timber.w(databaseError.toException())
+            }
+        }
+        database.child("projects").addValueEventListener(projectListener)
 
         // delete to swipe
 //        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
@@ -86,14 +129,24 @@ class MainActivity : AppCompatActivity() {
 //                .addOnCompleteListener {
 //                    // ...
 //                }
+//
+//            Firebase.database.reference.child("users").child(auth.currentUser.uid)
+//                .removeValue()
+        }
+
+        binding.addProjectButton.setOnClickListener {
+            // taskListActivity 이동
+            val intent = Intent(this, TaskListActivity::class.java)
+            intent.putExtra("add project", true)
+            startActivity(intent)
         }
     }
 
     private fun updateProfileUI() {
-        binding.profileUserNameText.text = Firebase.auth.currentUser.displayName
-        binding.profileEmailText.text = Firebase.auth.currentUser.email
+        binding.profileUserNameText.text = auth.currentUser.displayName
+        binding.profileEmailText.text = auth.currentUser.email
 
-        Firebase.auth.currentUser.photoUrl?.let {
+        auth.currentUser.photoUrl?.let {
             Glide.with(applicationContext)
                 .load(it)
                 .circleCrop()
@@ -101,15 +154,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    //    /* Opens ProjectDetailActivity when RecyclerView item is clicked. */
-//    private fun adapterOnClick(project: Project) {
-//        val intent = Intent(this, TaskListActivity()::class.java)
-//        intent.putExtra(PROJECT_ID, project.id)
-//        startActivityForResult(intent, projectDetailRequestCode)
-//    }
-//
+    /* Opens ProjectDetailActivity when RecyclerView item is clicked. */
+    private fun adapterOnClick(project: Project) {
+        val intent = Intent(this, TaskListActivity()::class.java)
+        intent.putExtra(PROJECT_ID, project.id)
+        startActivityForResult(intent, taskListRequestCode)
+    }
+
     private fun headItemOnClick(type: Int) {
-        when (type) {
+//        when (type) {
 //            0 -> {
 //                // 오늘 할 일
 //                val intent = Intent(this, TodayTaskListActivity()::class.java)
@@ -125,44 +178,17 @@ class MainActivity : AppCompatActivity() {
 //                val intent = Intent(this, PlannedScheduleActivity()::class.java)
 //                startActivityForResult(intent, headItemRequestCode)
 //            }
-        }
+//        }
     }
-//
-//    private fun addButtonOnClick() {
+
+    private fun addButtonOnClick() {
 //        val intent = Intent(this, AddProjectActivity::class.java)
 //        startActivityForResult(intent, newProjectActivityRequestCode)
-//    }
-//
-//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-//        super.onActivityResult(requestCode, resultCode, data)
-//
-//        if (requestCode == newProjectActivityRequestCode && resultCode == Activity.RESULT_OK) {
-//            data?.let { data ->
-//                val name = data.getStringExtra(PROJECT_NAME)
-//                name?.let {
-//                    val projectId = ProjectManager.createId()
-//                    val project = Project(projectId, name, Calendar.getInstance().time)
-//                    ProjectManager.addProject(project)
-//                }
-//            }
-//        } else if (requestCode == projectDetailRequestCode && resultCode == Activity.RESULT_OK) {
-//            data?.let { data ->
-//                val id = data.getIntExtra(REMOVED_PROJECT_ID, 0)
-//                ProjectManager.removeProjectForId(id)
-//            }
-//        } else if (requestCode == headItemRequestCode && requestCode == Activity.RESULT_OK) {
-//
-//        }
-//
-//        val recyclerView: RecyclerView = findViewById(R.id.project_list_recycler_view)
-//        (recyclerView.adapter as ConcatAdapter).adapters[1].notifyDataSetChanged()
-//        ProjectManager.save(filesDir)
-//    }
-//
-//    override fun onStop() {
-//        ProjectManager.save(filesDir)
-//        super.onStop()
-//    }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+    }
 
     override fun onStart() {
         super.onStart()

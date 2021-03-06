@@ -7,7 +7,7 @@ import java.util.*
 @IgnoreExtraProperties
 class Project(
     val id: String = "",
-    val userId: String = "",
+    val hostUserId: String = "",
     var name: String = "",
     val createdDate: Date = Date()
 ) {
@@ -17,7 +17,7 @@ class Project(
     fun toMap(): Map<String, Any> {
         return mapOf(
             "id" to id,
-            "userId" to userId,
+            "hostUserId" to hostUserId,
             "name" to name,
             "createdDate" to createdDate
         )

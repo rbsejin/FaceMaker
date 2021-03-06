@@ -14,7 +14,7 @@
 //
 //    override fun onCreate(savedInstanceState: Bundle?) {
 //        super.onCreate(savedInstanceState)
-//        setContentView(R.layout.activity_add_project)
+//        setContentView(R.layout.dialog_add_project)
 //
 //        findViewById<Button>(R.id.add_project_button).setOnClickListener {
 //            addProject()
