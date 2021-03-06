@@ -7,6 +7,7 @@ import android.content.DialogInterface
 import android.os.Bundle
 import android.widget.EditText
 import android.widget.TextView
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 
 class ProjectCreationDialogFragment(private val projectName: String) : DialogFragment() {
@@ -29,7 +30,7 @@ class ProjectCreationDialogFragment(private val projectName: String) : DialogFra
             val projectDialogTitle: TextView = view.findViewById(R.id.project_title_text)
             projectDialogTitle.text = tag
 
-            val positiveButtonText = when (tag) {
+            val positiveButtonText: String = when (tag) {
                 NEW_PROJECT_TAG -> getString(R.string.add)
                 UPDATE_PROJECT_NAME_TAG -> getString(R.string.save)
                 else -> throw ClassCastException("Unknown tag $tag")
@@ -54,7 +55,18 @@ class ProjectCreationDialogFragment(private val projectName: String) : DialogFra
 
                         listener.onDialogNegativeClick(isDeleted)
                     })
-            builder.create()
+
+            val alertDialog = builder.create()
+            alertDialog.show() // show를 호출 안하면 positiveButton이 null이 됨.
+
+            val positiveButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            positiveButton.isEnabled = projectNameText.text.toString().isNotEmpty()
+
+            projectNameText.addTextChangedListener {
+                positiveButton.isEnabled =
+                    projectNameText.text.toString().isNotEmpty()
+            }
+            alertDialog
         } ?: throw IllegalStateException("Activity cannot be null")
     }
 
@@ -67,8 +79,10 @@ class ProjectCreationDialogFragment(private val projectName: String) : DialogFra
             listener = context as ProjectCreationDialogListener
         } catch (e: ClassCastException) {
             // The activity doesn't implement the interface, throw exception
-            throw ClassCastException((context.toString() +
-                    " must implement ProjectCreationDialogListener"))
+            throw ClassCastException(
+                (context.toString() +
+                        " must implement ProjectCreationDialogListener")
+            )
         }
     }
 

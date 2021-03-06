@@ -66,8 +66,9 @@ class TaskListActivity() : AppCompatActivity(),
             database.child("projects").child(key).setValue(project)
 
             // 3. 프로젝트 생성 다이얼로그
-            ProjectCreationDialogFragment("").also {
-                it.show(supportFragmentManager, ProjectCreationDialogFragment.NEW_PROJECT_TAG)
+            ProjectCreationDialogFragment("").also { dialog ->
+                dialog.isCancelable = false
+                dialog.show(supportFragmentManager, ProjectCreationDialogFragment.NEW_PROJECT_TAG)
             }
 
             currentProjectId = key
@@ -81,8 +82,9 @@ class TaskListActivity() : AppCompatActivity(),
             binding.taskListProjectName.text = currentProject.name
 
             binding.taskListProjectName.setOnClickListener {
-                ProjectCreationDialogFragment(currentProject.name).also {
-                    it.show(supportFragmentManager, ProjectCreationDialogFragment.UPDATE_PROJECT_NAME_TAG)
+                ProjectCreationDialogFragment(currentProject.name).also { dialog ->
+                    dialog.isCancelable = false
+                    dialog.show(supportFragmentManager, ProjectCreationDialogFragment.UPDATE_PROJECT_NAME_TAG)
                 }
             }
         }.addOnFailureListener {
