@@ -7,6 +7,8 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -85,12 +87,16 @@ class TaskListActivity() : AppCompatActivity(),
             binding.taskListProjectName.setOnClickListener {
                 ProjectCreationDialogFragment(currentProject.name).also { dialog ->
                     dialog.isCancelable = false
-                    dialog.show(supportFragmentManager, ProjectCreationDialogFragment.UPDATE_PROJECT_NAME_TAG)
+                    dialog.show(
+                        supportFragmentManager,
+                        ProjectCreationDialogFragment.UPDATE_PROJECT_NAME_TAG
+                    )
                 }
             }
 
             findViewById<CollapsingToolbarLayout>(R.id.toolbar_layout).title = currentProject.name
-            binding.taskRecyclerView.adapter =  TaskAdapter(currentProject, TaskListener { task -> adapterOnClick(task) })
+            binding.taskRecyclerView.adapter =
+                TaskAdapter(currentProject, TaskListener { task -> adapterOnClick(task) })
         }.addOnFailureListener {
             if (BuildConfig.DEBUG) {
                 error("project 를 DB에서 가져오지 못함")
@@ -98,7 +104,36 @@ class TaskListActivity() : AppCompatActivity(),
         }
 
         setSupportActionBar(findViewById(R.id.toolbar))
-        
+
+        binding.addTaskText.setOnBackPressListener {
+            binding.addTaskLayout.visibility = View.GONE
+            binding.addTaskText.setText("")
+
+            val imm: InputMethodManager =
+                getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(binding.addTaskText.windowToken, 0)
+
+            binding.fab.visibility = View.VISIBLE
+        }
+
+        binding.addTaskText.setOnEditorActionListener { v, actionId, event ->
+            when (actionId) {
+                EditorInfo.IME_ACTION_DONE -> {
+                    // addTask
+                    binding.addTaskText.setText("")
+                    true
+                }
+                else -> false
+            }
+
+            true
+        }
+
+        binding.addTaskButton.setOnClickListener {
+            // addTask
+            binding.addTaskText.setText("")
+        }
+
         // 아이템간 구분선
 /*        val dividerItemDecoration = DividerItemDecoration(
             recyclerView.context,
@@ -121,6 +156,14 @@ class TaskListActivity() : AppCompatActivity(),
 
         val fab: View = findViewById(R.id.fab)
         fab.setOnClickListener {
+            binding.addTaskLayout.visibility = View.VISIBLE
+            binding.fab.visibility = View.GONE
+            binding.addTaskText.requestFocus()
+
+            val imm: InputMethodManager =
+                getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.showSoftInput(binding.addTaskText, 0)
+
 //            val intent = Intent(this, AddTaskActivity::class.java)
 //            startActivityForResult(intent, newTaskActivityRequestCode)
         }
@@ -186,11 +229,6 @@ class TaskListActivity() : AppCompatActivity(),
         }
     }
 
-    override fun onStop() {
-        super.onStop()
-    }
-
-
     override fun onDialogPositiveClick(projectName: String) {
         binding.taskListProjectName.text = projectName
         database.child("projects/${currentProject.id}/name")
@@ -208,6 +246,7 @@ class TaskListActivity() : AppCompatActivity(),
         database.child("projects/${currentProject.id}").removeValue()
         // db에 프로젝트에 포함된 task도 삭제 해야함
     }
+
 
     companion object {
         const val DEFAULT_PROJECT_NAME = "제목 없는 목록"
