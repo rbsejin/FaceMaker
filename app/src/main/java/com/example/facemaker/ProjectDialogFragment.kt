@@ -10,7 +10,7 @@ import android.widget.TextView
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 
-class ProjectCreationDialogFragment(private val projectName: String) : DialogFragment() {
+class ProjectDialogFragment(private val projectName: String) : DialogFragment() {
     private lateinit var listener: ProjectCreationDialogListener
 
     interface ProjectCreationDialogListener {

@@ -8,12 +8,15 @@ import com.example.facemaker.data.Project
 import com.example.facemaker.data.Task
 import com.example.facemaker.databinding.HeaderItemBinding
 import com.example.facemaker.databinding.TaskItemBinding
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 
 private const val ITEM_VIEW_TYPE_HEADER = 0
 private const val ITEM_VIEW_TYPE_ITEM = 1
 
 class TaskAdapter(
     private val currentProject: Project,
+    private val tasks: MutableList<Task>,
     private val clickListener: TaskListener /*private val onClick: (Task) -> Unit*/
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -35,19 +38,8 @@ class TaskAdapter(
 
     class ViewHolder private constructor(private val binding: TaskItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        private var currentTask: Task? = null
-
-        init {
-            binding.importantButton.setOnClickListener {
-                currentTask?.let {
-                    it.isImportant = !it.isImportant
-                    binding.task = currentTask
-                }
-            }
-        }
 
         fun bind(item: Task, clickListener: TaskListener) {
-            currentTask = item
             binding.task = item
             binding.clickListener = clickListener
             binding.executePendingBindings()
@@ -55,6 +47,10 @@ class TaskAdapter(
 
         fun getCheckButton(): ToggleButton {
             return binding.checkButton
+        }
+
+        fun getImportantButton(): ToggleButton {
+            return binding.importantButton
         }
 
         companion object {
@@ -66,32 +62,12 @@ class TaskAdapter(
         }
     }
 
-/*    private val undoneHeaderItem: DataItem.HeaderItem =
-        itemList.find { it is DataItem.HeaderItem } as DataItem.HeaderItem*/
-
     private val itemList = mutableListOf<DataItem>()
     private var doneHeaderItem: DataItem.HeaderItem? = null
 
-//    init {
-//        val doneList = mutableListOf<DataItem>()
-//        val undoneList = mutableListOf<DataItem>()
-//
-//        for (task in currentProject.getTaskList()) {
-//            if (task.isDone) {
-//                doneList.add(DataItem.ChildItem(task))
-//            } else {
-//                undoneList.add(DataItem.ChildItem(task))
-//            }
-//        }
-//
-//        itemList.addAll(undoneList)
-//        if (doneList.size > 0) {
-//            doneHeaderItem = DataItem.HeaderItem(Header(true, "완료됨", 0))
-//            doneHeaderItem!!.header.childCount = doneList.size
-//            itemList.add(doneHeaderItem!!)
-//            itemList.addAll(doneList)
-//        }
-//    }
+    init {
+        updateTaskRecyclerView()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
@@ -142,6 +118,11 @@ class TaskAdapter(
                 holder.getCheckButton().setOnClickListener {
                     val task = childItem.task
                     task.isDone = !task.isDone
+                    Firebase.database.reference.child("tasks").child(task.id).setValue(task)
+
+                    /*
+                    val task = childItem.task
+                    task.isDone = !task.isDone
 
                     itemList.removeAt(position)
 
@@ -172,6 +153,13 @@ class TaskAdapter(
                     }
 
                     notifyDataSetChanged()
+                    */
+                }
+
+                holder.getImportantButton().setOnClickListener {
+                    val task = childItem.task
+                    task.isImportant = !task.isImportant
+                    Firebase.database.reference.child("tasks").child(task.id).setValue(task)
                 }
             }
         }
@@ -186,6 +174,39 @@ class TaskAdapter(
             is DataItem.HeaderItem -> ITEM_VIEW_TYPE_HEADER
             is DataItem.ChildItem -> ITEM_VIEW_TYPE_ITEM
         }
+    }
+
+    // DB와 데이터를 가져와서 동기화할 때 호출한다.
+    fun updateTaskRecyclerView() {
+        val doneList = mutableListOf<DataItem.ChildItem>()
+        val undoneList = mutableListOf<DataItem.ChildItem>()
+
+        for (task in tasks) {
+            if (task.isDone) {
+                doneList.add(DataItem.ChildItem(task))
+            } else {
+                undoneList.add(DataItem.ChildItem(task))
+            }
+        }
+
+        itemList.clear()
+        itemList.addAll(undoneList)
+
+        if (doneList.size > 0) {
+            if (doneHeaderItem == null) {
+                doneHeaderItem = DataItem.HeaderItem(Header(true, "완료됨", 0))
+            }
+            doneHeaderItem!!.header.childCount = doneList.size
+            itemList.add(doneHeaderItem!!)
+
+            if (doneHeaderItem!!.header.isOpen) {
+                itemList.addAll(doneList)
+            } else {
+                doneHeaderItem!!.childList.addAll(doneList)
+            }
+        }
+
+        notifyDataSetChanged()
     }
 
 //    fun addTask(task: Task) {
