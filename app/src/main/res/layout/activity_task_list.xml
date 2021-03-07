@@ -40,18 +40,6 @@
             </com.google.android.material.appbar.CollapsingToolbarLayout>
         </com.google.android.material.appbar.AppBarLayout>
 
-        <TextView
-            android:id="@+id/task_list_project_name"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/layout_margin"
-            android:layout_marginTop="@dimen/layout_margin"
-            android:layout_marginEnd="@dimen/layout_margin"
-            android:layout_marginBottom="@dimen/layout_margin"
-            android:textColor="@color/white"
-            android:textSize="30sp"
-            tools:text="@string/none_name_project" />
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/task_recycler_view"
             android:layout_width="match_parent"

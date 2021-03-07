@@ -87,10 +87,10 @@ class TaskListActivity() : AppCompatActivity(),
         // DB에서 현재 프로젝트 데이터를 가져온다.
         database.child("projects/$currentProjectId").get().addOnSuccessListener {
             currentProject = it.getValue<Project>() ?: return@addOnSuccessListener
-            binding.taskListProjectName.text = currentProject.name
+            binding.toolbarLayout.title = currentProject.name
 
             // 프로젝트 이름을 클릭했을 때 프로젝트를 변경하는 다이얼로그가 열린다.
-            binding.taskListProjectName.setOnClickListener {
+            binding.toolbarLayout.setOnClickListener {
                 ProjectDialogFragment(currentProject.name).also { dialog ->
                     dialog.isCancelable = false
                     dialog.show(
@@ -257,9 +257,8 @@ class TaskListActivity() : AppCompatActivity(),
     }
 
     override fun onDialogPositiveClick(projectName: String) {
-        binding.taskListProjectName.text = projectName
-        database.child("projects/${currentProject.id}/name")
-            .setValue(projectName)
+        binding.toolbarLayout.title = projectName
+        database.child("projects/${currentProject.id}/name").setValue(projectName)
     }
 
     override fun onDialogNegativeClick(isDeleted: Boolean) {

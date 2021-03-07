@@ -5,6 +5,7 @@ import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
+import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.TextView
 import androidx.core.widget.addTextChangedListener
@@ -66,6 +67,19 @@ class ProjectDialogFragment(private val projectName: String) : DialogFragment() 
                 positiveButton.isEnabled =
                     projectNameText.text.toString().isNotEmpty()
             }
+
+            projectNameText.setOnEditorActionListener { v, actionId, event ->
+                when (actionId) {
+                    EditorInfo.IME_ACTION_DONE -> {
+                        positiveButton.callOnClick()
+                        true
+                    }
+                    else -> false
+                }
+
+                true
+            }
+
             alertDialog
         } ?: throw IllegalStateException("Activity cannot be null")
     }
