@@ -19,7 +19,8 @@ class Project(
             "id" to id,
             "hostUserId" to hostUserId,
             "name" to name,
-            "createdDate" to createdDate
+            "createdDate" to createdDate,
+            "updatedDate" to updatedDate
         )
     }
 }

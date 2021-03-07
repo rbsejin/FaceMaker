@@ -20,7 +20,8 @@ data class Task(
     var isImportant: Boolean = false
     val stepList = mutableListOf<String>() // 단계 리스트
     val fileList = mutableListOf<String>() // 첨부 파일 리스트
-    var note: String = "" // 메모
+    var note: String = "" // 메모,
+    var index: Int = -1
 
     @Exclude
     fun toMap(): Map<String, Any?> {
@@ -32,7 +33,14 @@ data class Task(
             "createdDateTime" to createdDateTime,
             "deadline" to deadline,
             "notificationDateTime" to notificationDateTime,
-            "repeatCycle" to repeatCycle
+            "repeatCycle" to repeatCycle,
+            "updatedDateTime" to updatedDateTime,
+            "completionDateTime" to completionDateTime,
+            "isImportant" to isImportant,
+            "stepList" to stepList,
+            "fileList" to fileList,
+            "note" to note,
+            "index" to index
         )
     }
 }

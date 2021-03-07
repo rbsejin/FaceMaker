@@ -258,30 +258,28 @@ class TaskAdapter(
 //        notifyDataSetChanged()
 //    }
 
-//    fun swapTasks(from: Int, to: Int): Boolean {
-//        val taskList: List<Task> = project.getTaskList()
-//
-//        if (from !in taskList.indices) {
-//            return false
-//        }
-//
-//        if (to !in taskList.indices) {
-//            return false
-//        }
-//
-//        if (from < to) {
-//            for (i in from until to) {
-//                Collections.swap(taskList, i, i + 1)
-//            }
-//        } else {
-//            for (i in from downTo to + 1) {
-//                Collections.swap(taskList, i, i - 1)
-//            }
-//        }
-//
-//        notifyItemMoved(from, to)
-//        return true
-//    }
+    fun swapTasks(from: Int, to: Int): Boolean {
+        if (from !in tasks.indices) {
+            return false
+        }
+
+        if (to !in tasks.indices) {
+            return false
+        }
+
+        if (from < to) {
+            for (i in from until to) {
+                Collections.swap(tasks, i, i + 1)
+            }
+        } else {
+            for (i in from downTo to + 1) {
+                Collections.swap(tasks, i, i - 1)
+            }
+        }
+
+        notifyItemMoved(from, to)
+        return true
+    }
 }
 
 sealed class DataItem {

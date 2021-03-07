@@ -12,6 +12,8 @@ import android.view.inputmethod.InputMethodManager
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
 import com.example.facemaker.data.Project
 import com.example.facemaker.data.Task
 import com.example.facemaker.databinding.ActivityTaskListBinding
@@ -24,6 +26,8 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import java.lang.Integer.max
+import java.lang.Integer.min
 import java.util.*
 
 const val TASK_ID = "task id"
@@ -101,7 +105,8 @@ class TaskListActivity() : AppCompatActivity(),
             }
 
             binding.toolbarLayout.title = currentProject.name
-            taskAdapter = TaskAdapter(currentProject, tasks, TaskListener { task -> adapterOnClick(task) })
+            taskAdapter =
+                TaskAdapter(currentProject, tasks, TaskListener { task -> adapterOnClick(task) })
             binding.taskRecyclerView.adapter = taskAdapter
 
             // DB에서 현재 프로젝트의 작업들을 가져온다.
@@ -116,7 +121,7 @@ class TaskListActivity() : AppCompatActivity(),
                         }
                     }
 
-                    tasks.reverse()
+                    tasks.sortBy { it.index }
                     taskAdapter.updateTaskRecyclerView()
                 }
 
@@ -172,17 +177,71 @@ class TaskListActivity() : AppCompatActivity(),
         }
 
         // delete to swipe
-/*        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP or ItemTouchHelper.DOWN, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
-            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
-                return taskAdapter.swapTasks(viewHolder.adapterPosition, target.adapterPosition)
+        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
+            ItemTouchHelper.UP or ItemTouchHelper.DOWN,
+            ItemTouchHelper.LEFT
+        ) {
+            private var dragFrom: Int = -1
+            private var dragTo: Int = -1
+
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                val fromPosition = viewHolder.adapterPosition
+                val toPosition = target.adapterPosition
+
+                taskAdapter.swapTasks(fromPosition, toPosition)
+                if (dragFrom == -1) {
+                    dragFrom = fromPosition
+                }
+
+                dragTo = toPosition
+
+                return true
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                taskAdapter.removeTask(viewHolder.adapterPosition)
+                when (direction) {
+                    ItemTouchHelper.LEFT -> {
+                        val task: Task = tasks[viewHolder.adapterPosition]
+                        //tasks.find { it.index == viewHolder.adapterPosition } ?: return
+                        database.child("tasks").child(task.id).removeValue()
+                        taskAdapter.notifyDataSetChanged()
+                    }
+                }
+            }
+
+            @RequiresApi(Build.VERSION_CODES.N)
+            override fun clearView(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder
+            ) {
+                super.clearView(recyclerView, viewHolder)
+
+                if (dragFrom != -1 && dragTo != -1 && dragFrom != dragTo) {
+                    // DB 변경
+
+                    val begin = min(dragFrom, dragTo)
+                    val end = max(dragFrom, dragTo)
+
+                    for (i in begin..end) {
+                        tasks[i].index = i
+                    }
+
+                    val taskUpdates = tasks.subList(begin, end + 1)
+                    val childUpdates =
+                        taskUpdates.map { "tasks/${it.id}/index" to it.index }.toMap()
+                    database.updateChildren(childUpdates)
+                }
+
+                dragFrom = -1
+                dragTo = -1
             }
         }).apply {
-            attachToRecyclerView((recyclerView))
-        }*/
+            attachToRecyclerView(binding.taskRecyclerView)
+        }
 
         // 플로팅 버튼을 클릭했을 때 입력창과 키보드를 띄운다.
         binding.fab.setOnClickListener {
@@ -286,13 +345,18 @@ class TaskListActivity() : AppCompatActivity(),
             currentProject.id,
             auth.currentUser.uid,
             taskName,
-            Calendar.getInstance().time,
-            null,
-            null,
-            null
+            Calendar.getInstance().time
         )
 
-        database.child("tasks").child(key).setValue(task)
+        tasks.add(0, task)
+
+        var i = 0
+        for (task in tasks) {
+            task.index = i++
+        }
+
+        val taskMap = tasks.map { "tasks/${it.id}" to it }.toMap()
+        database.updateChildren(taskMap)
         return true
     }
 
