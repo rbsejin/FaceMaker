@@ -16,7 +16,7 @@ data class Task(
     var repeatCycle: String? = null // 추후 RepeatCycle 클래스 만들 것
 ) {
     val updatedDateTime: Date = createdDateTime
-    var isDone: Boolean = false
+    var completionDateTime: Date? = null
     var isImportant: Boolean = false
     val stepList = mutableListOf<String>() // 단계 리스트
     val fileList = mutableListOf<String>() // 첨부 파일 리스트

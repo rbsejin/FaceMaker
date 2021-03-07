@@ -10,6 +10,7 @@ import com.example.facemaker.databinding.HeaderItemBinding
 import com.example.facemaker.databinding.TaskItemBinding
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import java.util.*
 
 private const val ITEM_VIEW_TYPE_HEADER = 0
 private const val ITEM_VIEW_TYPE_ITEM = 1
@@ -65,10 +66,6 @@ class TaskAdapter(
     private val itemList = mutableListOf<DataItem>()
     private var doneHeaderItem: DataItem.HeaderItem? = null
 
-    init {
-        updateTaskRecyclerView()
-    }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
             ITEM_VIEW_TYPE_HEADER -> HeaderViewHolder.from(parent)
@@ -117,7 +114,11 @@ class TaskAdapter(
 
                 holder.getCheckButton().setOnClickListener {
                     val task = childItem.task
-                    task.isDone = !task.isDone
+                    if (task.completionDateTime == null) {
+                        task.completionDateTime = Calendar.getInstance().time
+                    } else {
+                        task.completionDateTime = null
+                    }
                     Firebase.database.reference.child("tasks").child(task.id).setValue(task)
 
                     /*
@@ -178,15 +179,20 @@ class TaskAdapter(
 
     // DB와 데이터를 가져와서 동기화할 때 호출한다.
     fun updateTaskRecyclerView() {
+        // 선조건: tasks는 생성날짜 내림차순으로 정렬되어있다.
         val doneList = mutableListOf<DataItem.ChildItem>()
         val undoneList = mutableListOf<DataItem.ChildItem>()
 
         for (task in tasks) {
-            if (task.isDone) {
-                doneList.add(DataItem.ChildItem(task))
-            } else {
+            if (task.completionDateTime == null) {
                 undoneList.add(DataItem.ChildItem(task))
+            } else {
+                doneList.add(DataItem.ChildItem(task))
             }
+        }
+
+        doneList.sortByDescending {
+            it.task.completionDateTime
         }
 
         itemList.clear()
@@ -195,7 +201,11 @@ class TaskAdapter(
         if (doneList.size > 0) {
             if (doneHeaderItem == null) {
                 doneHeaderItem = DataItem.HeaderItem(Header(true, "완료됨", 0))
+            } else {
+                doneHeaderItem!!.childList.clear()
+                doneHeaderItem!!.header.childCount = 0
             }
+
             doneHeaderItem!!.header.childCount = doneList.size
             itemList.add(doneHeaderItem!!)
 
@@ -203,18 +213,13 @@ class TaskAdapter(
                 itemList.addAll(doneList)
             } else {
                 doneHeaderItem!!.childList.addAll(doneList)
+                doneHeaderItem!!.header.childCount = doneList.size
             }
         }
 
         notifyDataSetChanged()
     }
 
-//    fun addTask(task: Task) {
-//        currentProject.addTask(task)
-//        itemList.add(0, DataItem.ChildItem(task))
-//        notifyDataSetChanged()
-//    }
-//
 //    @RequiresApi(Build.VERSION_CODES.N)
 //    fun removeTaskForId(id: Int) {
 //        val task: Task? = currentProject.getTaskForId(id)
@@ -248,35 +253,35 @@ class TaskAdapter(
 //        notifyDataSetChanged()
 //    }
 
-/*    fun removeTask(position: Int) {
-        project.removeTaskAt(position)
-        notifyDataSetChanged()
-    }
+//    fun removeTask(position: Int) {
+//        project.removeTaskAt(position)
+//        notifyDataSetChanged()
+//    }
 
-    fun swapTasks(from: Int, to: Int): Boolean {
-        val taskList: List<Task> = project.getTaskList()
-
-        if (from !in taskList.indices) {
-            return false
-        }
-
-        if (to !in taskList.indices) {
-            return false
-        }
-
-        if (from < to) {
-            for (i in from until to) {
-                Collections.swap(taskList, i, i + 1)
-            }
-        } else {
-            for (i in from downTo to + 1) {
-                Collections.swap(taskList, i, i - 1)
-            }
-        }
-
-        notifyItemMoved(from, to)
-        return true
-    }*/
+//    fun swapTasks(from: Int, to: Int): Boolean {
+//        val taskList: List<Task> = project.getTaskList()
+//
+//        if (from !in taskList.indices) {
+//            return false
+//        }
+//
+//        if (to !in taskList.indices) {
+//            return false
+//        }
+//
+//        if (from < to) {
+//            for (i in from until to) {
+//                Collections.swap(taskList, i, i + 1)
+//            }
+//        } else {
+//            for (i in from downTo to + 1) {
+//                Collections.swap(taskList, i, i - 1)
+//            }
+//        }
+//
+//        notifyItemMoved(from, to)
+//        return true
+//    }
 }
 
 sealed class DataItem {

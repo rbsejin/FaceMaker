@@ -20,7 +20,7 @@ fun TextView.setTaskNameString(item: Task?) { // binding.task = task 으로 쓰�
 @BindingAdapter("taskCheckButton")
 fun ToggleButton.setTaskCheckButton(item: Task?) {
     item?.let {
-        isChecked = item.isDone
+        isChecked = item.completionDateTime != null
     }
 }
 

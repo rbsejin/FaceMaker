@@ -116,6 +116,7 @@ class TaskListActivity() : AppCompatActivity(),
                         }
                     }
 
+                    tasks.reverse()
                     taskAdapter.updateTaskRecyclerView()
                 }
 
