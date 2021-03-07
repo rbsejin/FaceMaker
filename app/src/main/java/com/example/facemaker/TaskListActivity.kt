@@ -271,10 +271,12 @@ class TaskListActivity() : AppCompatActivity(),
 
     private fun removeCurrentProject() {
         database.child("projects/${currentProject.id}").removeValue()
-        // db에 프로젝트에 포함된 task도 삭제 해야함
+
+        val childUpdates = tasks.map { "tasks/${it.id}" to null }.toMap()
+        database.updateChildren(childUpdates)
     }
 
-    private fun addTask(taskName: String) : Boolean{
+    private fun addTask(taskName: String): Boolean {
         if (taskName.isEmpty()) {
             return false
         }
