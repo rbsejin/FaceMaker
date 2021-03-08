@@ -12,6 +12,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.facemaker.data.Project
@@ -40,6 +41,7 @@ class TaskListActivity() : AppCompatActivity(),
     private lateinit var database: DatabaseReference
     private lateinit var auth: FirebaseAuth
     private lateinit var taskAdapter: TaskAdapter
+    private lateinit var doneTaskAdapter: DoneTaskAdapter
     private lateinit var currentProject: Project
     private val tasks = mutableListOf<Task>()
 
@@ -103,9 +105,9 @@ class TaskListActivity() : AppCompatActivity(),
             }
 
             binding.toolbarLayout.title = currentProject.name
-            taskAdapter =
-                TaskAdapter(currentProject, tasks, TaskListener { task -> adapterOnClick(task) })
-            binding.taskRecyclerView.adapter = taskAdapter
+            taskAdapter = TaskAdapter(TaskListener { task -> adapterOnClick(task) })
+            doneTaskAdapter = DoneTaskAdapter(TaskListener { task -> adapterOnClick(task) })
+            binding.taskRecyclerView.adapter = ConcatAdapter(taskAdapter, doneTaskAdapter)
 
             // DB에서 현재 프로젝트의 작업들을 가져온다.
             val projectListener = object : ValueEventListener {
@@ -120,7 +122,23 @@ class TaskListActivity() : AppCompatActivity(),
                     }
 
                     tasks.sortBy { task -> task.index }
-                    taskAdapter.updateTaskRecyclerView()
+
+                    val undoneTaskList = mutableListOf<Task>()
+                    val doneTaskList = mutableListOf<Task>()
+
+                    for (task in tasks) {
+                        if (task.completionDateTime == null) {
+                            undoneTaskList.add(task)
+                        } else {
+                            doneTaskList.add(task)
+                        }
+                    }
+
+                    taskAdapter.itemList = undoneTaskList
+                    taskAdapter.notifyDataSetChanged()
+
+                    doneTaskAdapter.updateItemList(doneTaskList)
+                    doneTaskAdapter.notifyDataSetChanged()
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -190,15 +208,10 @@ class TaskListActivity() : AppCompatActivity(),
                 val fromPosition = viewHolder.adapterPosition
                 val toPosition = target.adapterPosition
 
-                if (!taskAdapter.isItemMoved(fromPosition)) {
+                if (!taskAdapter.isItemMoved(fromPosition, toPosition)) {
                     return false
                 }
 
-                if (!taskAdapter.isItemMoved(toPosition)) {
-                    return false
-                }
-
-                //taskAdapter.swapItems(fromPosition, toPosition)
                 taskAdapter.notifyItemMoved(fromPosition, toPosition)
 
                 if (dragFrom == -1) {
@@ -213,12 +226,52 @@ class TaskListActivity() : AppCompatActivity(),
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 when (direction) {
                     ItemTouchHelper.LEFT -> {
-                        val task: Task =
-                            (taskAdapter.itemList[viewHolder.adapterPosition] as DataItem.ChildItem).task
-                        database.child("tasks").child(task.id).removeValue()
-                        taskAdapter.notifyDataSetChanged()
+                        when (viewHolder) {
+                            is TaskAdapter.ViewHolder -> {
+                                val task: Task = taskAdapter.itemList[viewHolder.adapterPosition]
+                                database.child("tasks").child(task.id).removeValue()
+                                taskAdapter.notifyDataSetChanged()
+                            }
+                            is DoneTaskAdapter.ViewHolder -> {
+                                val task: Task =
+                                    (doneTaskAdapter.itemList[viewHolder.adapterPosition] as DataItem.ChildItem).task
+                                database.child("tasks").child(task.id).removeValue()
+                                doneTaskAdapter.notifyDataSetChanged()
+                            }
+                            is DoneTaskAdapter.HeaderViewHolder -> {
+                                // 아무것도 안함
+                            }
+                            else -> {
+                            }
+                        }
                     }
                 }
+            }
+
+            override fun getSwipeDirs(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder
+            ): Int {
+                if (viewHolder is DoneTaskAdapter.HeaderViewHolder) {
+                    return 0
+                }
+
+                return super.getSwipeDirs(recyclerView, viewHolder)
+            }
+
+            override fun getDragDirs(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder
+            ): Int {
+                if (viewHolder is DoneTaskAdapter.HeaderViewHolder) {
+                    return 0
+                }
+
+                if (viewHolder is DoneTaskAdapter.ViewHolder) {
+                    return ItemTouchHelper.LEFT
+                }
+
+                return super.getDragDirs(recyclerView, viewHolder)
             }
 
             @RequiresApi(Build.VERSION_CODES.N)
@@ -230,11 +283,11 @@ class TaskListActivity() : AppCompatActivity(),
 
                 if (dragFrom != -1 && dragTo != -1 && dragFrom != dragTo) {
                     // tasks: fromPosition ~ toPosition update
-                    val fromItem = taskAdapter.itemList[dragFrom] as DataItem.ChildItem
-                    val toItem = taskAdapter.itemList[dragTo] as DataItem.ChildItem
+                    val fromItem = taskAdapter.itemList[dragFrom]
+                    val toItem = taskAdapter.itemList[dragTo]
 
-                    val from = fromItem.task.index
-                    val to = toItem.task.index
+                    val from = fromItem.index
+                    val to = toItem.index
 
                     if (from < to) {
                         for (i in from until to) {
