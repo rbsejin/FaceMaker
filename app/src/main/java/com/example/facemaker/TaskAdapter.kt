@@ -63,7 +63,7 @@ class TaskAdapter(
         }
     }
 
-    private val itemList = mutableListOf<DataItem>()
+    val itemList = mutableListOf<DataItem>()
     private var doneHeaderItem: DataItem.HeaderItem? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -258,27 +258,67 @@ class TaskAdapter(
 //        notifyDataSetChanged()
 //    }
 
-    fun swapTasks(from: Int, to: Int): Boolean {
-        if (from !in tasks.indices) {
+    fun swapItems(from: Int, to: Int): Boolean {
+        if (from !in itemList.indices) {
             return false
         }
 
-        if (to !in tasks.indices) {
+        if (to !in itemList.indices) {
             return false
         }
 
         if (from < to) {
             for (i in from until to) {
-                Collections.swap(tasks, i, i + 1)
+                // from: 0 -> to: 4
+                // 0    1
+                // 1    2
+                // 2    3
+                // 3    4
+                // 4    0
+
+                Collections.swap(itemList, i, i + 1)
             }
         } else {
             for (i in from downTo to + 1) {
-                Collections.swap(tasks, i, i - 1)
+                // from: 4 -> to: 0
+                // 0    4
+                // 1    0
+                // 2    1
+                // 3    2
+                // 4    3
+
+                Collections.swap(itemList, i, i - 1)
             }
         }
 
         notifyItemMoved(from, to)
         return true
+    }
+
+    fun swapTasks(from: Int, to: Int) {
+        if (from < to) {
+            for (i in from until to) {
+                Collections.swap(tasks, i, i + 1)
+            }
+
+            for (i in from..to) {
+                tasks[i].index = i
+            }
+        } else {
+            for (i in from downTo to + 1) {
+                Collections.swap(tasks, i, i - 1)
+            }
+
+            for (i in to..from) {
+                tasks[i].index = i
+            }
+        }
+    }
+
+    fun isItemMoved(index: Int): Boolean {
+        val headerIndex = itemList.indexOf(doneHeaderItem)
+
+        return index < headerIndex
     }
 }
 

@@ -26,8 +26,6 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
-import java.lang.Integer.max
-import java.lang.Integer.min
 import java.util.*
 
 const val TASK_ID = "task id"
@@ -121,7 +119,7 @@ class TaskListActivity() : AppCompatActivity(),
                         }
                     }
 
-                    tasks.sortBy { it.index }
+                    tasks.sortBy { task -> task.index }
                     taskAdapter.updateTaskRecyclerView()
                 }
 
@@ -134,7 +132,7 @@ class TaskListActivity() : AppCompatActivity(),
                 }
 
             }
-            database.child("tasks").addValueEventListener(projectListener)
+            database.child("tasks").orderByChild("index").addValueEventListener(projectListener)
         }.addOnFailureListener {
             if (BuildConfig.DEBUG) {
                 error("project를 DB에서 가져오지 못함")
@@ -192,7 +190,17 @@ class TaskListActivity() : AppCompatActivity(),
                 val fromPosition = viewHolder.adapterPosition
                 val toPosition = target.adapterPosition
 
-                taskAdapter.swapTasks(fromPosition, toPosition)
+                if (!taskAdapter.isItemMoved(fromPosition)) {
+                    return false
+                }
+
+                if (!taskAdapter.isItemMoved(toPosition)) {
+                    return false
+                }
+
+                //taskAdapter.swapItems(fromPosition, toPosition)
+                taskAdapter.notifyItemMoved(fromPosition, toPosition)
+
                 if (dragFrom == -1) {
                     dragFrom = fromPosition
                 }
@@ -205,8 +213,8 @@ class TaskListActivity() : AppCompatActivity(),
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 when (direction) {
                     ItemTouchHelper.LEFT -> {
-                        val task: Task = tasks[viewHolder.adapterPosition]
-                        //tasks.find { it.index == viewHolder.adapterPosition } ?: return
+                        val task: Task =
+                            (taskAdapter.itemList[viewHolder.adapterPosition] as DataItem.ChildItem).task
                         database.child("tasks").child(task.id).removeValue()
                         taskAdapter.notifyDataSetChanged()
                     }
@@ -221,18 +229,33 @@ class TaskListActivity() : AppCompatActivity(),
                 super.clearView(recyclerView, viewHolder)
 
                 if (dragFrom != -1 && dragTo != -1 && dragFrom != dragTo) {
-                    // DB 변경
+                    // tasks: fromPosition ~ toPosition update
+                    val fromItem = taskAdapter.itemList[dragFrom] as DataItem.ChildItem
+                    val toItem = taskAdapter.itemList[dragTo] as DataItem.ChildItem
 
-                    val begin = min(dragFrom, dragTo)
-                    val end = max(dragFrom, dragTo)
+                    val from = fromItem.task.index
+                    val to = toItem.task.index
+
+                    if (from < to) {
+                        for (i in from until to) {
+                            Collections.swap(tasks, i, i + 1)
+                        }
+                    } else {
+                        for (i in from downTo to + 1) {
+                            Collections.swap(tasks, i, i - 1)
+                        }
+                    }
+
+                    val begin = kotlin.math.min(from, to)
+                    val end = kotlin.math.max(from, to)
 
                     for (i in begin..end) {
                         tasks[i].index = i
                     }
 
-                    val taskUpdates = tasks.subList(begin, end + 1)
                     val childUpdates =
-                        taskUpdates.map { "tasks/${it.id}/index" to it.index }.toMap()
+                        tasks.subList(begin, end + 1).map { "tasks/${it.id}/index" to it.index }
+                            .toMap()
                     database.updateChildren(childUpdates)
                 }
 
