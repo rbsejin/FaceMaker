@@ -11,11 +11,12 @@ data class Task(
     val userId: String = "",
     var name: String = "",
     val createdDateTime: Date = Date(),
-    var deadline: Date? = null, // 기한
+    var dueDate: Date? = null, // 기한
     var notificationDateTime: Date? = null, // 알림
     var repeatCycle: String? = null // 추후 RepeatCycle 클래스 만들 것
 ) {
     val updatedDateTime: Date = createdDateTime
+    var myDay: Date? = null
     var completionDateTime: Date? = null
     var isImportant: Boolean = false
     val stepList = mutableListOf<String>() // 단계 리스트
@@ -31,10 +32,11 @@ data class Task(
             "userId" to userId,
             "name" to name,
             "createdDateTime" to createdDateTime,
-            "deadline" to deadline,
+            "dueDate" to dueDate,
             "notificationDateTime" to notificationDateTime,
             "repeatCycle" to repeatCycle,
             "updatedDateTime" to updatedDateTime,
+            "myDay" to myDay,
             "completionDateTime" to completionDateTime,
             "isImportant" to isImportant,
             "stepList" to stepList,

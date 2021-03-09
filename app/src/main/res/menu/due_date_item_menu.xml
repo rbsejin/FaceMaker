@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/deadline_today_item"
+    <item android:id="@+id/due_today_item"
         android:title="오늘"/>
-    <item android:id="@+id/deadline_tomorrow_item"
+    <item android:id="@+id/due_tomorrow_item"
         android:title="내일"/>
-    <item android:id="@+id/deadline_next_week_item"
+    <item android:id="@+id/due_next_week_item"
         android:title="다음 주"/>
-    <item android:id="@+id/daedline_direct_selection_item"
+    <item android:id="@+id/due_direct_selection_item"
         android:title="날짜 선택"/>
 </menu>

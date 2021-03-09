@@ -59,5 +59,6 @@
     <string name="project_name_input">프로젝트명 입력</string>
     <string name="save">저장</string>
     <string name="add_task">작업 추가</string>
+    <string name="planned">계획된 일정</string>
 
 </resources>

@@ -9,15 +9,15 @@ import com.example.facemaker.databinding.HeaderItemBinding
 import com.example.facemaker.databinding.TaskItemBinding
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import java.text.SimpleDateFormat
 import java.util.*
 
 private const val ITEM_VIEW_TYPE_HEADER = 0
 private const val ITEM_VIEW_TYPE_ITEM = 1
 
-class DoneTaskAdapter(private val clickListener: TaskListener) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    var itemList = mutableListOf<DataItem>()
-
+class PlannedAdapter(
+    private val clickListener: TaskListener
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     class HeaderViewHolder private constructor(private val binding: HeaderItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: Header) {
@@ -36,8 +36,19 @@ class DoneTaskAdapter(private val clickListener: TaskListener) :
 
     class ViewHolder private constructor(private val binding: TaskItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
+        private var currentTask: Task? = null
+
+        init {
+            binding.importantButton.setOnClickListener {
+                currentTask?.let {
+                    it.isImportant = !it.isImportant
+                    binding.task = currentTask
+                }
+            }
+        }
 
         fun bind(item: Task, clickListener: TaskListener) {
+            currentTask = item
             binding.task = item
             binding.clickListener = clickListener
             binding.executePendingBindings()
@@ -60,7 +71,8 @@ class DoneTaskAdapter(private val clickListener: TaskListener) :
         }
     }
 
-    private var doneHeader: DataItem.HeaderItem? = null
+    private val itemList = mutableListOf<DataItem>()
+    private val grouping: TaskGrouping = TaskGrouping.DATE
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
@@ -68,8 +80,6 @@ class DoneTaskAdapter(private val clickListener: TaskListener) :
             ITEM_VIEW_TYPE_ITEM -> ViewHolder.from(parent)
             else -> throw ClassCastException("Unknown viewType $viewType")
         }
-
-        return ViewHolder.from(parent)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -106,21 +116,21 @@ class DoneTaskAdapter(private val clickListener: TaskListener) :
             }
             is ViewHolder -> {
                 val childItem: DataItem.ChildItem = itemList[position] as DataItem.ChildItem
+                val task: Task = childItem.task
                 holder.bind(childItem.task, clickListener)
 
                 holder.getCheckButton().setOnClickListener {
-                    val task = childItem.task
+                    val task = task
                     if (task.completionDateTime == null) {
                         task.completionDateTime = Calendar.getInstance().time
                     } else {
                         task.completionDateTime = null
                     }
-
                     Firebase.database.reference.child("tasks").child(task.id).setValue(task)
                 }
 
                 holder.getImportantButton().setOnClickListener {
-                    val task = childItem.task
+                    val task = task
                     task.isImportant = !task.isImportant
                     Firebase.database.reference.child("tasks").child(task.id).setValue(task)
                 }
@@ -139,30 +149,52 @@ class DoneTaskAdapter(private val clickListener: TaskListener) :
         }
     }
 
-    fun updateItemList(list: List<Task>) {
-        if (list.isEmpty()) {
-            doneHeader = null
-            itemList.clear()
-            return
-        }
-
-        if (doneHeader == null) {
-            doneHeader = DataItem.HeaderItem(Header(true, "완료됨", list.size))
-        } else {
-            doneHeader!!.header.childCount = list.size
-            doneHeader!!.childList.clear()
-        }
-
+    fun updateItemList(list: MutableList<Task>) {
+        // 기간 또는 프로젝트 별로 그룹핑
         itemList.clear()
-        itemList.add(doneHeader!!)
 
-        val taskItemList = (list.map { DataItem.ChildItem(it) }) as MutableList<DataItem.ChildItem>
+        when (grouping) {
+            TaskGrouping.DATE -> {
+                list.sortBy { it.dueDate }
 
-        if (doneHeader!!.header.isOpen) {
-            itemList.addAll(taskItemList)
-        } else {
-            doneHeader!!.childList.addAll(taskItemList)
+                for (i in 0 until list.size) {
+                    val task = list[i]
+
+                    if (task.dueDate == null) {
+                        continue
+                    }
+
+                    // 기간 해더 생성 및 추가
+                    val dateFormat = SimpleDateFormat("M월 d일 (EE)")
+                    var headerItem: DataItem.HeaderItem? = null
+
+                    if (i == 0 || dateFormat.format(task.dueDate) != dateFormat.format(list[i - 1].dueDate)) {
+                        val headerName = dateFormat.format(task.dueDate)
+                        val headerItem = DataItem.HeaderItem(Header(true, headerName, 0))
+                        itemList.add(headerItem)
+                    }
+
+                    itemList.add(DataItem.ChildItem(task))
+                    headerItem?.apply { ++header.childCount }
+                }
+            }
+            TaskGrouping.PROJECT -> {
+                list.sortBy { it.projectId }
+            }
         }
-        notifyDataSetChanged()
     }
+}
+
+enum class TaskGrouping {
+    DATE,
+    PROJECT
+}
+
+enum class TaskFilter {
+    OVERDUE,
+    TODAY,
+    TOMORROW,
+    THIS_WEEK,
+    LATER,
+    ALL_PLANNED
 }

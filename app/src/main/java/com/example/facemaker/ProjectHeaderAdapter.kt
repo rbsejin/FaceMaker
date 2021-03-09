@@ -78,8 +78,6 @@ class ProjectHeaderAdapter(private val onClick: (Int) -> Unit) :
             }
         }
 
-
-
         holder.itemView.setOnClickListener {
             onClick(position)
         }

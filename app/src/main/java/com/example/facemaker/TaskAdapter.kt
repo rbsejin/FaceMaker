@@ -50,7 +50,6 @@ class TaskAdapter(
         holder.bind(task, clickListener)
 
         holder.getCheckButton().setOnClickListener {
-            val task = task
             if (task.completionDateTime == null) {
                 task.completionDateTime = Calendar.getInstance().time
             } else {
@@ -60,7 +59,6 @@ class TaskAdapter(
         }
 
         holder.getImportantButton().setOnClickListener {
-            val task = task
             task.isImportant = !task.isImportant
             Firebase.database.reference.child("tasks").child(task.id).setValue(task)
         }

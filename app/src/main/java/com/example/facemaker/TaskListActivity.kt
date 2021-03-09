@@ -1,5 +1,6 @@
 package com.example.facemaker
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Build
@@ -32,29 +33,29 @@ import java.util.*
 const val TASK_ID = "task id"
 const val REMOVED_PROJECT_ID = "removedTaskId"
 
+const val taskDetailRequestCode = 1
+
 class TaskListActivity() : AppCompatActivity(),
     ProjectDialogFragment.ProjectCreationDialogListener {
-    private val newTaskActivityRequestCode = 1
-    private val taskDetailRequestCode = 2
 
     private lateinit var binding: ActivityTaskListBinding
     private lateinit var database: DatabaseReference
     private lateinit var auth: FirebaseAuth
     private lateinit var taskAdapter: TaskAdapter
     private lateinit var doneTaskAdapter: DoneTaskAdapter
-    private lateinit var currentProject: Project
+    private lateinit var projectId: String
+    private lateinit var projectName: String
+
     private val tasks = mutableListOf<Task>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_task_list)
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_task_list)
         database = Firebase.database.reference
         auth = Firebase.auth
 
         val bundle: Bundle? = intent.extras
-        val currentProjectId: String
 
         val isAddingProject = bundle?.getBoolean(ADD_PROJECT) ?: false
         if (isAddingProject) {
@@ -75,91 +76,71 @@ class TaskListActivity() : AppCompatActivity(),
             )
             database.child("projects").child(key).setValue(project)
 
-
             // 프로젝트 생성 다이얼로그
             ProjectDialogFragment("").also { dialog ->
                 dialog.isCancelable = false
                 dialog.show(supportFragmentManager, ProjectDialogFragment.NEW_PROJECT_TAG)
             }
 
-            currentProjectId = key
+            projectId = key
+            projectName = project.name
         } else {
             // 프로젝트를 열었을 때
-            currentProjectId = bundle?.getString(PROJECT_ID) ?: return
+            projectId = bundle?.getString(PROJECT_ID) ?: return
+            projectName = bundle?.getString(PROJECT_NAME) ?: return
         }
 
         // DB에서 현재 프로젝트 데이터를 가져온다.
-        database.child("projects/$currentProjectId").get().addOnSuccessListener {
-            currentProject = it.getValue<Project>() ?: return@addOnSuccessListener
-            binding.toolbarLayout.title = currentProject.name
+        binding.toolbarLayout.title = projectName
+        setSupportActionBar(binding.toolbar)
 
-            // 프로젝트 이름을 클릭했을 때 프로젝트를 변경하는 다이얼로그가 열린다.
-            binding.toolbarLayout.setOnClickListener {
-                ProjectDialogFragment(currentProject.name).also { dialog ->
-                    dialog.isCancelable = false
-                    dialog.show(
-                        supportFragmentManager,
-                        ProjectDialogFragment.UPDATE_PROJECT_NAME_TAG
-                    )
-                }
-            }
+        taskAdapter = TaskAdapter(TaskListener { task -> adapterOnClick(task) })
+        doneTaskAdapter = DoneTaskAdapter(TaskListener { task -> adapterOnClick(task) })
+        binding.taskRecyclerView.adapter = ConcatAdapter(taskAdapter, doneTaskAdapter)
 
-            binding.toolbarLayout.title = currentProject.name
-            taskAdapter = TaskAdapter(TaskListener { task -> adapterOnClick(task) })
-            doneTaskAdapter = DoneTaskAdapter(TaskListener { task -> adapterOnClick(task) })
-            binding.taskRecyclerView.adapter = ConcatAdapter(taskAdapter, doneTaskAdapter)
+        // DB에서 현재 프로젝트의 작업들을 가져온다.
+        val projectListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                tasks.clear()
 
-            // DB에서 현재 프로젝트의 작업들을 가져온다.
-            val projectListener = object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    tasks.clear()
-
-                    for (taskSnapshot in snapshot.children) {
-                        val task: Task = taskSnapshot.getValue<Task>() ?: continue
-                        if (task.projectId == currentProjectId) {
-                            tasks.add(task)
-                        }
+                for (taskSnapshot in snapshot.children) {
+                    val task: Task = taskSnapshot.getValue<Task>() ?: continue
+                    if (task.projectId == projectId) {
+                        tasks.add(task)
                     }
-
-                    tasks.sortBy { task -> task.index }
-
-                    val undoneTaskList = mutableListOf<Task>()
-                    val doneTaskList = mutableListOf<Task>()
-
-                    for (task in tasks) {
-                        if (task.completionDateTime == null) {
-                            undoneTaskList.add(task)
-                        } else {
-                            doneTaskList.add(task)
-                        }
-                    }
-
-                    taskAdapter.itemList = undoneTaskList
-                    taskAdapter.notifyDataSetChanged()
-
-                    doneTaskAdapter.updateItemList(doneTaskList)
-                    doneTaskAdapter.notifyDataSetChanged()
                 }
 
-                override fun onCancelled(error: DatabaseError) {
-                    if (BuildConfig.DEBUG) {
-                        error("tasks를 DB에서 가져오지 못함")
-                    }
+                tasks.sortBy { task -> task.index }
 
-                    finish()
+                val undoneTaskList = mutableListOf<Task>()
+                val doneTaskList = mutableListOf<Task>()
+
+                for (task in tasks) {
+                    if (task.completionDateTime == null) {
+                        undoneTaskList.add(task)
+                    } else {
+                        doneTaskList.add(task)
+                    }
                 }
 
-            }
-            database.child("tasks").orderByChild("index").addValueEventListener(projectListener)
-        }.addOnFailureListener {
-            if (BuildConfig.DEBUG) {
-                error("project를 DB에서 가져오지 못함")
+                taskAdapter.itemList = undoneTaskList
+                taskAdapter.notifyDataSetChanged()
+
+                doneTaskAdapter.updateItemList(doneTaskList)
+                doneTaskAdapter.notifyDataSetChanged()
             }
 
-            finish()
+            override fun onCancelled(error: DatabaseError) {
+                if (BuildConfig.DEBUG) {
+                    error("tasks를 DB에서 가져오지 못함")
+                }
+
+                finish()
+            }
         }
+        database.child("tasks").orderByChild("index").addValueEventListener(projectListener)
 
-        setSupportActionBar(findViewById(R.id.toolbar))
+        /* 이벤트 처리 */
 
         // 키보드가 열려있을 때 뒤로가기 버튼을 눌렀을 경우 입력창이 사라지도록 처리
         binding.addTaskText.setOnBackPressListener {
@@ -190,6 +171,28 @@ class TaskListActivity() : AppCompatActivity(),
         binding.addTaskButton.setOnClickListener {
             addTask(binding.addTaskText.text.toString())
             binding.addTaskText.setText("")
+        }
+
+        // 플로팅 버튼을 클릭했을 때 입력창과 키보드를 띄운다.
+        binding.fab.setOnClickListener {
+            binding.addTaskLayout.visibility = View.VISIBLE
+            binding.fab.visibility = View.GONE
+            binding.addTaskText.requestFocus()
+
+            val imm: InputMethodManager =
+                getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.showSoftInput(binding.addTaskText, 0)
+        }
+
+        // 프로젝트 이름을 클릭했을 때 프로젝트를 변경하는 다이얼로그가 열린다.
+        binding.toolbarLayout.setOnClickListener {
+            ProjectDialogFragment(projectName).also { dialog ->
+                dialog.isCancelable = false
+                dialog.show(
+                    supportFragmentManager,
+                    ProjectDialogFragment.UPDATE_PROJECT_NAME_TAG
+                )
+            }
         }
 
         // delete to swipe
@@ -318,56 +321,29 @@ class TaskListActivity() : AppCompatActivity(),
         }).apply {
             attachToRecyclerView(binding.taskRecyclerView)
         }
-
-        // 플로팅 버튼을 클릭했을 때 입력창과 키보드를 띄운다.
-        binding.fab.setOnClickListener {
-            binding.addTaskLayout.visibility = View.VISIBLE
-            binding.fab.visibility = View.GONE
-            binding.addTaskText.requestFocus()
-
-            val imm: InputMethodManager =
-                getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.showSoftInput(binding.addTaskText, 0)
-        }
     }
 
     /* Opens TaskDetailActivity when RecyclerView item is clicked. */
     private fun adapterOnClick(task: Task) {
-//        val intent = Intent(this, TaskDetailActivity()::class.java)
-//        intent.putExtra(PROJECT_ID, currentProject.id)
-//        intent.putExtra(TASK_ID, task.id)
-//        //startActivity(intent)
-//        startActivityForResult(intent, taskDetailRequestCode)
+        val intent = Intent(this, TaskDetailActivity()::class.java)
+        intent.putExtra(TASK_ID, task.id)
+        //startActivity(intent)
+        startActivityForResult(intent, taskDetailRequestCode)
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-//        if (requestCode == newTaskActivityRequestCode && resultCode == Activity.RESULT_OK) {
-//            data?.let { data ->
-//                val name = data.getStringExtra(TASK_NAME)
-//                name?.let {
-//                    val taskId = currentProject.createId()
-//                    val task = Task(taskId, currentProject.id, name, Calendar.getInstance().time)
-//                    taskAdapter.addTask(task)
-//                    taskAdapter.notifyDataSetChanged()
-//                }
-//            }
-//        } else if (requestCode == taskDetailRequestCode && resultCode == Activity.RESULT_OK) {
-//            data?.let { data ->
-//                val id = data.getIntExtra(REMOVED_PROJECT_ID, 0)
-//                taskAdapter.removeTaskForId(id)
-//            }
-//        }
-//
-//        val recyclerView: RecyclerView = findViewById(R.id.task_recycler_view)
-//        (recyclerView.adapter as TaskAdapter).notifyDataSetChanged()
-//        ProjectManager.save(filesDir)
+        if (requestCode == taskDetailRequestCode && resultCode == Activity.RESULT_OK) {
+            data?.let { data ->
+                val id = data.getIntExtra(REMOVED_PROJECT_ID, 0)
+                database.child("tasks/$id").removeValue()
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.project_option_menu, menu)
         return true
     }
@@ -393,7 +369,7 @@ class TaskListActivity() : AppCompatActivity(),
 
     override fun onDialogPositiveClick(projectName: String) {
         binding.toolbarLayout.title = projectName
-        database.child("projects/${currentProject.id}/name").setValue(projectName)
+        database.child("projects/${projectId}/name").setValue(projectName)
     }
 
     override fun onDialogNegativeClick(isDeleted: Boolean) {
@@ -404,7 +380,7 @@ class TaskListActivity() : AppCompatActivity(),
     }
 
     private fun removeCurrentProject() {
-        database.child("projects/${currentProject.id}").removeValue()
+        database.child("projects/${projectId}").removeValue()
 
         val childUpdates = tasks.map { "tasks/${it.id}" to null }.toMap()
         database.updateChildren(childUpdates)
@@ -418,7 +394,7 @@ class TaskListActivity() : AppCompatActivity(),
         val key: String = database.child("tasks").push().key ?: return false
         val task = Task(
             key,
-            currentProject.id,
+            projectId,
             auth.currentUser.uid,
             taskName,
             Calendar.getInstance().time

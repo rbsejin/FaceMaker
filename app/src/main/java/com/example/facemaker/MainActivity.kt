@@ -24,13 +24,12 @@ import timber.log.Timber
 
 
 const val EXTRA_MESSAGE = "com.example.facemaker.MESSAGE"
+const val TASK_LIST_TYPE = "task list type"
 const val PROJECT_ID = "project id"
+const val PROJECT_NAME = "project name"
 const val ADD_PROJECT = "add project"
 
 class MainActivity : AppCompatActivity() {
-    private val taskListRequestCode = 1
-//    private val headItemRequestCode = 3
-
     private lateinit var binding: ActivityMainBinding
     private lateinit var database: DatabaseReference
     private lateinit var auth: FirebaseAuth
@@ -52,7 +51,6 @@ class MainActivity : AppCompatActivity() {
         val projectAdapter = ProjectAdapter(projects) { project -> adapterOnClick(project) }
         recyclerView.adapter = ConcatAdapter(headerAdapter, projectAdapter)
 
-        //
         val projectListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 // Get Project object and use the values to update the UI
@@ -158,36 +156,28 @@ class MainActivity : AppCompatActivity() {
     private fun adapterOnClick(project: Project) {
         val intent = Intent(this, TaskListActivity()::class.java)
         intent.putExtra(PROJECT_ID, project.id)
-        startActivityForResult(intent, taskListRequestCode)
+        intent.putExtra(PROJECT_NAME, project.name)
+        startActivity(intent)
     }
 
     private fun headItemOnClick(type: Int) {
-//        when (type) {
-//            0 -> {
-//                // 오늘 할 일
-//                val intent = Intent(this, TodayTaskListActivity()::class.java)
-//                startActivityForResult(intent, headItemRequestCode)
-//            }
-//            1 -> {
-//                // 중요
-//                val intent = Intent(this, ImportantTaskListActivity()::class.java)
-//                startActivityForResult(intent, headItemRequestCode)
-//            }
-//            2 -> {
-//                // 계획된 일정
-//                val intent = Intent(this, PlannedScheduleActivity()::class.java)
-//                startActivityForResult(intent, headItemRequestCode)
-//            }
-//        }
-    }
-
-    private fun addButtonOnClick() {
-//        val intent = Intent(this, AddProjectActivity::class.java)
-//        startActivityForResult(intent, newProjectActivityRequestCode)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
+        when (type) {
+            0 -> {
+                // 오늘 할 일
+                val intent = Intent(this, TaskListActivity()::class.java)
+                startActivity(intent)
+            }
+            1 -> {
+                // 중요
+                val intent = Intent(this, TaskListActivity()::class.java)
+                startActivity(intent)
+            }
+            2 -> {
+                // 계획된 일정
+                val intent = Intent(this, PlannedActivity()::class.java)
+                startActivity(intent)
+            }
+        }
     }
 
     override fun onStart() {
