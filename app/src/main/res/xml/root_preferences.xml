@@ -1,0 +1,87 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory app:title="Account">
+        <Preference
+            app:key="account_info"
+            app:title="세진 이"
+            app:summary="sejin@gmail.com"/>
+
+        <Preference
+            app:key="delete_account"
+            app:title="회원 탈퇴" />
+
+        <PreferenceScreen
+            app:key="logout"
+            app:title="로그 아웃" />
+    </PreferenceCategory>
+
+
+    <PreferenceCategory app:title="일반">
+        <SwitchPreferenceCompat
+            app:key="new_task_add_top"
+            app:title="새로운 작업을 상단에 추가" />
+
+        <SwitchPreferenceCompat
+            app:key="important_task_move_top"
+            app:title="별표 표시된 작업을 상단으로 이동" />
+
+        <SwitchPreferenceCompat
+            app:key="completion_sound"
+            app:title="완료 소리 재생" />
+
+<!--        <EditTextPreference-->
+<!--            app:key="signature"-->
+<!--            app:title="@string/signature_title"-->
+<!--            app:useSimpleSummaryProvider="true" />-->
+
+        <ListPreference
+            app:defaultValue="reply"
+            app:entries="@array/reply_entries"
+            app:entryValues="@array/reply_values"
+            app:key="reply"
+            app:title="@string/reply_title"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="스마트 목록">
+
+        <SwitchPreferenceCompat
+            app:key="all"
+            app:title="모두" />
+
+        <SwitchPreferenceCompat
+            app:key="important"
+            app:title="중요" />
+
+        <SwitchPreferenceCompat
+            android:key="planned"
+            app:title="계획된 일정" />
+
+<!--        <SwitchPreferenceCompat-->
+<!--            app:title="나에게 할당됨" />-->
+
+<!--        <SwitchPreferenceCompat-->
+<!--            app:title="완료됨" />-->
+
+<!--        <SwitchPreferenceCompat-->
+<!--            app:title="빈 스마트 목록 자동 숨김" />-->
+
+<!--        <SwitchPreferenceCompat-->
+<!--            app:dependency="sync"-->
+<!--            app:key="attachment"-->
+<!--            app:summaryOff="@string/attachment_summary_off"-->
+<!--            app:summaryOn="@string/attachment_summary_on"-->
+<!--            app:title="@string/attachment_title" />-->
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="정보">
+        <Preference
+            app:key="version"
+            app:title="버전"
+            app:summary="베타"/>
+    </PreferenceCategory>
+
+</PreferenceScreen>

@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.facemaker.data.Project
 import com.example.facemaker.databinding.ActivityMainBinding
-import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
@@ -113,23 +112,7 @@ class MainActivity : AppCompatActivity() {
 
         val profile: ConstraintLayout = findViewById(R.id.profile_item)
         profile.setOnClickListener {
-            // 로그아웃
-            AuthUI.getInstance()
-                .signOut(this)
-                .addOnCompleteListener {
-                    startActivity(Intent(this, FirebaseUIActivity()::class.java))
-                    finish()
-                }
-
-//            // 계정 삭제
-//            AuthUI.getInstance()
-//                .delete(this)
-//                .addOnCompleteListener {
-//                    // ...
-//                }
-//
-//            Firebase.database.reference.child("users").child(auth.currentUser.uid)
-//                .removeValue()
+            startActivity(Intent(this, SettingsActivity::class.java))
         }
 
         binding.addProjectButton.setOnClickListener {

@@ -16,6 +16,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.FaceMaker">
+        <activity
+            android:name=".SettingsActivity"
+            android:parentActivityName=".MainActivity"
+            android:label="설정"></activity>
         <activity android:name=".FirebaseUIActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,14 +27,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".EmailSignUpActivity" />
-        <!--        <activity android:name=".LoginActivity">-->
-        <!--            <intent-filter>-->
-        <!--                <action android:name="android.intent.action.MAIN" />-->
-
-        <!--                <category android:name="android.intent.category.LAUNCHER" />-->
-        <!--            </intent-filter>-->
-        <!--        </activity>-->
+        <activity android:name=".EmailSignUpActivity" /> <!-- <activity android:name=".LoginActivity"> -->
+        <!-- <intent-filter> -->
+        <!-- <action android:name="android.intent.action.MAIN" /> -->
+        <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+        <!-- </intent-filter> -->
+        <!-- </activity> -->
         <activity android:name=".MainActivity" /> <!-- 알람 리시버 -->
         <!-- </activity> -->
         <!-- <activity android:name=".AddProjectActivity" /> -->
@@ -38,10 +40,9 @@
         <activity android:name=".TaskDetailActivity" />
         <activity
             android:name=".TaskListActivity"
-            android:theme="@style/Theme.FaceMaker.NoActionBar" />
-        <!--            android:theme="@style/Theme.TaskList"/>-->
-        <!--         <activity android:name=".TodayTaskListActivity" /> -->
-        <!--         <activity android:name=".ImportantTaskListActivity" /> -->
+            android:theme="@style/Theme.FaceMaker.NoActionBar" /> <!-- android:theme="@style/Theme.TaskList"/> -->
+        <!-- <activity android:name=".TodayTaskListActivity" /> -->
+        <!-- <activity android:name=".ImportantTaskListActivity" /> -->
         <activity
             android:name=".PlannedActivity"
             android:theme="@style/Theme.FaceMaker.NoActionBar" />
@@ -53,8 +54,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
-        </receiver>
-        <!-- <meta-data -->
+        </receiver> <!-- <meta-data -->
         <!-- android:name="com.facebook.sdk.ApplicationId" -->
         <!-- android:value="@string/facebook_app_id" /> -->
         <!-- <activity -->
@@ -82,8 +82,10 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_path" />
         </provider>
+
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
     </application>
+
 </manifest>
