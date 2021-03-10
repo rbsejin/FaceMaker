@@ -197,18 +197,22 @@ class TaskDateAdapter(private var currentTask: Task) :
                                     true
                                 }
                                 R.id.due_next_week_item -> {
-                                    calendar.add(Calendar.DATE, 7)
+                                    val week = 7
+                                    calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY)
+                                    calendar.add(Calendar.DAY_OF_MONTH, week)
                                     currentTask.dueDate = calendar.time
                                     true
                                 }
                                 R.id.due_direct_selection_item -> {
+                                    val DEFAULT_HOUR = 9
+
                                     val datePickerDialog = DatePickerDialog(
                                         parentContext,
                                         { _, year, month, dayOfMonth ->
                                             calendar.set(Calendar.YEAR, year)
                                             calendar.set(Calendar.MONTH, month)
                                             calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-                                            calendar.set(Calendar.HOUR_OF_DAY, 9)
+                                            calendar.set(Calendar.HOUR_OF_DAY, DEFAULT_HOUR)
                                             calendar.set(Calendar.MINUTE, 0)
                                             currentTask.dueDate = calendar.time
                                         },
@@ -216,6 +220,19 @@ class TaskDateAdapter(private var currentTask: Task) :
                                         calendar.get(Calendar.MONTH),
                                         calendar.get(Calendar.DAY_OF_MONTH)
                                     )
+                                    datePickerDialog.setOnDateSetListener { view, year, month, dayOfMonth ->
+                                        currentTask?.let { task ->
+                                            val calendar = Calendar.getInstance()
+                                            calendar.set(Calendar.YEAR, year)
+                                            calendar.set(Calendar.MONTH, month)
+                                            calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+                                            task.dueDate = calendar.time
+
+                                            Firebase.database.reference.child("tasks/${task.id}/dueDate")
+                                                .setValue(task.dueDate)
+                                        }
+                                    }
+
                                     datePickerDialog.show()
 
                                     true

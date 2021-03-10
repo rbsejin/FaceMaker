@@ -12,7 +12,7 @@
         android:layout_height="wrap_content">
 
         <TextView
-            android:id="@+id/planedFilter"
+            android:id="@+id/plannedFilter"
             android:layout_width="wrap_content"
             android:layout_height="36dp"
             android:layout_margin="@dimen/small_layout_margin"
@@ -38,9 +38,9 @@
             android:clickable="true"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            app:layout_constraintBottom_toBottomOf="@+id/planedFilter"
-            app:layout_constraintStart_toEndOf="@+id/planedFilter"
-            app:layout_constraintTop_toTopOf="@+id/planedFilter">
+            app:layout_constraintBottom_toBottomOf="@+id/plannedFilter"
+            app:layout_constraintStart_toEndOf="@+id/plannedFilter"
+            app:layout_constraintTop_toTopOf="@+id/plannedFilter">
 
             <TextView
                 android:id="@+id/planed_group_text"
@@ -55,7 +55,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageButton
-                android:id="@+id/planed_group_close"
+                android:id="@+id/planned_group_close"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:background="#00FFFFFF"

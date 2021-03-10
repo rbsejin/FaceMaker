@@ -3,6 +3,8 @@ package com.example.facemaker
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.ConcatAdapter
@@ -15,6 +17,7 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import java.util.*
 
 class PlannedActivity : AppCompatActivity() {
     private lateinit var binding: ActivityTaskListBinding
@@ -32,7 +35,7 @@ class PlannedActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
         binding.toolbarLayout.title = getString(R.string.planned)
 
-        plannedAdapter =  PlannedAdapter(TaskListener { task -> adapterOnClick(task) })
+        plannedAdapter = PlannedAdapter(TaskListener { task -> adapterOnClick(task) })
         headerAdapter = PlannedHeaderAdapter()
         binding.taskRecyclerView.adapter = ConcatAdapter(headerAdapter, plannedAdapter)
 
@@ -41,9 +44,124 @@ class PlannedActivity : AppCompatActivity() {
             override fun onDataChange(snapshot: DataSnapshot) {
                 tasks.clear()
 
-                for (taskSnapshot in snapshot.children) {
+                // filter
+
+                val filterSnapshot = snapshot.child("planned/filter")
+
+                val day = (60 * 60 * 24 * 1000)
+                val week = 7
+
+                val filter: (Task) -> Boolean
+
+                if (filterSnapshot.getValue<TaskFilter>() != null) {
+                    headerAdapter.filter = filterSnapshot.getValue<TaskFilter>()!!
+                    headerAdapter.notifyDataSetChanged()
+                } else {
+                    assert(false)
+                    return
+                }
+
+                when (headerAdapter.filter) {
+                    TaskFilter.OVERDUE -> {
+                        filter = { task: Task ->
+                            val calendar = Calendar.getInstance()
+                            calendar.set(Calendar.HOUR_OF_DAY, 0)
+                            calendar.set(Calendar.MINUTE, 0)
+                            calendar.set(Calendar.SECOND, 0)
+
+                            if (task.dueDate != null) {
+                                val differ = task.dueDate!!.time - calendar.time.time
+                                differ < 0L
+                            } else {
+                                false
+                            }
+                        }
+                    }
+                    TaskFilter.TODAY -> {
+                        filter = { task: Task ->
+                            val calendar = Calendar.getInstance()
+                            calendar.set(Calendar.HOUR_OF_DAY, 0)
+                            calendar.set(Calendar.MINUTE, 0)
+                            calendar.set(Calendar.SECOND, 0)
+
+                            if (task.dueDate != null) {
+                                val differ = task.dueDate!!.time - calendar.time.time
+                                differ in 0L until day
+                            } else {
+                                false
+                            }
+                        }
+                    }
+                    TaskFilter.TOMORROW -> {
+                        filter = { task: Task ->
+                            val calendar = Calendar.getInstance()
+                            calendar.set(Calendar.HOUR_OF_DAY, 0)
+                            calendar.set(Calendar.MINUTE, 0)
+                            calendar.set(Calendar.SECOND, 0)
+
+                            if (task.dueDate != null) {
+                                calendar.add(Calendar.DATE, 1)
+
+                                val differ = task.dueDate!!.time - calendar.time.time
+                                differ in 0L until day
+                            } else {
+                                false
+                            }
+                        }
+                    }
+                    TaskFilter.THIS_WEEK -> {
+                        filter = { task: Task ->
+                            val calendar = Calendar.getInstance()
+                            calendar.set(Calendar.HOUR_OF_DAY, 0)
+                            calendar.set(Calendar.MINUTE, 0)
+                            calendar.set(Calendar.SECOND, 0)
+
+                            if (task.dueDate != null) {
+                                calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY)
+                                calendar.add(Calendar.DATE, week + 1)
+
+                                val differ = task.dueDate!!.time - calendar.time.time
+                                differ < 0L
+                            } else {
+                                false
+                            }
+                        }
+                    }
+                    TaskFilter.LATER -> {
+                        filter = { task: Task ->
+                            val calendar = Calendar.getInstance()
+                            calendar.set(Calendar.HOUR_OF_DAY, 0)
+                            calendar.set(Calendar.MINUTE, 0)
+                            calendar.set(Calendar.SECOND, 0)
+
+                            if (task.dueDate != null) {
+                                calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY)
+                                calendar.add(Calendar.DATE, week + 1)
+
+                                val differ = task.dueDate!!.time - calendar.time.time
+                                differ >= 0L
+                            } else {
+                                false
+                            }
+                        }
+                    }
+                    TaskFilter.ALL_PLANNED -> {
+                        filter = { task: Task ->
+                            true
+                        }
+                    }
+                    else -> return
+                }
+
+
+                // tasks
+
+                val tasksSnapshot = snapshot.child("tasks")
+
+                for (taskSnapshot in tasksSnapshot.children) {
                     val task: Task = taskSnapshot.getValue<Task>() ?: continue
-                    if (task.dueDate != null) {
+
+                    if (task.dueDate != null && filter(task)) {
                         tasks.add(task)
                     }
                 }
@@ -60,7 +178,7 @@ class PlannedActivity : AppCompatActivity() {
                 finish()
             }
         }
-        database.child("tasks").orderByChild("dueDate").addValueEventListener(taskListListener)
+        database.orderByChild("tasks/dueDate").addValueEventListener(taskListListener)
     }
 
     private fun adapterOnClick(task: Task) {
@@ -77,6 +195,20 @@ class PlannedActivity : AppCompatActivity() {
                 val id = data.getIntExtra(REMOVED_PROJECT_ID, 0)
                 database.child("tasks/$id").removeValue()
             }
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.planed_option_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.project_delete_item -> {
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 }

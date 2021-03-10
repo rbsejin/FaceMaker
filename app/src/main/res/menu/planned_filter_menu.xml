@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/overdue_item"
+        android:title="@string/overdue" />
+    <item
+        android:id="@+id/today_item"
+        android:title="@string/today" />
+    <item
+        android:id="@+id/tomorrow_item"
+        android:title="@string/tomorrow" />
+    <item
+        android:id="@+id/this_week_item"
+        android:title="@string/this_week" />
+    <item
+        android:id="@+id/later_item"
+        android:title="@string/later" />
+    <item
+        android:id="@+id/all_planned_item"
+        android:title="@string/all_planned" />
+</menu>
