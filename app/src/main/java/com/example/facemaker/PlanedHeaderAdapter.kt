@@ -1,11 +1,12 @@
 package com.example.facemaker
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.facemaker.databinding.PlannedHeaderItemBinding
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
@@ -24,42 +25,42 @@ class PlannedHeaderAdapter :
                             R.id.overdue_item -> {
                                 binding.plannedFilter.text =
                                     binding.root.context.getText(R.string.overdue)
-                                Firebase.database.reference.child("planned/filter")
+                                Firebase.database.reference.child("users/${Firebase.auth.currentUser.uid}/planned/filter")
                                     .setValue(TaskFilter.OVERDUE)
                                 true
                             }
                             R.id.today_item -> {
                                 binding.plannedFilter.text =
                                     binding.root.context.getText(R.string.today)
-                                Firebase.database.reference.child("planned/filter")
+                                Firebase.database.reference.child("users/${Firebase.auth.currentUser.uid}/planned/filter")
                                     .setValue(TaskFilter.TODAY)
                                 true
                             }
                             R.id.tomorrow_item -> {
                                 binding.plannedFilter.text =
                                     binding.root.context.getText(R.string.tomorrow)
-                                Firebase.database.reference.child("planned/filter")
+                                Firebase.database.reference.child("users/${Firebase.auth.currentUser.uid}/planned/filter")
                                     .setValue(TaskFilter.TOMORROW)
                                 true
                             }
                             R.id.this_week_item -> {
                                 binding.plannedFilter.text =
                                     binding.root.context.getText(R.string.this_week)
-                                Firebase.database.reference.child("planned/filter")
+                                Firebase.database.reference.child("users/${Firebase.auth.currentUser.uid}/planned/filter")
                                     .setValue(TaskFilter.THIS_WEEK)
                                 true
                             }
                             R.id.later_item -> {
                                 binding.plannedFilter.text =
                                     binding.root.context.getText(R.string.later)
-                                Firebase.database.reference.child("planned/filter")
+                                Firebase.database.reference.child("users/${Firebase.auth.currentUser.uid}/planned/filter")
                                     .setValue(TaskFilter.LATER)
                                 true
                             }
                             R.id.all_planned_item -> {
                                 binding.plannedFilter.text =
                                     binding.root.context.getText(R.string.all_planned)
-                                Firebase.database.reference.child("planned/filter")
+                                Firebase.database.reference.child("users/${Firebase.auth.currentUser.uid}/planned/filter")
                                     .setValue(TaskFilter.ALL_PLANNED)
                                 true
                             }
@@ -70,16 +71,16 @@ class PlannedHeaderAdapter :
                 }
             }
 
+            binding.groupByLayout.setOnClickListener {
+
+            }
+
             binding.plannedGroupClose.setOnClickListener {
-                Toast.makeText(this.binding.root.context, "close", Toast.LENGTH_SHORT).show()
+                Firebase.database.reference.child("users/${Firebase.auth.currentUser.uid}/planned/groupBy").setValue(null)
             }
         }
 
-        fun bind(filter: TaskFilter) {
-            setFilter(filter)
-        }
-
-        fun setFilter(filter: TaskFilter) {
+        fun bind(filter: TaskFilter, groupBy: TaskGroupBy) {
             when (filter) {
                 TaskFilter.OVERDUE -> {
                     binding.plannedFilter.text = binding.root.context.getText(R.string.overdue)
@@ -99,12 +100,28 @@ class PlannedHeaderAdapter :
                 TaskFilter.ALL_PLANNED -> {
                     binding.plannedFilter.text = binding.root.context.getText(R.string.all_planned)
                 }
-                else -> return
+            }
+
+            when (groupBy) {
+                null -> {
+                    binding.planedGroupText.text = ""
+                }
+                TaskGroupBy.DATE -> {
+                    binding.planedGroupText.text =
+                        binding.root.context.getText(R.string.by_due_date)
+                }
+                TaskGroupBy.PROJECT -> {
+                    binding.planedGroupText.text = binding.root.context.getText(R.string.by_project)
+                }
             }
         }
 
         companion object {
+            private lateinit var adapter: PlannedHeaderAdapter
+
             fun from(adapter: PlannedHeaderAdapter, parent: ViewGroup): ViewHolder {
+                this.adapter = adapter
+
                 val layoutInflater = LayoutInflater.from(parent.context)
                 val binding = PlannedHeaderItemBinding.inflate(layoutInflater, parent, false)
                 return ViewHolder(binding)
@@ -113,13 +130,36 @@ class PlannedHeaderAdapter :
     }
 
     var filter: TaskFilter? = null
+    var groupBy: TaskGroupBy? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder.from(this, parent)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        filter?.let { holder.bind(it) }
+        filter?.let { filter ->
+            groupBy?.let { groupBy ->
+                holder.bind(filter, groupBy)
+            }
+        }
+
+        holder.apply {
+            when (groupBy) {
+                null -> {
+                    binding.planedGroupText.text = ""
+                    binding.groupByLayout.visibility = View.INVISIBLE
+                }
+                TaskGroupBy.DATE -> {
+                    binding.planedGroupText.text =
+                        binding.root.context.getText(R.string.by_due_date)
+                    binding.groupByLayout.visibility = View.VISIBLE
+                }
+                TaskGroupBy.PROJECT -> {
+                    binding.planedGroupText.text = binding.root.context.getText(R.string.by_project)
+                    binding.groupByLayout.visibility = View.VISIBLE
+                }
+            }
+        }
     }
 
     override fun getItemCount(): Int {

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="group_by">
+        <item>기한별</item>
+        <item>프로젝트별</item>
+    </string-array>
+</resources>

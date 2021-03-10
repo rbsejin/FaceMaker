@@ -4,10 +4,12 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ToggleButton
 import androidx.recyclerview.widget.RecyclerView
+import com.example.facemaker.data.Project
 import com.example.facemaker.data.Task
 import com.example.facemaker.databinding.HeaderItemBinding
 import com.example.facemaker.databinding.TaskItemBinding
 import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import java.text.SimpleDateFormat
 import java.util.*
@@ -72,7 +74,8 @@ class PlannedAdapter(
     }
 
     private val itemList = mutableListOf<DataItem>()
-    private val grouping: TaskGrouping = TaskGrouping.DATE
+    var groupBy: TaskGroupBy? = null
+    var completionFilter: Boolean = false
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
@@ -153,8 +156,21 @@ class PlannedAdapter(
         // 기간 또는 프로젝트 별로 그룹핑
         itemList.clear()
 
-        when (grouping) {
-            TaskGrouping.DATE -> {
+        when (groupBy) {
+            null -> {
+                list.sortBy { it.dueDate }
+
+                for (i in 0 until list.size) {
+                    val task = list[i]
+
+                    if (task.dueDate == null) {
+                        continue
+                    }
+
+                    itemList.add(DataItem.ChildItem(task))
+                }
+            }
+            TaskGroupBy.DATE -> {
                 list.sortBy { it.dueDate }
 
                 for (i in 0 until list.size) {
@@ -178,14 +194,41 @@ class PlannedAdapter(
                     headerItem?.apply { ++header.childCount }
                 }
             }
-            TaskGrouping.PROJECT -> {
-                list.sortBy { it.projectId }
+            TaskGroupBy.PROJECT -> {
+                Firebase.database.reference.child("projects").get().addOnSuccessListener { dataSnapshot ->
+                    list.sortBy { it.projectId }
+
+                    val projectMap: Map<String, Project> = dataSnapshot.getValue<Map<String, Project>>() ?: return@addOnSuccessListener
+
+                    for (i in 0 until list.size) {
+                        val task = list[i]
+
+                        if (task.dueDate == null) {
+                            continue
+                        }
+
+                        // 기간 해더 생성 및 추가
+                        var headerItem: DataItem.HeaderItem? = null
+
+                        if (i == 0 || (task.projectId) != list[i - 1].projectId) {
+                            val project = projectMap[task.projectId] ?: return@addOnSuccessListener
+                            val headerName = project.name
+                            val headerItem = DataItem.HeaderItem(Header(true, headerName, 0))
+                            itemList.add(headerItem)
+                        }
+
+                        itemList.add(DataItem.ChildItem(task))
+                        headerItem?.apply { ++header.childCount }
+                    }
+
+                    notifyDataSetChanged()
+                }
             }
         }
     }
 }
 
-enum class TaskGrouping {
+enum class TaskGroupBy {
     DATE,
     PROJECT
 }

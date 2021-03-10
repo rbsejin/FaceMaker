@@ -60,8 +60,9 @@
     <string name="save">저장</string>
     <string name="add_task">작업 추가</string>
     <string name="planned">계획된 일정</string>
-    <string name="group_by">그룹으로 보기</string>
+    <string name="group_by">그룹별 보기</string>
     <string name="hide_completion_tasks">완료된 작업 숨기기</string>
+    <string name="show_completion_tasks">완료된 작업 보기</string>
     <string name="overdue">지연</string>
     <string name="today">오늘</string>
     <string name="tomorrow">내일</string>
@@ -69,5 +70,9 @@
     <string name="this_week">이번 주</string>
     <string name="later">나중에</string>
     <string name="all_planned">전체</string>
+    <string name="by_project">프로젝트별</string>
+    <string name="by_due_date">기한별</string>
+    <string name="ok">확인</string>
+
 
 </resources>
