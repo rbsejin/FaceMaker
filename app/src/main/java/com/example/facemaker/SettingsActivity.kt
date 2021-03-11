@@ -40,6 +40,7 @@ class SettingsActivity : AppCompatActivity() {
             Timber.i("값 변경 감지 Preference의 key: $key")
 
             when (key) {
+                
             }
         }
     }
@@ -106,6 +107,10 @@ class SettingsActivity : AppCompatActivity() {
     class SettingsFragment : PreferenceFragmentCompat() {
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
+
+            val account: Preference = findPreference<Preference>("account_info") ?: return
+            account.title = Firebase.auth.currentUser.displayName
+            account.summary = Firebase.auth.currentUser.email
         }
 
         override fun onPreferenceTreeClick(preference: Preference?): Boolean {
