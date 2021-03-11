@@ -82,6 +82,10 @@
             app:key="version"
             app:title="버전"
             app:summary="베타"/>
+
+        <Preference
+            app:key="game"
+            app:title="게임" />
     </PreferenceCategory>
 
 </PreferenceScreen>

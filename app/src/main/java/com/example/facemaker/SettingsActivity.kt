@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager
+import com.example.facemaker.game.GameActivity
 import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -98,6 +99,9 @@ class SettingsActivity : AppCompatActivity() {
             }
     }
 
+    private fun playGame() {
+        startActivity(Intent(this, GameActivity::class.java))
+    }
 
     class SettingsFragment : PreferenceFragmentCompat() {
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -116,6 +120,9 @@ class SettingsActivity : AppCompatActivity() {
                 }
                 "delete_account" -> {
                     settingActivity.deleteAccount()
+                }
+                "game" -> {
+                    settingActivity.playGame()
                 }
             }
 

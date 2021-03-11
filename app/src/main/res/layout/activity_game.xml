@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/fullscreenBackgroundColor"
+        android:theme="@style/ThemeOverlay.FaceMaker.FullscreenContainer"
+        tools:context=".game.GameActivity">
+
+        <!-- The primary full-screen view. This can be replaced with whatever view
+             is needed to present your content, e.g. VideoView, SurfaceView,
+             TextureView, etc. -->
+        <!--    <TextView-->
+        <!--        android:id="@+id/fullscreen_content"-->
+        <!--        android:layout_width="match_parent"-->
+        <!--        android:layout_height="match_parent"-->
+        <!--        android:gravity="center"-->
+        <!--        android:keepScreenOn="true"-->
+        <!--        android:text="GAME"-->
+        <!--        android:textColor="?attr/fullscreenTextColor"-->
+        <!--        android:textSize="50sp"-->
+        <!--        android:textStyle="bold" />-->
+
+        <com.example.facemaker.game.Game
+            android:id="@+id/game"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_horizontal">
+
+        </com.example.facemaker.game.Game>
+
+<!--        <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="160dp"-->
+<!--            android:layout_gravity="bottom"-->
+<!--            android:background="@color/teal_700">-->
+
+<!--            <ImageButton-->
+<!--                android:id="@+id/left_button"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginStart="32dp"-->
+<!--                android:layout_marginBottom="32dp"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                app:layout_constraintEnd_toStartOf="@+id/right_button"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                app:srcCompat="@drawable/ic_keyboard_arrow_left_24px" />-->
+
+<!--            <ImageButton-->
+<!--                android:id="@+id/right_button"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginEnd="32dp"-->
+<!--                app:layout_constraintBottom_toBottomOf="@+id/left_button"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintHorizontal_bias="0.5"-->
+<!--                app:layout_constraintStart_toEndOf="@+id/left_button"-->
+<!--                app:layout_constraintTop_toTopOf="@+id/left_button"-->
+<!--                app:srcCompat="@drawable/ic_keyboard_arrow_right_24px" />-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/score_text"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginEnd="16dp"-->
+<!--                android:padding="@dimen/small_padding"-->
+<!--                android:text="score: 100"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintHorizontal_bias="1.0"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                app:layout_constraintVertical_bias="0.100000024" />-->
+
+<!--            <Button-->
+<!--                android:id="@+id/space_button"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="36dp"-->
+<!--                android:layout_marginStart="8dp"-->
+<!--                android:layout_marginEnd="8dp"-->
+<!--                android:layout_marginBottom="2dp"-->
+<!--                android:text="SAPCE"-->
+<!--                android:textSize="10sp"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent" />-->
+<!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+        <!-- This FrameLayout insets its children based on system windows using
+             android:fitsSystemWindows. -->
+        <!--    <FrameLayout-->
+        <!--        android:layout_width="match_parent"-->
+        <!--        android:layout_height="match_parent"-->
+        <!--        android:fitsSystemWindows="true">-->
+
+        <!--        <LinearLayout-->
+        <!--            android:id="@+id/fullscreen_content_controls"-->
+        <!--            style="@style/Widget.Theme.FaceMaker.ButtonBar.Fullscreen"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_gravity="bottom|center_horizontal"-->
+        <!--            android:background="@color/purple_200"-->
+        <!--            android:orientation="horizontal"-->
+        <!--            tools:ignore="UselessParent">-->
+
+        <!--            <Button-->
+        <!--                android:id="@+id/dummy_button"-->
+        <!--                style="?android:attr/buttonBarButtonStyle"-->
+        <!--                android:layout_width="0dp"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:layout_weight="1"-->
+        <!--                android:text="@string/dummy_button" />-->
+
+        <!--        </LinearLayout>-->
+        <!--    </FrameLayout>-->
+
+    </FrameLayout>
+</layout>
