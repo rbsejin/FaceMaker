@@ -3,7 +3,6 @@ package com.example.facemaker
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -110,8 +109,7 @@ class MainActivity : AppCompatActivity() {
 //            addButtonOnClick()
 //        }
 
-        val profile: ConstraintLayout = findViewById(R.id.profile_item)
-        profile.setOnClickListener {
+        binding.profileItem.setOnClickListener {
             startActivity(Intent(this, SettingsActivity::class.java))
         }
 
@@ -120,6 +118,10 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, TaskListActivity::class.java)
             intent.putExtra("add project", true)
             startActivity(intent)
+        }
+
+        binding.searchButton.setOnClickListener {
+            startActivity(Intent(this, SearchActivity::class.java))
         }
     }
 

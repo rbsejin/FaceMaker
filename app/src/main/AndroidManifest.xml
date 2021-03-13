@@ -18,20 +18,25 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FaceMaker">
         <activity
+            android:name=".SearchActivity"
+            android:label="@string/search"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/Theme.FaceMaker.NoActionBar"></activity>
+        <activity
             android:name=".game.GameActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_game"
-            android:theme="@style/Theme.FaceMaker.Fullscreen"></activity>
+            android:theme="@style/Theme.FaceMaker.Fullscreen" />
         <activity
             android:name=".SettingsActivity"
             android:label="설정"
             android:parentActivityName=".MainActivity" />
         <activity android:name=".FirebaseUIActivity">
-            <!--            <intent-filter>
-                            <action android:name="android.intent.action.MAIN" />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-                            <category android:name="android.intent.category.LAUNCHER" />
-                        </intent-filter>-->
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity android:name=".EmailSignUpActivity" /> <!-- <activity android:name=".LoginActivity"> -->
         <!-- <intent-filter> -->
@@ -39,12 +44,9 @@
         <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
         <!-- </intent-filter> -->
         <!-- </activity> -->
-        <activity android:name=".MainActivity"> <!-- 알람 리시버 -->
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+        <activity
+            android:name=".MainActivity"
+            android:theme="@style/Theme.FaceMaker.NoActionBar">
         </activity>
         <!-- <activity android:name=".AddProjectActivity" /> -->
         <!-- <activity android:name=".AddTaskActivity" /> -->
