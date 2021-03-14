@@ -7,39 +7,43 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.PopupMenu
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import com.example.facemaker.data.Task
+import com.example.facemaker.databinding.TaskDateItemBinding
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import java.text.SimpleDateFormat
 import java.util.*
 
 class TaskDateAdapter(private var currentTask: Task) :
-    Adapter<TaskDateAdapter.TaskDateViewHolder>() {
+    Adapter<TaskDateAdapter.ViewHolder>() {
     private lateinit var parentContext: Context
 
-    class TaskDateViewHolder(itemView: View, private val currentTask: Task) :
-        RecyclerView.ViewHolder(itemView) {
-        val icon: ImageView = itemView.findViewById(R.id.task_date_item_icon)
-        val nameTextView: TextView = itemView.findViewById(R.id.task_date_item_name)
-        val deleteButton: ImageButton = itemView.findViewById(R.id.task_date_item_delete)
+    class ViewHolder(val binding: TaskDateItemBinding, private val currentTask: Task) :
+        RecyclerView.ViewHolder(binding.root) {
+
+        companion object {
+            fun from(parent: ViewGroup, currentTask: Task) : ViewHolder {
+                val layoutInflater = LayoutInflater.from(parent.context)
+                val binding = TaskDateItemBinding.inflate(layoutInflater, parent, false)
+                return ViewHolder(binding, currentTask)
+            }
+        }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskDateViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         parentContext = parent.context
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.task_date_item, parent, false)
-        return TaskDateViewHolder(view, currentTask)
+        return ViewHolder.from(parent, currentTask)
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
-    override fun onBindViewHolder(holder: TaskDateViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
         // bind
         holder.apply {
@@ -47,48 +51,48 @@ class TaskDateAdapter(private var currentTask: Task) :
                 0 -> {
                     val dateFormat = SimpleDateFormat("yy년 MM월 dd일 HH시 mm분 알림")
                     if (currentTask.notificationDateTime == null) {
-                        holder.nameTextView.text = "알림 설정"
-                        deleteButton.visibility = RecyclerView.INVISIBLE
+                        holder.binding.taskDateItemName.text = "알림 설정"
+                        holder.binding.taskDateItemDelete.visibility = RecyclerView.INVISIBLE
                     } else {
-                        nameTextView.text = dateFormat.format(currentTask.notificationDateTime)
-                        deleteButton.visibility = RecyclerView.VISIBLE
+                        holder.binding.taskDateItemName.text = dateFormat.format(currentTask.notificationDateTime)
+                        holder.binding.taskDateItemDelete.visibility = RecyclerView.VISIBLE
                     }
 
-                    icon.setImageResource(R.drawable.baseline_notifications_none_24)
+                    binding.taskDateItemIcon.setImageResource(R.drawable.baseline_notifications_none_24)
                 }
                 1 -> {
                     val dateFormat = SimpleDateFormat("yy년 MM월 dd일 까지")
                     if (currentTask.dueDate == null) {
-                        nameTextView.text = "기한 설정"
-                        deleteButton.visibility = RecyclerView.INVISIBLE
+                        holder.binding.taskDateItemName.text = "기한 설정"
+                        holder.binding.taskDateItemDelete.visibility = RecyclerView.INVISIBLE
                     } else {
-                        nameTextView.text = dateFormat.format(currentTask.dueDate)
-                        deleteButton.visibility = RecyclerView.VISIBLE
+                        holder.binding.taskDateItemName.text = dateFormat.format(currentTask.dueDate)
+                        holder.binding.taskDateItemDelete.visibility = RecyclerView.VISIBLE
                     }
 
-                    icon.setImageResource(R.drawable.baseline_calendar_today_24)
+                    binding.taskDateItemIcon.setImageResource(R.drawable.baseline_calendar_today_24)
                 }
                 2 -> {
                     if (currentTask.repeatCycle == null) {
-                        nameTextView.text = "반복"
-                        deleteButton.visibility = RecyclerView.INVISIBLE
+                        holder.binding.taskDateItemName.text = "반복"
+                        holder.binding.taskDateItemDelete.visibility = RecyclerView.INVISIBLE
                     } else {
-                        nameTextView.text = currentTask.repeatCycle
-                        deleteButton.visibility = RecyclerView.VISIBLE
+                        holder.binding.taskDateItemName.text = currentTask.repeatCycle
+                        holder.binding.taskDateItemDelete.visibility = RecyclerView.VISIBLE
                     }
 
-                    icon.setImageResource(R.drawable.baseline_repeat_24)
+                    binding.taskDateItemIcon.setImageResource(R.drawable.baseline_repeat_24)
                 }
                 3 -> {
                     if (currentTask.myDay != null) {
-                        nameTextView.text = "나의 하루에 추가됨"
-                        deleteButton.visibility = RecyclerView.VISIBLE
+                        holder.binding.taskDateItemName.text = "나의 하루에 추가됨"
+                        holder.binding.taskDateItemDelete.visibility = RecyclerView.VISIBLE
                     } else {
-                        nameTextView.text = "나의 하루에 추가"
-                        deleteButton.visibility = RecyclerView.INVISIBLE
+                        holder.binding.taskDateItemName.text = "나의 하루에 추가"
+                        holder.binding.taskDateItemDelete.visibility = RecyclerView.INVISIBLE
                     }
 
-                    icon.setImageResource(R.drawable.baseline_calendar_today_24)
+                    binding.taskDateItemIcon.setImageResource(R.drawable.baseline_calendar_today_24)
                 }
 
                 else -> {
@@ -104,7 +108,7 @@ class TaskDateAdapter(private var currentTask: Task) :
             when (position) {
                 // 미리 알림
                 0 -> {
-                    PopupMenu(parentContext, holder.itemView).apply {
+                    PopupMenu(holder.binding.root.context , holder.itemView).apply {
                         menuInflater.inflate(R.menu.notification_item_menu, menu)
                         var isAlarm: Boolean = false
 
@@ -183,7 +187,7 @@ class TaskDateAdapter(private var currentTask: Task) :
                 }
                 // 기한 설정
                 1 -> {
-                    PopupMenu(parentContext, holder.itemView).apply {
+                    PopupMenu(holder.binding.root.context, holder.itemView).apply {
                         menuInflater.inflate(R.menu.due_date_item_menu, menu)
                         setOnMenuItemClickListener {
                             val ret = when (it.itemId) {
@@ -207,7 +211,7 @@ class TaskDateAdapter(private var currentTask: Task) :
                                     val DEFAULT_HOUR = 9
 
                                     val datePickerDialog = DatePickerDialog(
-                                        parentContext,
+                                        holder.binding.root.context,
                                         { _, year, month, dayOfMonth ->
                                             calendar.set(Calendar.YEAR, year)
                                             calendar.set(Calendar.MONTH, month)
@@ -252,7 +256,7 @@ class TaskDateAdapter(private var currentTask: Task) :
                 }
                 // 반복
                 2 -> {
-                    PopupMenu(parentContext, holder.itemView).apply {
+                    PopupMenu(holder.binding.root.context, holder.itemView).apply {
                         menuInflater.inflate(R.menu.repeat_cycle_item_menu, menu)
                         setOnMenuItemClickListener {
                             val ret = when (it.itemId) {
@@ -309,7 +313,7 @@ class TaskDateAdapter(private var currentTask: Task) :
             }
         }
 
-        holder.deleteButton.setOnClickListener {
+        holder.binding.taskDateItemDelete.setOnClickListener {
             when (position) {
                 0 -> {
                     currentTask.notificationDateTime = null
@@ -343,8 +347,7 @@ class TaskDateAdapter(private var currentTask: Task) :
             Locale.getDefault()
         )
         val dateTimeMessage = simpleDateFormat.format(calendar.time)
-        Toast.makeText(parentContext, dateTimeMessage, Toast.LENGTH_SHORT)
-            .show()
+        Toast.makeText(parentContext, dateTimeMessage, Toast.LENGTH_SHORT).show()
 
         // Preference 에 설정한 값 저장
         val editor = parentContext.getSharedPreferences(
