@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import com.example.facemaker.data.Task
 import com.example.facemaker.databinding.TaskDateItemBinding
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import java.text.SimpleDateFormat
@@ -24,6 +25,7 @@ import java.util.*
 class TaskDateAdapter(private var currentTask: Task) :
     Adapter<TaskDateAdapter.ViewHolder>() {
     private lateinit var parentContext: Context
+    private lateinit var database: DatabaseReference
 
     class ViewHolder(val binding: TaskDateItemBinding, private val currentTask: Task) :
         RecyclerView.ViewHolder(binding.root) {
@@ -39,6 +41,7 @@ class TaskDateAdapter(private var currentTask: Task) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         parentContext = parent.context
+        database = Firebase.database.reference
         return ViewHolder.from(parent, currentTask)
     }
 
@@ -50,11 +53,11 @@ class TaskDateAdapter(private var currentTask: Task) :
             when (position) {
                 0 -> {
                     val dateFormat = SimpleDateFormat("yy년 MM월 dd일 HH시 mm분 알림")
-                    if (currentTask.notificationDateTime == null) {
+                    if (currentTask.notification == null) {
                         holder.binding.taskDateItemName.text = "알림 설정"
                         holder.binding.taskDateItemDelete.visibility = RecyclerView.INVISIBLE
                     } else {
-                        holder.binding.taskDateItemName.text = dateFormat.format(currentTask.notificationDateTime)
+                        holder.binding.taskDateItemName.text = dateFormat.format(currentTask.notification)
                         holder.binding.taskDateItemDelete.visibility = RecyclerView.VISIBLE
                     }
 
@@ -87,6 +90,8 @@ class TaskDateAdapter(private var currentTask: Task) :
                     if (currentTask.myDay != null) {
                         holder.binding.taskDateItemName.text = "나의 하루에 추가됨"
                         holder.binding.taskDateItemDelete.visibility = RecyclerView.VISIBLE
+
+
                     } else {
                         holder.binding.taskDateItemName.text = "나의 하루에 추가"
                         holder.binding.taskDateItemDelete.visibility = RecyclerView.INVISIBLE
@@ -110,14 +115,13 @@ class TaskDateAdapter(private var currentTask: Task) :
                 0 -> {
                     PopupMenu(holder.binding.root.context , holder.itemView).apply {
                         menuInflater.inflate(R.menu.notification_item_menu, menu)
-                        var isAlarm: Boolean = false
 
                         setOnMenuItemClickListener {
                             val ret = when (it.itemId) {
                                 R.id.notification_today_later_item -> {
                                     calendar.add(Calendar.HOUR_OF_DAY, 3)
                                     calendar.set(Calendar.MINUTE, 0)
-                                    currentTask.notificationDateTime = calendar.time
+                                    currentTask.notification = calendar.time
                                     setAlarm(calendar)
                                     true
                                 }
@@ -125,22 +129,24 @@ class TaskDateAdapter(private var currentTask: Task) :
                                     calendar.add(Calendar.DATE, 1)
                                     calendar.set(Calendar.HOUR_OF_DAY, 9)
                                     calendar.set(Calendar.MINUTE, 0)
-                                    currentTask.notificationDateTime = calendar.time
+                                    currentTask.notification = calendar.time
                                     setAlarm(calendar)
                                     true
                                 }
                                 R.id.notification_next_week_item -> {
-                                    calendar.add(Calendar.DATE, 7)
+                                    val week = 7
+                                    calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY)
+                                    calendar.add(Calendar.DAY_OF_MONTH, week)
                                     calendar.set(Calendar.HOUR_OF_DAY, 9)
                                     calendar.set(Calendar.MINUTE, 0)
-                                    currentTask.notificationDateTime = calendar.time
+                                    currentTask.notification = calendar.time
                                     setAlarm(calendar)
                                     true
                                 }
 
                                 R.id.notification_direct_selection_item -> {
-                                    if (currentTask.notificationDateTime != null) {
-                                        calendar.time = currentTask.notificationDateTime
+                                    if (currentTask.notification != null) {
+                                        calendar.time = currentTask.notification
                                     }
 
                                     val datePickerDialog = DatePickerDialog(
@@ -149,8 +155,7 @@ class TaskDateAdapter(private var currentTask: Task) :
                                             calendar.set(Calendar.YEAR, year)
                                             calendar.set(Calendar.MONTH, month)
                                             calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-                                            currentTask.notificationDateTime = calendar.time
-                                            notifyItemChanged(position)
+                                            currentTask.notification = calendar.time
 
                                             val timePickerDialog = TimePickerDialog(
                                                 parentContext,
@@ -158,9 +163,10 @@ class TaskDateAdapter(private var currentTask: Task) :
                                                     calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
                                                     calendar.set(Calendar.MINUTE, minute)
 
-                                                    currentTask.notificationDateTime = calendar.time
-                                                    notifyItemChanged(position)
+                                                    currentTask.notification = calendar.time
                                                     setAlarm(calendar)
+
+                                                    database.child("tasks/${currentTask.id}/notification").setValue(currentTask.notification)
                                                 },
                                                 calendar.get(Calendar.HOUR_OF_DAY),
                                                 calendar.get(Calendar.MINUTE),
@@ -179,7 +185,8 @@ class TaskDateAdapter(private var currentTask: Task) :
                                 else -> false
                             }
 
-                            notifyItemChanged(position)
+                            database.child("tasks/${currentTask.id}/notification").setValue(currentTask.notification)
+
                             ret
                         }
                         show()
@@ -231,9 +238,6 @@ class TaskDateAdapter(private var currentTask: Task) :
                                             calendar.set(Calendar.MONTH, month)
                                             calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
                                             task.dueDate = calendar.time
-
-                                            Firebase.database.reference.child("tasks/${task.id}/dueDate")
-                                                .setValue(task.dueDate)
                                         }
                                     }
 
@@ -244,10 +248,7 @@ class TaskDateAdapter(private var currentTask: Task) :
                                 else -> false
                             }
 
-                            currentTask?.let { task ->
-                                Firebase.database.reference.child("tasks/${task.id}/dueDate")
-                                    .setValue(currentTask.dueDate)
-                            }
+                            database.child("tasks/${currentTask.id}/dueDate").setValue(currentTask.dueDate)
 
                             ret
                         }
@@ -293,8 +294,10 @@ class TaskDateAdapter(private var currentTask: Task) :
                                     currentTask.dueDate = calendar.time // 오늘로 설정
                                 }
 
-                                notifyDataSetChanged()
+//                                notifyDataSetChanged()
                             }
+
+                            database.child("tasks/${currentTask.id}/repeatCycle").setValue(currentTask.repeatCycle)
 
                             ret
                         }
@@ -304,7 +307,7 @@ class TaskDateAdapter(private var currentTask: Task) :
                 // 나의 하루
                 3 -> {
                     currentTask.myDay = Calendar.getInstance().time
-                    notifyDataSetChanged()
+                    database.child("tasks/${currentTask.id}/myDay").setValue(currentTask.myDay)
                 }
                 // else 에 들어올 수 없다.
                 else -> {
@@ -316,12 +319,12 @@ class TaskDateAdapter(private var currentTask: Task) :
         holder.binding.taskDateItemDelete.setOnClickListener {
             when (position) {
                 0 -> {
-                    currentTask.notificationDateTime = null
+                    currentTask.notification = null
                     // deleteAlarm
                     // notification 이 취소되지 않는다... 임시로 AlarmReceiver 에서 처리함
                     val notificationManager: NotificationManager =
                         parentContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-                    notificationManager.cancel(Integer.parseInt(currentTask.id))
+                    notificationManager.cancel(0)
                 }
                 1 -> {
                     currentTask.dueDate = null
@@ -331,8 +334,6 @@ class TaskDateAdapter(private var currentTask: Task) :
                 3 -> currentTask.myDay = null
                 else -> assert(false)
             }
-
-            Firebase.database.reference.child("tasks/${currentTask.id}").setValue(currentTask)
         }
     }
 
@@ -363,7 +364,7 @@ class TaskDateAdapter(private var currentTask: Task) :
         val pendingIntent: PendingIntent =
             PendingIntent.getBroadcast(
                 parentContext,
-                Integer.parseInt(currentTask.id),
+                0,
                 alarmIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT
             )

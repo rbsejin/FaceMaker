@@ -45,13 +45,13 @@ class AlarmReceiver : BroadcastReceiver() {
         val task: Task = Task(taskId.toString())
 
         // 알람 삭제시 notification 이 취소되지 않아 임시방편으로 여기서 취소.
-        if (task.notificationDateTime == null) {
+        if (task.notification == null) {
             notificationManager.cancel(taskId)
             return
         }
 
         // 알림을 제거한다.
-        task.notificationDateTime = null
+        task.notification = null
         // view를 갱신해주지 않아서 뷰는 그대로고, 데이터만 null인 상태
 
         builder.setAutoCancel(true)

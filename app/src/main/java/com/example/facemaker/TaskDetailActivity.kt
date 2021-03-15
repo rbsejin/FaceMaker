@@ -136,11 +136,6 @@ class TaskDetailActivity : AppCompatActivity() {
         database.child("tasks/$currentTaskId").addValueEventListener(taskListener)
     }
 
-    override fun onStart() {
-        super.onStart()
-        binding.taskDetailRecyclerView.adapter?.notifyDataSetChanged()
-    }
-
     override fun onStop() {
         binding.taskDetailRecyclerView.clearFocus()
         binding.taskDetailRecyclerView.clearFocus()

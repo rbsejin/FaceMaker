@@ -12,7 +12,7 @@ data class Task(
     var name: String = "",
     val createdDateTime: Date = Date(),
     var dueDate: Date? = null, // 기한
-    var notificationDateTime: Date? = null, // 알림
+    var notification: Date? = null, // 알림
     var repeatCycle: String? = null // 추후 RepeatCycle 클래스 만들 것
 ) {
     val updatedDateTime: Date = createdDateTime
@@ -33,7 +33,7 @@ data class Task(
             "name" to name,
             "createdDateTime" to createdDateTime,
             "dueDate" to dueDate,
-            "notificationDateTime" to notificationDateTime,
+            "notification" to notification,
             "repeatCycle" to repeatCycle,
             "updatedDateTime" to updatedDateTime,
             "myDay" to myDay,
