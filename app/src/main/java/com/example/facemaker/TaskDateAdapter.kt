@@ -31,7 +31,7 @@ class TaskDateAdapter(private var currentTask: Task) :
         RecyclerView.ViewHolder(binding.root) {
 
         companion object {
-            fun from(parent: ViewGroup, currentTask: Task) : ViewHolder {
+            fun from(parent: ViewGroup, currentTask: Task): ViewHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)
                 val binding = TaskDateItemBinding.inflate(layoutInflater, parent, false)
                 return ViewHolder(binding, currentTask)
@@ -57,7 +57,8 @@ class TaskDateAdapter(private var currentTask: Task) :
                         holder.binding.taskDateItemName.text = "알림 설정"
                         holder.binding.taskDateItemDelete.visibility = RecyclerView.INVISIBLE
                     } else {
-                        holder.binding.taskDateItemName.text = dateFormat.format(currentTask.notification)
+                        holder.binding.taskDateItemName.text =
+                            dateFormat.format(currentTask.notification)
                         holder.binding.taskDateItemDelete.visibility = RecyclerView.VISIBLE
                     }
 
@@ -69,7 +70,8 @@ class TaskDateAdapter(private var currentTask: Task) :
                         holder.binding.taskDateItemName.text = "기한 설정"
                         holder.binding.taskDateItemDelete.visibility = RecyclerView.INVISIBLE
                     } else {
-                        holder.binding.taskDateItemName.text = dateFormat.format(currentTask.dueDate)
+                        holder.binding.taskDateItemName.text =
+                            dateFormat.format(currentTask.dueDate)
                         holder.binding.taskDateItemDelete.visibility = RecyclerView.VISIBLE
                     }
 
@@ -113,7 +115,7 @@ class TaskDateAdapter(private var currentTask: Task) :
             when (position) {
                 // 미리 알림
                 0 -> {
-                    PopupMenu(holder.binding.root.context , holder.itemView).apply {
+                    PopupMenu(holder.binding.root.context, holder.itemView).apply {
                         menuInflater.inflate(R.menu.notification_item_menu, menu)
 
                         setOnMenuItemClickListener {
@@ -166,7 +168,8 @@ class TaskDateAdapter(private var currentTask: Task) :
                                                     currentTask.notification = calendar.time
                                                     setAlarm(calendar)
 
-                                                    database.child("tasks/${currentTask.id}/notification").setValue(currentTask.notification)
+                                                    database.child("tasks/${currentTask.id}/notification")
+                                                        .setValue(currentTask.notification)
                                                 },
                                                 calendar.get(Calendar.HOUR_OF_DAY),
                                                 calendar.get(Calendar.MINUTE),
@@ -185,7 +188,8 @@ class TaskDateAdapter(private var currentTask: Task) :
                                 else -> false
                             }
 
-                            database.child("tasks/${currentTask.id}/notification").setValue(currentTask.notification)
+                            database.child("tasks/${currentTask.id}/notification")
+                                .setValue(currentTask.notification)
 
                             ret
                         }
@@ -248,7 +252,8 @@ class TaskDateAdapter(private var currentTask: Task) :
                                 else -> false
                             }
 
-                            database.child("tasks/${currentTask.id}/dueDate").setValue(currentTask.dueDate)
+                            database.child("tasks/${currentTask.id}/dueDate")
+                                .setValue(currentTask.dueDate)
 
                             ret
                         }
@@ -293,11 +298,12 @@ class TaskDateAdapter(private var currentTask: Task) :
                                 if (currentTask.dueDate == null) {
                                     currentTask.dueDate = calendar.time // 오늘로 설정
                                 }
-
-//                                notifyDataSetChanged()
                             }
 
-                            database.child("tasks/${currentTask.id}/repeatCycle").setValue(currentTask.repeatCycle)
+                            val childUpdates = hashMapOf<String, Any?>()
+                            childUpdates["tasks/${currentTask.id}/dueDate"] = currentTask.dueDate
+                            childUpdates["tasks/${currentTask.id}/repeatCycle"] = currentTask.repeatCycle
+                            database.updateChildren(childUpdates)
 
                             ret
                         }
@@ -325,13 +331,27 @@ class TaskDateAdapter(private var currentTask: Task) :
                     val notificationManager: NotificationManager =
                         parentContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
                     notificationManager.cancel(0)
+
+                    database.child("tasks/${currentTask.id}/notification").removeValue()
                 }
                 1 -> {
                     currentTask.dueDate = null
                     currentTask.repeatCycle = null
+
+
+                    val childUpdates = hashMapOf<String, Any?>()
+                    childUpdates["tasks/${currentTask.id}/dueDate"] = currentTask.dueDate
+                    childUpdates["tasks/${currentTask.id}/repeatCycle"] = currentTask.repeatCycle
+                    database.updateChildren(childUpdates)
                 }
-                2 -> currentTask.repeatCycle = null
-                3 -> currentTask.myDay = null
+                2 -> {
+                    currentTask.repeatCycle = null
+                    database.child("tasks/${currentTask.id}/repeatCycle").removeValue()
+                }
+                3 -> {
+                    currentTask.myDay = null
+                    database.child("tasks/${currentTask.id}/myDay").removeValue()
+                }
                 else -> assert(false)
             }
         }
