@@ -154,7 +154,7 @@ class MainActivity : AppCompatActivity() {
             }
             1 -> {
                 // 중요
-                val intent = Intent(this, TaskListActivity()::class.java)
+                val intent = Intent(this, ImportantTaskListActivity()::class.java)
                 startActivity(intent)
             }
             2 -> {
