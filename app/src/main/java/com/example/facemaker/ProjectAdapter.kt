@@ -1,6 +1,7 @@
 package com.example.facemaker
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.facemaker.data.Project
@@ -30,7 +31,7 @@ class ProjectAdapter(
             currentProject = project
             binding.apply {
                 projectItemName.text = project.name
-                projectItemChildCount.text = "0"//tasks.count { !it.isDone }.toString()
+                projectItemChildCount.visibility = View.INVISIBLE
             }
         }
 
