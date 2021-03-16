@@ -1,15 +1,11 @@
 package com.example.facemaker
 
 import android.app.Activity
-import android.app.AlertDialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.recyclerview.widget.ConcatAdapter
 import com.example.facemaker.data.Task
 import com.example.facemaker.databinding.ActivityTaskListBinding
 import com.google.firebase.auth.ktx.auth
@@ -20,12 +16,11 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
-import java.util.*
 
 class AllTaskListActivity : AppCompatActivity() {
     private lateinit var binding: ActivityTaskListBinding
     private lateinit var database: DatabaseReference
-    private lateinit var plannedAdapter: PlannedAdapter
+    private lateinit var groupByAdapter: GroupByAdapter
     private lateinit var headerAdapter: PlannedHeaderAdapter
     private val tasks = mutableListOf<Task>()
 
@@ -35,12 +30,21 @@ class AllTaskListActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_task_list)
         database = Firebase.database.reference
 
-        setSupportActionBar(binding.toolbar)
-        binding.toolbarLayout.title = getString(R.string.planned)
+        // 나의 하루에서 작업 추가 미구현으로 버튼 숨김
+        binding.fab.visibility = View.INVISIBLE
 
-        plannedAdapter = PlannedAdapter(TaskListener { task -> adapterOnClick(task) })
-        headerAdapter = PlannedHeaderAdapter()
-        binding.taskRecyclerView.adapter = ConcatAdapter(headerAdapter, plannedAdapter)
+        // 배경색 지정
+        binding.root.setBackgroundColor(resources.getColor(R.color.all_task_list_title_color))
+        binding.toolbarLayout.setContentScrimColor(resources.getColor(R.color.all_task_list_title_color))
+        binding.toolbarLayout.setBackgroundColor(resources.getColor(R.color.all_task_list_title_color))
+//        binding.toolbarLayout.setCollapsedTitleTextColor(resources.getColor(R.color.important_task_list_title_color))
+//        binding.toolbarLayout.setExpandedTitleColor(resources.getColor(R.color.important_task_list_title_color))
+
+        setSupportActionBar(binding.toolbar)
+        binding.toolbarLayout.title = getString(R.string.all)
+
+        groupByAdapter = GroupByAdapter(TaskListener { task -> adapterOnClick(task) })
+        binding.taskRecyclerView.adapter = groupByAdapter
 
         // DB에서 기한이 있는 작업들을 가져온다.
         val taskListListener = object : ValueEventListener {
@@ -55,118 +59,14 @@ class AllTaskListActivity : AppCompatActivity() {
                 val week = 7
 
                 val filter: (Task) -> Boolean
-                headerAdapter.filter =
-                    filterSnapshot.getValue<TaskFilter>() ?: TaskFilter.ALL_PLANNED
 
                 // completion filter
                 val completionFilterSnapshot =
                     snapshot.child("users/${Firebase.auth.currentUser.uid}/planned/completionFilter")
 
-                plannedAdapter.completionFilter = completionFilterSnapshot.getValue<Boolean>() ?: false
-
-                // groupBy
-                snapshot.child("users/${Firebase.auth.currentUser.uid}/planned/groupBy")
-                    .getValue<TaskGroupBy>().let {
-                    headerAdapter.groupBy = it
-                    plannedAdapter.groupBy = it
-                }
-
-
-                when (headerAdapter.filter) {
-                    TaskFilter.OVERDUE -> {
-                        filter = { task: Task ->
-                            val calendar = Calendar.getInstance()
-                            calendar.set(Calendar.HOUR_OF_DAY, 0)
-                            calendar.set(Calendar.MINUTE, 0)
-                            calendar.set(Calendar.SECOND, 0)
-
-                            if (task.dueDate != null) {
-                                val differ = task.dueDate!!.time - calendar.time.time
-                                differ < 0L
-                            } else {
-                                false
-                            }
-                        }
-                    }
-                    TaskFilter.TODAY -> {
-                        filter = { task: Task ->
-                            val calendar = Calendar.getInstance()
-                            calendar.set(Calendar.HOUR_OF_DAY, 0)
-                            calendar.set(Calendar.MINUTE, 0)
-                            calendar.set(Calendar.SECOND, 0)
-
-                            if (task.dueDate != null) {
-                                val differ = task.dueDate!!.time - calendar.time.time
-                                differ in 0L until day
-                            } else {
-                                false
-                            }
-                        }
-                    }
-                    TaskFilter.TOMORROW -> {
-                        filter = { task: Task ->
-                            val calendar = Calendar.getInstance()
-                            calendar.set(Calendar.HOUR_OF_DAY, 0)
-                            calendar.set(Calendar.MINUTE, 0)
-                            calendar.set(Calendar.SECOND, 0)
-
-                            if (task.dueDate != null) {
-                                calendar.add(Calendar.DATE, 1)
-
-                                val differ = task.dueDate!!.time - calendar.time.time
-                                differ in 0L until day
-                            } else {
-                                false
-                            }
-                        }
-                    }
-                    TaskFilter.THIS_WEEK -> {
-                        filter = { task: Task ->
-                            val calendar = Calendar.getInstance()
-                            calendar.set(Calendar.HOUR_OF_DAY, 0)
-                            calendar.set(Calendar.MINUTE, 0)
-                            calendar.set(Calendar.SECOND, 0)
-
-                            if (task.dueDate != null) {
-                                calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY)
-                                calendar.add(Calendar.DATE, week + 1)
-
-                                val differ = task.dueDate!!.time - calendar.time.time
-                                differ < 0L
-                            } else {
-                                false
-                            }
-                        }
-                    }
-                    TaskFilter.LATER -> {
-                        filter = { task: Task ->
-                            val calendar = Calendar.getInstance()
-                            calendar.set(Calendar.HOUR_OF_DAY, 0)
-                            calendar.set(Calendar.MINUTE, 0)
-                            calendar.set(Calendar.SECOND, 0)
-
-                            if (task.dueDate != null) {
-                                calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY)
-                                calendar.add(Calendar.DATE, week + 1)
-
-                                val differ = task.dueDate!!.time - calendar.time.time
-                                differ >= 0L
-                            } else {
-                                false
-                            }
-                        }
-                    }
-                    TaskFilter.ALL_PLANNED -> {
-                        filter = { task: Task ->
-                            true
-                        }
-                    }
-                    else -> return
-                }
-
+                groupByAdapter.completionFilter = completionFilterSnapshot.getValue<Boolean>() ?: false
 
                 // tasks
-
                 val tasksSnapshot = snapshot.child("tasks")
 
                 for (taskSnapshot in tasksSnapshot.children) {
@@ -176,21 +76,15 @@ class AllTaskListActivity : AppCompatActivity() {
                         continue
                     }
 
-                    if (task.dueDate == null || !filter(task)) {
-                        continue
-                    }
-
-                    if (plannedAdapter.completionFilter && (task.completionDateTime != null)) {
+                    if (task.completionDateTime != null) {
                         continue
                     }
 
                     tasks.add(task)
                 }
 
-                plannedAdapter.updateItemList(tasks)
-
-                headerAdapter.notifyDataSetChanged()
-                plannedAdapter.notifyDataSetChanged()
+                groupByAdapter.updateItemList(tasks)
+                groupByAdapter.notifyDataSetChanged()
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -221,75 +115,70 @@ class AllTaskListActivity : AppCompatActivity() {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.planned_option_menu, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        var checkedItem = when (headerAdapter.groupBy) {
-            null -> -1
-            TaskGroupBy.DATE -> 0
-            TaskGroupBy.PROJECT -> 1
-        }
-
-        return when (item.itemId) {
-            R.id.group_by_item -> {
-                val builder = AlertDialog.Builder(this)
-                    .setTitle(R.string.group_by)
-                builder.apply {
-                    setSingleChoiceItems(R.array.group_by, checkedItem,
-                        DialogInterface.OnClickListener { dialog, which ->
-                            checkedItem = which
-                        })
-                    setPositiveButton(R.string.ok,
-                        DialogInterface.OnClickListener { dialog, id ->
-                            // User clicked OK button
-                            when (checkedItem) {
-                                -1 -> database.child("users/${Firebase.auth.currentUser.uid}/planned/groupBy")
-                                    .setValue(null)
-                                0 -> database.child("users/${Firebase.auth.currentUser.uid}/planned/groupBy")
-                                    .setValue(TaskGroupBy.DATE)
-                                1 -> database.child("users/${Firebase.auth.currentUser.uid}/planned/groupBy")
-                                    .setValue(TaskGroupBy.PROJECT)
-                            }
-                        })
-                    setNegativeButton(R.string.cancel,
-                        DialogInterface.OnClickListener { dialog, id ->
-                            // User cancelled the dialog
-                        })
-
-                }
-
-                // Set other dialog properties
-
-                // Create the AlertDialog
-                val alertDialog: AlertDialog = builder.create()
-                alertDialog.show()
-
-                true
-            }
-            R.id.completed_tasks -> {
-                database.child("users/${Firebase.auth.currentUser.uid}/planned/completionFilter")
-                    .setValue(!plannedAdapter.completionFilter)
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
+//    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+//        menuInflater.inflate(R.menu.planned_option_menu, menu)
+//        return true
+//    }
+//
+//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+//        var checkedItem = when (headerAdapter.groupBy) {
+//            null -> -1
+//            TaskGroupBy.DATE -> 0
+//            TaskGroupBy.PROJECT -> 1
+//        }
+//
+//        return when (item.itemId) {
+//            R.id.group_by_item -> {
+//                val builder = AlertDialog.Builder(this)
+//                    .setTitle(R.string.group_by)
+//                builder.apply {
+//                    setSingleChoiceItems(R.array.group_by, checkedItem,
+//                        DialogInterface.OnClickListener { dialog, which ->
+//                            checkedItem = which
+//                        })
+//                    setPositiveButton(R.string.ok,
+//                        DialogInterface.OnClickListener { dialog, id ->
+//                            // User clicked OK button
+//                            when (checkedItem) {
+//                                -1 -> database.child("users/${Firebase.auth.currentUser.uid}/planned/groupBy")
+//                                    .setValue(null)
+//                                0 -> database.child("users/${Firebase.auth.currentUser.uid}/planned/groupBy")
+//                                    .setValue(TaskGroupBy.DATE)
+//                                1 -> database.child("users/${Firebase.auth.currentUser.uid}/planned/groupBy")
+//                                    .setValue(TaskGroupBy.PROJECT)
+//                            }
+//                        })
+//                    setNegativeButton(R.string.cancel,
+//                        DialogInterface.OnClickListener { dialog, id ->
+//                            // User cancelled the dialog
+//                        })
+//
+//                }
+//
+//                // Set other dialog properties
+//
+//                // Create the AlertDialog
+//                val alertDialog: AlertDialog = builder.create()
+//                alertDialog.show()
+//
+//                true
+//            }
+//            else -> super.onOptionsItemSelected(item)
+//        }
+//    }
 
 
-    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        val item = menu?.findItem(R.id.completed_tasks)
-
-        item?.let {
-            if (plannedAdapter.completionFilter) {
-                it.title = getString(R.string.show_completion_tasks)
-            } else {
-                it.title = getString(R.string.hide_completion_tasks)
-            }
-        }
-
-        return super.onPrepareOptionsMenu(menu)
-    }
+//    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+//        val item = menu?.findItem(R.id.completed_tasks)
+//
+//        item?.let {
+//            if (plannedAdapter.completionFilter) {
+//                it.title = getString(R.string.show_completion_tasks)
+//            } else {
+//                it.title = getString(R.string.hide_completion_tasks)
+//            }
+//        }
+//
+//        return super.onPrepareOptionsMenu(menu)
+//    }
 }

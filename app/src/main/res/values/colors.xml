@@ -21,4 +21,7 @@
     <color name="my_day_background_color">#FF4B8A93</color>
     <color name="important_task_list_background_color">#FFFFD7DF</color>
     <color name="important_task_list_title_color">#AC395D</color>
+    <color name="all_task_list_title_color">#CD5853</color>
+    <color name="completed_task_list_title_color">#CD5853</color>
+    <color name="tasks_task_list_title_color">#6175c4</color>
 </resources>

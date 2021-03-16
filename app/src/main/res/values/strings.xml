@@ -48,9 +48,12 @@
     <string name="user_name">user name</string>
     <string name="project">프로젝트</string>
     <string name="today_task">오늘 할 일</string>
+    <string name="my_day">나의 하루</string>
     <string name="important">중요</string>
     <string name="planned">계획된 일정</string>
-    <string name="my_day">나의 하루</string>
+    <string name="all">모두</string>
+    <string name="completion">완료</string>
+    <string name="tasks">작업들</string>
     <string name="none_name_project">제목 없는 프로젝트</string>
     <string name="fab">fab</string>
     <string name="cancel">취소</string>
