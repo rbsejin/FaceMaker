@@ -149,7 +149,7 @@ class MainActivity : AppCompatActivity() {
         when (type) {
             0 -> {
                 // 오늘 할 일
-                val intent = Intent(this, TaskListActivity()::class.java)
+                val intent = Intent(this, MyDayActivity()::class.java)
                 startActivity(intent)
             }
             1 -> {

@@ -1,6 +1,5 @@
 package com.example.facemaker
 
-import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Build
@@ -31,7 +30,6 @@ import com.google.firebase.ktx.Firebase
 import java.util.*
 
 const val TASK_ID = "task id"
-const val REMOVED_PROJECT_ID = "removedTaskId"
 
 const val taskDetailRequestCode = 1
 
@@ -331,17 +329,17 @@ class TaskListActivity() : AppCompatActivity(),
         startActivityForResult(intent, taskDetailRequestCode)
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == taskDetailRequestCode && resultCode == Activity.RESULT_OK) {
-            data?.let { data ->
-                val id = data.getIntExtra(REMOVED_PROJECT_ID, 0)
-                database.child("tasks/$id").removeValue()
-            }
-        }
-    }
+//    @RequiresApi(Build.VERSION_CODES.N)
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//
+//        if (requestCode == taskDetailRequestCode && resultCode == Activity.RESULT_OK) {
+//            data?.let { data ->
+//                val id = data.getIntExtra(REMOVED_TASK_ID, 0)
+//                database.child("tasks/$id").removeValue()
+//            }
+//        }
+//    }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.project_option_menu, menu)

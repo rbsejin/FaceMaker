@@ -46,8 +46,10 @@
         <!-- </activity> -->
         <activity
             android:name=".MainActivity"
-            android:theme="@style/Theme.FaceMaker.NoActionBar">
-        </activity>
+            android:theme="@style/Theme.FaceMaker.NoActionBar"></activity>
+        <activity
+            android:name=".MyDayActivity"
+            android:theme="@style/Theme.FaceMaker.NoActionBar" />
         <!-- <activity android:name=".AddProjectActivity" /> -->
         <!-- <activity android:name=".AddTaskActivity" /> -->
         <activity android:name=".TaskDetailActivity" />

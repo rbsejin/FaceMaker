@@ -1,7 +1,6 @@
 package com.example.facemaker
 
 import android.Manifest
-import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -97,9 +96,10 @@ class TaskDetailActivity : AppCompatActivity() {
                         .setTitle("계속할까요?")
                         .setNegativeButton("취소", null)
                         .setPositiveButton("삭제") { _, _ ->
-                            val resultIntent = Intent()
-                            resultIntent.putExtra(REMOVED_TASK_ID, currentTask!!.id)
-                            setResult(Activity.RESULT_OK, resultIntent)
+//                            val resultIntent = Intent()
+//                            resultIntent.putExtra(REMOVED_TASK_ID, currentTask!!.id)
+//                            setResult(Activity.RESULT_OK, resultIntent)
+                            database.child("tasks/${currentTask!!.id}").removeValue()
                             finish()
                         }
                     val dialog: AlertDialog = builder.create()

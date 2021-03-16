@@ -23,7 +23,6 @@
             android:id="@+id/task_name_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="ToDo"
             android:textSize="30dp"
             app:layout_constraintBottom_toTopOf="@+id/task_detail_recycler_view"
             app:layout_constraintEnd_toEndOf="parent"
