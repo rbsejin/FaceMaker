@@ -76,18 +76,18 @@ class TaskDateAdapter(private var currentTask: Task) :
 
                     binding.taskDateItemIcon.setImageResource(R.drawable.baseline_calendar_today_24)
                 }
+//                2 -> {
+//                    if (currentTask.repeatCycle == null) {
+//                        holder.binding.taskDateItemName.text = "반복"
+//                        holder.binding.taskDateItemDelete.visibility = RecyclerView.INVISIBLE
+//                    } else {
+//                        holder.binding.taskDateItemName.text = currentTask.repeatCycle
+//                        holder.binding.taskDateItemDelete.visibility = RecyclerView.VISIBLE
+//                    }
+//
+//                    binding.taskDateItemIcon.setImageResource(R.drawable.baseline_repeat_24)
+//                }
                 2 -> {
-                    if (currentTask.repeatCycle == null) {
-                        holder.binding.taskDateItemName.text = "반복"
-                        holder.binding.taskDateItemDelete.visibility = RecyclerView.INVISIBLE
-                    } else {
-                        holder.binding.taskDateItemName.text = currentTask.repeatCycle
-                        holder.binding.taskDateItemDelete.visibility = RecyclerView.VISIBLE
-                    }
-
-                    binding.taskDateItemIcon.setImageResource(R.drawable.baseline_repeat_24)
-                }
-                3 -> {
                     if (currentTask.myDay != null) {
                         holder.binding.taskDateItemName.text = "나의 하루에 추가됨"
                         holder.binding.taskDateItemDelete.visibility = RecyclerView.VISIBLE
@@ -260,57 +260,57 @@ class TaskDateAdapter(private var currentTask: Task) :
                     }
                 }
                 // 반복
-                2 -> {
-                    PopupMenu(holder.binding.root.context, holder.itemView).apply {
-                        menuInflater.inflate(R.menu.repeat_cycle_item_menu, menu)
-                        setOnMenuItemClickListener {
-                            val ret = when (it.itemId) {
-                                R.id.repeat_every_day_item -> {
-                                    currentTask.repeatCycle = "매일"
-                                    true
-                                }
-                                R.id.repeat_every_weekday_item -> {
-                                    currentTask.repeatCycle = "평일"
-                                    true
-                                }
-                                R.id.repeat_every_week_item -> {
-                                    currentTask.repeatCycle = "매주"
-                                    true
-                                }
-                                R.id.repeat_every_month_item -> {
-                                    currentTask.repeatCycle = "매월"
-                                    true
-                                }
-                                R.id.repeat_every_year_item -> {
-                                    currentTask.repeatCycle = "매년"
-                                    true
-                                }
-                                R.id.repeat_direct_selection_item -> {
-                                    currentTask.repeatCycle = "사용자 지정"
-                                    true
-                                }
-                                else -> false
-                            }
-
-                            // 반복 선택하면 기한 설정도 기본값(오늘)로 같이 설정
-                            currentTask.repeatCycle?.let {
-                                if (currentTask.dueDate == null) {
-                                    currentTask.dueDate = calendar.time // 오늘로 설정
-                                }
-                            }
-
-                            val childUpdates = hashMapOf<String, Any?>()
-                            childUpdates["tasks/${currentTask.id}/dueDate"] = currentTask.dueDate
-                            childUpdates["tasks/${currentTask.id}/repeatCycle"] = currentTask.repeatCycle
-                            database.updateChildren(childUpdates)
-
-                            ret
-                        }
-                        show()
-                    }
-                }
+//                2 -> {
+//                    PopupMenu(holder.binding.root.context, holder.itemView).apply {
+//                        menuInflater.inflate(R.menu.repeat_cycle_item_menu, menu)
+//                        setOnMenuItemClickListener {
+//                            val ret = when (it.itemId) {
+//                                R.id.repeat_every_day_item -> {
+//                                    currentTask.repeatCycle = "매일"
+//                                    true
+//                                }
+//                                R.id.repeat_every_weekday_item -> {
+//                                    currentTask.repeatCycle = "평일"
+//                                    true
+//                                }
+//                                R.id.repeat_every_week_item -> {
+//                                    currentTask.repeatCycle = "매주"
+//                                    true
+//                                }
+//                                R.id.repeat_every_month_item -> {
+//                                    currentTask.repeatCycle = "매월"
+//                                    true
+//                                }
+//                                R.id.repeat_every_year_item -> {
+//                                    currentTask.repeatCycle = "매년"
+//                                    true
+//                                }
+//                                R.id.repeat_direct_selection_item -> {
+//                                    currentTask.repeatCycle = "사용자 지정"
+//                                    true
+//                                }
+//                                else -> false
+//                            }
+//
+//                            // 반복 선택하면 기한 설정도 기본값(오늘)로 같이 설정
+//                            currentTask.repeatCycle?.let {
+//                                if (currentTask.dueDate == null) {
+//                                    currentTask.dueDate = calendar.time // 오늘로 설정
+//                                }
+//                            }
+//
+//                            val childUpdates = hashMapOf<String, Any?>()
+//                            childUpdates["tasks/${currentTask.id}/dueDate"] = currentTask.dueDate
+//                            childUpdates["tasks/${currentTask.id}/repeatCycle"] = currentTask.repeatCycle
+//                            database.updateChildren(childUpdates)
+//
+//                            ret
+//                        }
+//                        show()
+//                    }
+//                }
                 // 나의 하루
-                3 -> {
+                2 -> {
                     currentTask.myDay = Calendar.getInstance().time
                     database.child("tasks/${currentTask.id}/myDay").setValue(currentTask.myDay)
                 }
@@ -343,11 +343,11 @@ class TaskDateAdapter(private var currentTask: Task) :
                     childUpdates["tasks/${currentTask.id}/repeatCycle"] = currentTask.repeatCycle
                     database.updateChildren(childUpdates)
                 }
+//                2 -> {
+//                    currentTask.repeatCycle = null
+//                    database.child("tasks/${currentTask.id}/repeatCycle").removeValue()
+//                }
                 2 -> {
-                    currentTask.repeatCycle = null
-                    database.child("tasks/${currentTask.id}/repeatCycle").removeValue()
-                }
-                3 -> {
                     currentTask.myDay = null
                     database.child("tasks/${currentTask.id}/myDay").removeValue()
                 }
@@ -357,7 +357,7 @@ class TaskDateAdapter(private var currentTask: Task) :
     }
 
     override fun getItemCount(): Int {
-        return 4
+        return 3
     }
 
     // 알람설정
