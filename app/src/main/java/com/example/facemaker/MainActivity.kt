@@ -162,6 +162,21 @@ class MainActivity : AppCompatActivity() {
                 val intent = Intent(this, PlannedActivity()::class.java)
                 startActivity(intent)
             }
+            3 -> {
+                // 모두
+                val intent = Intent(this, AllTaskListActivity()::class.java)
+                startActivity(intent)
+            }
+            4 -> {
+                // 완료
+                val intent = Intent(this, CompletedActivity()::class.java)
+                startActivity(intent)
+            }
+            5 -> {
+                // 작업들
+                val intent = Intent(this, EtcTaskListActivity()::class.java)
+                startActivity(intent)
+            }
         }
     }
 

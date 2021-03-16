@@ -62,6 +62,15 @@
         <activity
             android:name=".PlannedActivity"
             android:theme="@style/Theme.FaceMaker.NoActionBar" />
+        <activity
+            android:name=".AllTaskListActivity"
+            android:theme="@style/Theme.FaceMaker.NoActionBar" />
+        <activity
+            android:name=".CompletedActivity"
+            android:theme="@style/Theme.FaceMaker.NoActionBar" />
+        <activity
+            android:name=".EtcTaskListActivity"
+            android:theme="@style/Theme.FaceMaker.NoActionBar" />
 
         <receiver android:name=".AlarmReceiver" />
         <receiver

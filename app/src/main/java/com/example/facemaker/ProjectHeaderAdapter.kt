@@ -46,7 +46,7 @@ class ProjectHeaderAdapter(private val onClick: (Int) -> Unit) :
                                 0,
                                 0
                             )
-                            countTextView.text = "0"
+                            countTextView.visibility = View.INVISIBLE
                         }
                         1 -> {
                             nameTextView.text = "중요"
@@ -56,7 +56,7 @@ class ProjectHeaderAdapter(private val onClick: (Int) -> Unit) :
                                 0,
                                 0
                             )
-                            countTextView.text = "0"
+                            countTextView.visibility = View.INVISIBLE
                         }
                         2 -> {
                             nameTextView.text = "계획된 일정"
@@ -66,7 +66,37 @@ class ProjectHeaderAdapter(private val onClick: (Int) -> Unit) :
                                 0,
                                 0
                             )
-                            countTextView.text = "0"
+                            countTextView.visibility = View.INVISIBLE
+                        }
+                        3 -> {
+                            nameTextView.text = "모두"
+                            nameTextView.setCompoundDrawablesWithIntrinsicBounds(
+                                R.drawable.ic_360_24px,
+                                0,
+                                0,
+                                0
+                            )
+                            countTextView.visibility = View.INVISIBLE
+                        }
+                        4 -> {
+                            nameTextView.text = "완료"
+                            nameTextView.setCompoundDrawablesWithIntrinsicBounds(
+                                R.drawable.ic_check_circle_24px,
+                                0,
+                                0,
+                                0
+                            )
+                            countTextView.visibility = View.INVISIBLE
+                        }
+                        5 -> {
+                            nameTextView.text = "작업들"
+                            nameTextView.setCompoundDrawablesWithIntrinsicBounds(
+                                R.drawable.ic_task_24px,
+                                0,
+                                0,
+                                0
+                            )
+                            countTextView.visibility = View.INVISIBLE
                         }
                         else -> {
                             if (BuildConfig.DEBUG) {
@@ -93,6 +123,6 @@ class ProjectHeaderAdapter(private val onClick: (Int) -> Unit) :
     }
 
     private companion object {
-        private const val HEADER_ITEM_COUNT = 4
+        private const val HEADER_ITEM_COUNT = 7
     }
 }
