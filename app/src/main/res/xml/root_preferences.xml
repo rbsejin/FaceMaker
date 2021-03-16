@@ -24,7 +24,8 @@
 
         <SwitchPreferenceCompat
             app:key="important_task_move_top"
-            app:title="별표 표시된 작업을 상단으로 이동" />
+            app:title="별표 표시된 작업을 상단으로 이동"
+            app:isPreferenceVisible="false"/>
 
         <SwitchPreferenceCompat
             app:key="completion_sound"
