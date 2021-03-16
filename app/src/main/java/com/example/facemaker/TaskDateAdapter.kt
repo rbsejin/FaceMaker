@@ -9,7 +9,6 @@ import android.os.Build
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.PopupMenu
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
@@ -367,8 +366,6 @@ class TaskDateAdapter(private var currentTask: Task) :
             "yyyy년 MM월 dd일 EE요일 a hh시 mm분",
             Locale.getDefault()
         )
-        val dateTimeMessage = simpleDateFormat.format(calendar.time)
-        Toast.makeText(parentContext, dateTimeMessage, Toast.LENGTH_SHORT).show()
 
         // Preference 에 설정한 값 저장
         val editor = parentContext.getSharedPreferences(
