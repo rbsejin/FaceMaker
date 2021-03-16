@@ -1,29 +1,15 @@
 package com.example.facemaker
 
 import android.app.Activity
-<<<<<<< HEAD
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-=======
-import android.app.AlertDialog
-import android.content.Intent
-import android.os.Build
-import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
->>>>>>> 13f26af9cd0d3cd2bd13ff7d4060cef62d62378e
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.ConcatAdapter
-<<<<<<< HEAD
-=======
-import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.RecyclerView
->>>>>>> 13f26af9cd0d3cd2bd13ff7d4060cef62d62378e
 import com.example.facemaker.data.Task
 import com.example.facemaker.databinding.ActivityTaskListBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -181,7 +167,6 @@ class MyDayActivity : AppCompatActivity() {
         }
 
         // delete to swipe
-<<<<<<< HEAD
 //        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
 //            ItemTouchHelper.UP or ItemTouchHelper.DOWN,
 //            ItemTouchHelper.LEFT
@@ -307,133 +292,6 @@ class MyDayActivity : AppCompatActivity() {
 //        }).apply {
 //            attachToRecyclerView(binding.taskRecyclerView)
 //        }
-=======
-        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
-            ItemTouchHelper.UP or ItemTouchHelper.DOWN,
-            ItemTouchHelper.LEFT
-        ) {
-            private var dragFrom: Int = -1
-            private var dragTo: Int = -1
-
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
-                val fromPosition = viewHolder.adapterPosition
-                val toPosition = target.adapterPosition
-
-                if (!taskAdapter.isItemMoved(fromPosition, toPosition)) {
-                    return false
-                }
-
-                taskAdapter.notifyItemMoved(fromPosition, toPosition)
-
-                if (dragFrom == -1) {
-                    dragFrom = fromPosition
-                }
-
-                dragTo = toPosition
-
-                return true
-            }
-
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                when (direction) {
-                    ItemTouchHelper.LEFT -> {
-                        when (viewHolder) {
-                            is TaskAdapter.ViewHolder -> {
-                                val task: Task = taskAdapter.itemList[viewHolder.adapterPosition]
-                                database.child("tasks").child(task.id).removeValue()
-                                taskAdapter.notifyDataSetChanged()
-                            }
-                            is DoneTaskAdapter.ViewHolder -> {
-                                val task: Task =
-                                    (doneTaskAdapter.itemList[viewHolder.adapterPosition] as DataItem.ChildItem).task
-                                database.child("tasks").child(task.id).removeValue()
-                                doneTaskAdapter.notifyDataSetChanged()
-                            }
-                            is DoneTaskAdapter.HeaderViewHolder -> {
-                                // 아무것도 안함
-                            }
-                            else -> {
-                            }
-                        }
-                    }
-                }
-            }
-
-            override fun getSwipeDirs(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder
-            ): Int {
-                if (viewHolder is DoneTaskAdapter.HeaderViewHolder) {
-                    return 0
-                }
-
-                return super.getSwipeDirs(recyclerView, viewHolder)
-            }
-
-            override fun getDragDirs(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder
-            ): Int {
-                if (viewHolder is DoneTaskAdapter.HeaderViewHolder) {
-                    return 0
-                }
-
-                if (viewHolder is DoneTaskAdapter.ViewHolder) {
-                    return ItemTouchHelper.LEFT
-                }
-
-                return super.getDragDirs(recyclerView, viewHolder)
-            }
-
-            @RequiresApi(Build.VERSION_CODES.N)
-            override fun clearView(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder
-            ) {
-                super.clearView(recyclerView, viewHolder)
-
-                if (dragFrom != -1 && dragTo != -1 && dragFrom != dragTo) {
-                    // tasks: fromPosition ~ toPosition update
-                    val fromItem = taskAdapter.itemList[dragFrom]
-                    val toItem = taskAdapter.itemList[dragTo]
-
-                    val from = fromItem.index
-                    val to = toItem.index
-
-                    if (from < to) {
-                        for (i in from until to) {
-                            Collections.swap(tasks, i, i + 1)
-                        }
-                    } else {
-                        for (i in from downTo to + 1) {
-                            Collections.swap(tasks, i, i - 1)
-                        }
-                    }
-
-                    val begin = kotlin.math.min(from, to)
-                    val end = kotlin.math.max(from, to)
-
-                    for (i in begin..end) {
-                        tasks[i].index = i
-                    }
-
-                    val childUpdates =
-                        tasks.subList(begin, end + 1).map { "tasks/${it.id}/index" to it.index }
-                            .toMap()
-                    database.updateChildren(childUpdates)
-                }
-
-                dragFrom = -1
-                dragTo = -1
-            }
-        }).apply {
-            attachToRecyclerView(binding.taskRecyclerView)
-        }
->>>>>>> 13f26af9cd0d3cd2bd13ff7d4060cef62d62378e
     }
 
     /* Opens TaskDetailActivity when RecyclerView item is clicked. */
@@ -456,7 +314,6 @@ class MyDayActivity : AppCompatActivity() {
         }
     }
 
-<<<<<<< HEAD
 //    override fun onCreateOptionsMenu(menu: Menu): Boolean {
 //        menuInflater.inflate(R.menu.project_option_menu, menu)
 //        return true
@@ -480,31 +337,6 @@ class MyDayActivity : AppCompatActivity() {
 //            else -> super.onOptionsItemSelected(item)
 //        }
 //    }
-=======
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.project_option_menu, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.project_delete_item -> {
-                val builder: AlertDialog.Builder = AlertDialog.Builder(this)
-                builder.setMessage("삭제하시겠습니까?")
-                    .setTitle("계속할까요?")
-                    .setNegativeButton("취소", null)
-                    .setPositiveButton("삭제") { _, _ ->
-
-                        finish()
-                    }
-                val dialog: AlertDialog = builder.create()
-                dialog.show()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
->>>>>>> 13f26af9cd0d3cd2bd13ff7d4060cef62d62378e
 
 //    private fun addTask(taskName: String): Boolean {
 //        if (taskName.isEmpty()) {
