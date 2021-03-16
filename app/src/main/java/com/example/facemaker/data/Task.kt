@@ -19,7 +19,7 @@ data class Task(
     var myDay: Date? = null
     var completionDateTime: Date? = null
     var isImportant: Boolean = false
-    val stepList = mutableListOf<String>() // 단계 리스트
+    val stepList = mutableListOf<Step>() // 단계 리스트
     val fileList = mutableListOf<String>() // 첨부 파일 리스트
     var note: String = "" // 메모,
     var index: Int = -1

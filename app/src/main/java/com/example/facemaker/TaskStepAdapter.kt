@@ -3,9 +3,12 @@ package com.example.facemaker
 import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.widget.ToggleButton
 import androidx.recyclerview.widget.RecyclerView
+import com.example.facemaker.data.Step
 import com.example.facemaker.data.Task
 import com.example.facemaker.databinding.StepItemBinding
 import com.google.firebase.database.ktx.database
@@ -16,9 +19,13 @@ class TaskStepAdapter(
 ) :
     RecyclerView.Adapter<TaskStepAdapter.ViewHolder>() {
     private lateinit var parentContext: Context
-    private val stepList: MutableList<String> = currentTask.stepList
+    private val stepList: MutableList<Step> = currentTask.stepList
 
     class ViewHolder(val binding: StepItemBinding) : RecyclerView.ViewHolder(binding.root) {
+
+        fun getCheckButton() : ToggleButton {
+            return binding.itemIcon
+        }
 
         companion object {
             fun from(parent: ViewGroup): ViewHolder {
@@ -35,14 +42,15 @@ class TaskStepAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         if (position == stepList.size) {
+            holder.binding.itemIcon.visibility = View.INVISIBLE
             holder.binding.itemDeleteButton.visibility = RecyclerView.INVISIBLE
-            holder.binding.itemIcon.setImageResource(R.drawable.baseline_add_24)
             holder.binding.itemNameText.hint = "다음단계"
             holder.binding.itemNameText.setText("")
         } else {
+            holder.binding.itemIcon.visibility = View.VISIBLE
+            holder.binding.itemIcon.isChecked = stepList[position].isCompleted
             holder.binding.itemDeleteButton.visibility = RecyclerView.VISIBLE
-            holder.binding.itemIcon.setImageResource(R.drawable.baseline_check_box_outline_blank_24)
-            holder.binding.itemNameText.setText(stepList[position])
+            holder.binding.itemNameText.setText(stepList[position].name)
         }
 
         holder.binding.itemNameText.setOnFocusChangeListener { v, hasFocus ->
@@ -52,7 +60,7 @@ class TaskStepAdapter(
                 if (position == stepList.size) {
                     val text: String = holder.binding.itemNameText.text.toString()
                     if (text.isNotEmpty()) {
-                        stepList.add(text)
+                        stepList.add(Step(text))
                     }
                 } else {
                     val text: String = holder.binding.itemNameText.text.toString()
@@ -60,7 +68,7 @@ class TaskStepAdapter(
                         stepList.removeAt(position)
                         notifyDataSetChanged()
                     } else {
-                        stepList[position] = text
+                        stepList[position] = Step(text)
                     }
                 }
             } else {
@@ -92,6 +100,16 @@ class TaskStepAdapter(
             // 파일 아이템 삭제한다.
             stepList.removeAt(position)
 
+            Firebase.database.reference.child("tasks/${currentTask.id}/stepList").setValue(stepList)
+        }
+
+        // 체크 버튼 클릭했을 때
+        holder.getCheckButton().setOnClickListener {
+            if (position == stepList.size) {
+                return@setOnClickListener
+            }
+
+            stepList[position].isCompleted = !stepList[position].isCompleted
             Firebase.database.reference.child("tasks/${currentTask.id}/stepList").setValue(stepList)
         }
     }
