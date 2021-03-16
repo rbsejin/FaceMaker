@@ -164,63 +164,6 @@ class ProjectHeaderAdapter(val itemList: MutableList<SmartListHeader>, private v
 
     override fun getItemViewType(position: Int): Int {
         return if (position == itemList.size) 1 else 0
-
-    }
-
-    companion object {
-        private var itemCount = 7
-        private var isAllVisible = true
-        private var isImportantVisible = true
-        private var isPlannedVisible = true
-        private var isCompletedVisible = true
-
-        fun setAllVisible(isVisible: Boolean) {
-            if (isAllVisible != isVisible) {
-                if (isVisible) {
-                    ++itemCount
-                } else {
-                    --itemCount
-                }
-            }
-
-            isAllVisible = isVisible
-        }
-
-        fun setImportantVisible(isVisible: Boolean) {
-            if (isImportantVisible != isVisible) {
-                if (isVisible) {
-                    ++itemCount
-                } else {
-                    --itemCount
-                }
-            }
-
-            isImportantVisible = isVisible
-        }
-
-        fun setPlannedVisible(isVisible: Boolean) {
-            if (isPlannedVisible != isVisible) {
-                if (isVisible) {
-                    ++itemCount
-                } else {
-                    --itemCount
-                }
-            }
-
-            isPlannedVisible = isVisible
-        }
-
-        fun setCompletedVisible(isVisible: Boolean) {
-            if (isCompletedVisible != isVisible) {
-                if (isVisible) {
-                    ++itemCount
-                } else {
-                    --itemCount
-                }
-            }
-
-            isCompletedVisible = isVisible
-        }
     }
 }
 

@@ -45,6 +45,7 @@ class TaskListActivity() : AppCompatActivity(),
     private lateinit var projectName: String
 
     private val tasks = mutableListOf<Task>()
+    private var generalMap = mutableMapOf<String, Boolean>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -137,6 +138,28 @@ class TaskListActivity() : AppCompatActivity(),
             }
         }
         database.child("tasks").orderByChild("index").addValueEventListener(projectListener)
+
+
+        val generalListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+
+                snapshot.getValue<Map<String, Boolean>>()?.let {
+                    generalMap = it as MutableMap<String, Boolean>
+                }
+
+                taskAdapter.notifyDataSetChanged()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                if (BuildConfig.DEBUG) {
+                    error("tasks를 DB에서 가져오지 못함")
+                }
+
+                finish()
+            }
+        }
+        database.child("users/${Firebase.auth.currentUser.uid}/general").addValueEventListener(generalListener)
+
 
         /* 이벤트 처리 */
 
@@ -398,7 +421,11 @@ class TaskListActivity() : AppCompatActivity(),
             Calendar.getInstance().time
         )
 
-        tasks.add(0, task)
+        if (generalMap["new_task_add_top"] ?: true) {
+            tasks.add(0, task)
+        } else {
+            tasks.add(tasks.size, task)
+        }
 
         var i = 0
         for (task in tasks) {

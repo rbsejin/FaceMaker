@@ -109,6 +109,7 @@ class SettingsActivity : AppCompatActivity() {
 
     class SettingsFragment : PreferenceFragmentCompat() {
         private var smartListMap = mutableMapOf<String, Boolean>()
+        private var generalMap = mutableMapOf<String, Boolean>()
 
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
@@ -152,6 +153,34 @@ class SettingsActivity : AppCompatActivity() {
                     override fun onCancelled(error: DatabaseError) {
                     }
                 })
+
+            Firebase.database.reference.child("users/${Firebase.auth.currentUser.uid}/general")
+                .addValueEventListener(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        snapshot.getValue<Map<String, Boolean>>()?.let {
+                            smartListMap = it as MutableMap<String, Boolean>
+                        }
+
+                        for (smartList in smartListMap) {
+                            when (smartList.key) {
+                                "new_task_add_top" -> {
+                                    val preference =
+                                        findPreference<SwitchPreferenceCompat>("new_task_add_top")!!
+                                    preference.isChecked = smartListMap["new_task_add_top"] ?: true
+                                }
+                                "important_task_move_top" -> {
+                                    val preference =
+                                        findPreference<SwitchPreferenceCompat>("important_task_move_top")!!
+                                    preference.isChecked =
+                                        smartListMap["important_task_move_top"] ?: true
+                                }
+                            }
+                        }
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                    }
+                })
         }
 
         override fun onPreferenceTreeClick(preference: Preference?): Boolean {
@@ -172,7 +201,6 @@ class SettingsActivity : AppCompatActivity() {
                 }
                 "all" -> {
                     val preference = findPreference<SwitchPreferenceCompat>("all")!!
-                    ProjectHeaderAdapter.setAllVisible(preference.isChecked)
 
                     smartListMap["all"] = preference.isChecked
 
@@ -181,7 +209,6 @@ class SettingsActivity : AppCompatActivity() {
                 }
                 "important" -> {
                     val preference = findPreference<SwitchPreferenceCompat>("important")!!
-                    ProjectHeaderAdapter.setImportantVisible(preference.isChecked)
 
                     smartListMap["important"] = preference.isChecked
 
@@ -190,7 +217,6 @@ class SettingsActivity : AppCompatActivity() {
                 }
                 "planned" -> {
                     val preference = findPreference<SwitchPreferenceCompat>("planned")!!
-                    ProjectHeaderAdapter.setPlannedVisible(preference.isChecked)
 
                     smartListMap["planned"] = preference.isChecked
 
@@ -199,11 +225,27 @@ class SettingsActivity : AppCompatActivity() {
                 }
                 "completed" -> {
                     val preference = findPreference<SwitchPreferenceCompat>("completed")!!
-                    ProjectHeaderAdapter.setCompletedVisible(preference.isChecked)
 
                     smartListMap["completed"] = preference.isChecked
 
                     Firebase.database.reference.child("users/${Firebase.auth.currentUser.uid}/smartList/completed")
+                        .setValue(preference.isChecked)
+                }
+                "new_task_add_top" -> {
+                    val preference = findPreference<SwitchPreferenceCompat>("new_task_add_top")!!
+
+                    generalMap["new_task_add_top"] = preference.isChecked
+
+                    Firebase.database.reference.child("users/${Firebase.auth.currentUser.uid}/general/new_task_add_top")
+                        .setValue(preference.isChecked)
+                }
+                "important_task_move_top" -> {
+                    val preference =
+                        findPreference<SwitchPreferenceCompat>("important_task_move_top")!!
+
+                    generalMap["important_task_move_top"] = preference.isChecked
+
+                    Firebase.database.reference.child("users/${Firebase.auth.currentUser.uid}/general/important_task_move_top")
                         .setValue(preference.isChecked)
                 }
             }
