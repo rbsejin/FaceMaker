@@ -66,11 +66,12 @@ class TaskStepAdapter(
                     val text: String = holder.binding.itemNameText.text.toString()
                     if (text.isEmpty()) {
                         stepList.removeAt(position)
-                        notifyDataSetChanged()
                     } else {
-                        stepList[position] = Step(text)
+                        stepList[position].name = text
                     }
                 }
+
+                Firebase.database.reference.child("tasks/${currentTask.id}/stepList").setValue(stepList)
             } else {
                 Log.d("focus", "$position 포커스 얻음")
             }
