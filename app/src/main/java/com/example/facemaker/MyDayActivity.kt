@@ -156,15 +156,15 @@ class MyDayActivity : AppCompatActivity() {
         }
 
         // 프로젝트 이름을 클릭했을 때 프로젝트를 변경하는 다이얼로그가 열린다.
-        binding.toolbarLayout.setOnClickListener {
-            ProjectDialogFragment(projectName).also { dialog ->
-                dialog.isCancelable = false
-                dialog.show(
-                    supportFragmentManager,
-                    ProjectDialogFragment.UPDATE_PROJECT_NAME_TAG
-                )
-            }
-        }
+//        binding.toolbarLayout.setOnClickListener {
+//            ProjectDialogFragment(projectName).also { dialog ->
+//                dialog.isCancelable = false
+//                dialog.show(
+//                    supportFragmentManager,
+//                    ProjectDialogFragment.UPDATE_PROJECT_NAME_TAG
+//                )
+//            }
+//        }
 
         // delete to swipe
 //        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(

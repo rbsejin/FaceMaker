@@ -1,6 +1,10 @@
 package com.example.facemaker
 
+import android.content.Context
 import android.content.Intent
+import android.media.AudioManager
+import android.media.SoundPool
+import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -45,10 +49,21 @@ class MainActivity : AppCompatActivity() {
         SmartListHeader("tasks", "작업", R.drawable.ic_task_24px)
     )
     private val headerItemList = mutableListOf<SmartListHeader>()
-    private var smartListMap = mutableMapOf<String, Boolean>()
+    var smartListMap = mutableMapOf<String, Boolean>()
+    var generalMap = mutableMapOf<String, Boolean>()
+
+    // SoundManager
+    lateinit var soundPool: SoundPool
+    lateinit var soundManager: SoundManager
+
+    companion object {
+        lateinit var mContext: Context
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        mContext = this
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         database = Firebase.database.reference
@@ -57,7 +72,18 @@ class MainActivity : AppCompatActivity() {
         // 프로필 정보 업데이트
         updateProfileUI()
 
-        // 스마트 리스트 필터
+        // 소리 재생
+
+        //롤리팝 이상 버전일 경우
+        soundPool = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            SoundPool.Builder().build()
+        } else {
+            SoundPool(1, AudioManager.STREAM_MUSIC, 0)
+        }
+        soundManager = SoundManager (this, soundPool)
+        soundManager.addSound(0, R.raw.sound01)
+
+        // 스마트 리스트 설정
         Firebase.database.reference.child("users/${Firebase.auth.currentUser.uid}/smartList")
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -81,6 +107,26 @@ class MainActivity : AppCompatActivity() {
                 }
 
             })
+
+        // 일반 설정
+        val generalListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+
+                snapshot.getValue<Map<String, Boolean>>()?.let {
+                    generalMap = it as MutableMap<String, Boolean>
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                if (BuildConfig.DEBUG) {
+                    error("tasks를 DB에서 가져오지 못함")
+                }
+
+                finish()
+            }
+        }
+        database.child("users/${Firebase.auth.currentUser.uid}/general")
+            .addValueEventListener(generalListener)
 
         val recyclerView = findViewById<RecyclerView>(R.id.project_list_recycler_view)
         headerAdapter = ProjectHeaderAdapter(headerItemList) { type -> headItemOnClick(type) }
@@ -244,5 +290,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         headerAdapter.notifyDataSetChanged()
+    }
+
+    fun playSound(index: Int) {
+        if (generalMap["completion_sound"] != false)
+        soundManager.playSound(index)
     }
 }

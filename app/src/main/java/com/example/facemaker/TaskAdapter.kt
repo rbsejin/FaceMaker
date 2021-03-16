@@ -52,6 +52,10 @@ class TaskAdapter(
         holder.getCheckButton().setOnClickListener {
             if (task.completionDateTime == null) {
                 task.completionDateTime = Calendar.getInstance().time
+
+                // 소리 재생
+                val mainActivity: MainActivity = MainActivity.mContext as MainActivity
+                mainActivity.playSound(0)
             } else {
                 task.completionDateTime = null
             }

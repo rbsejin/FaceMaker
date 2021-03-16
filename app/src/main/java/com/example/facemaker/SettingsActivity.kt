@@ -248,6 +248,15 @@ class SettingsActivity : AppCompatActivity() {
                     Firebase.database.reference.child("users/${Firebase.auth.currentUser.uid}/general/important_task_move_top")
                         .setValue(preference.isChecked)
                 }
+                "completion_sound" -> {
+                    val preference =
+                        findPreference<SwitchPreferenceCompat>("completion_sound")!!
+
+                    generalMap["completion_sound"] = preference.isChecked
+
+                    Firebase.database.reference.child("users/${Firebase.auth.currentUser.uid}/general/completion_sound")
+                        .setValue(preference.isChecked)
+                }
             }
 
             return super.onPreferenceTreeClick(preference)
