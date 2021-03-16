@@ -1,5 +1,6 @@
 package com.example.facemaker
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Build
@@ -7,7 +8,6 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -15,7 +15,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.example.facemaker.data.Project
 import com.example.facemaker.data.Task
 import com.example.facemaker.databinding.ActivityTaskListBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -27,21 +26,17 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import java.text.SimpleDateFormat
 import java.util.*
 
-const val TASK_ID = "task id"
-
-const val taskDetailRequestCode = 1
-
-class TaskListActivity() : AppCompatActivity(),
-    ProjectDialogFragment.ProjectCreationDialogListener {
+class MyDayActivity : AppCompatActivity() {
+    private val title = "나의 하루"
 
     private lateinit var binding: ActivityTaskListBinding
     private lateinit var database: DatabaseReference
     private lateinit var auth: FirebaseAuth
     private lateinit var taskAdapter: TaskAdapter
     private lateinit var doneTaskAdapter: DoneTaskAdapter
-    private lateinit var projectId: String
     private lateinit var projectName: String
 
     private val tasks = mutableListOf<Task>()
@@ -53,43 +48,17 @@ class TaskListActivity() : AppCompatActivity(),
         database = Firebase.database.reference
         auth = Firebase.auth
 
-        val bundle: Bundle? = intent.extras
+        // 나의 하루에서 작업 추가 미구현으로 버튼 숨김
+        binding.fab.visibility = View.INVISIBLE
 
-        val isAddingProject = bundle?.getBoolean(ADD_PROJECT) ?: false
-        if (isAddingProject) {
-            // 프로젝트 생성했을 때
-            val key: String? = database.child("projects").push().key
-            if (key == null) {
-                if (BuildConfig.DEBUG) {
-                    error("key must not be null")
-                }
-                return
-            }
+        // 배경색 지정
+        binding.root.setBackgroundColor(resources.getColor(R.color.my_day_background_color))
+        binding.toolbarLayout.setContentScrimColor(resources.getColor(R.color.my_day_background_color))
+        binding.toolbarLayout.setBackgroundColor(resources.getColor(R.color.my_day_background_color))
 
-            val project = Project(
-                key,
-                auth.currentUser.uid,
-                getString(R.string.none_name_project),
-                Calendar.getInstance().time
-            )
-            database.child("projects").child(key).setValue(project)
-
-            // 프로젝트 생성 다이얼로그
-            ProjectDialogFragment("").also { dialog ->
-                dialog.isCancelable = false
-                dialog.show(supportFragmentManager, ProjectDialogFragment.NEW_PROJECT_TAG)
-            }
-
-            projectId = key
-            projectName = project.name
-        } else {
-            // 프로젝트를 열었을 때
-            projectId = bundle?.getString(PROJECT_ID) ?: return
-            projectName = bundle?.getString(PROJECT_NAME) ?: return
-        }
 
         // DB에서 현재 프로젝트 데이터를 가져온다.
-        binding.toolbarLayout.title = projectName
+        binding.toolbarLayout.title = title
         setSupportActionBar(binding.toolbar)
 
         taskAdapter = TaskAdapter(TaskListener { task -> adapterOnClick(task) })
@@ -101,14 +70,23 @@ class TaskListActivity() : AppCompatActivity(),
             override fun onDataChange(snapshot: DataSnapshot) {
                 tasks.clear()
 
+                val today = Calendar.getInstance().time
+
                 for (taskSnapshot in snapshot.children) {
                     val task: Task = taskSnapshot.getValue<Task>() ?: continue
-                    if (task.projectId == projectId) {
+
+                    if (task.myDay == null) {
+                        continue
+                    }
+
+                    val dateFormat = SimpleDateFormat("Y년 M월 d일 (EE)")
+
+                    if (dateFormat.format(task.myDay) == dateFormat.format(today)) {
                         tasks.add(task)
                     }
                 }
 
-                tasks.sortBy { task -> task.index }
+                tasks.sortBy { task -> task.myDay }
 
                 val undoneTaskList = mutableListOf<Task>()
                 val doneTaskList = mutableListOf<Task>()
@@ -136,7 +114,7 @@ class TaskListActivity() : AppCompatActivity(),
                 finish()
             }
         }
-        database.child("tasks").orderByChild("index").addValueEventListener(projectListener)
+        database.child("tasks").orderByChild("myDay").addValueEventListener(projectListener)
 
         /* 이벤트 처리 */
 
@@ -153,23 +131,23 @@ class TaskListActivity() : AppCompatActivity(),
         }
 
         // 입력창에서 엔터를 입력했을 때 작업 추가가 되도록 처리
-        binding.addTaskText.setOnEditorActionListener { v, actionId, event ->
-            when (actionId) {
-                EditorInfo.IME_ACTION_DONE -> {
-                    addTask(binding.addTaskText.text.toString())
-                    binding.addTaskText.setText("")
-                    true
-                }
-                else -> false
-            }
+//        binding.addTaskText.setOnEditorActionListener { v, actionId, event ->
+//            when (actionId) {
+//                EditorInfo.IME_ACTION_DONE -> {
+//                    addTask(binding.addTaskText.text.toString())
+//                    binding.addTaskText.setText("")
+//                    true
+//                }
+//                else -> false
+//            }
+//
+//            true
+//        }
 
-            true
-        }
-
-        binding.addTaskButton.setOnClickListener {
-            addTask(binding.addTaskText.text.toString())
-            binding.addTaskText.setText("")
-        }
+//        binding.addTaskButton.setOnClickListener {
+//            addTask(binding.addTaskText.text.toString())
+//            binding.addTaskText.setText("")
+//        }
 
         // 플로팅 버튼을 클릭했을 때 입력창과 키보드를 띄운다.
         binding.fab.setOnClickListener {
@@ -329,17 +307,17 @@ class TaskListActivity() : AppCompatActivity(),
         startActivityForResult(intent, taskDetailRequestCode)
     }
 
-//    @RequiresApi(Build.VERSION_CODES.N)
-//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-//        super.onActivityResult(requestCode, resultCode, data)
-//
-//        if (requestCode == taskDetailRequestCode && resultCode == Activity.RESULT_OK) {
-//            data?.let { data ->
-//                val id = data.getIntExtra(REMOVED_TASK_ID, 0)
-//                database.child("tasks/$id").removeValue()
-//            }
-//        }
-//    }
+    @RequiresApi(Build.VERSION_CODES.N)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == taskDetailRequestCode && resultCode == Activity.RESULT_OK) {
+            data?.let { data ->
+                val id = data.getIntExtra(REMOVED_TASK_ID, 0)
+                database.child("tasks/$id").removeValue()
+            }
+        }
+    }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.project_option_menu, menu)
@@ -354,7 +332,7 @@ class TaskListActivity() : AppCompatActivity(),
                     .setTitle("계속할까요?")
                     .setNegativeButton("취소", null)
                     .setPositiveButton("삭제") { _, _ ->
-                        removeCurrentProject()
+
                         finish()
                     }
                 val dialog: AlertDialog = builder.create()
@@ -365,52 +343,29 @@ class TaskListActivity() : AppCompatActivity(),
         }
     }
 
-    override fun onDialogPositiveClick(projectName: String) {
-        binding.toolbarLayout.title = projectName
-        database.child("projects/${projectId}/name").setValue(projectName)
-    }
-
-    override fun onDialogNegativeClick(isDeleted: Boolean) {
-        if (isDeleted) {
-            removeCurrentProject()
-            finish()
-        }
-    }
-
-    private fun removeCurrentProject() {
-        database.child("projects/${projectId}").removeValue()
-
-        val childUpdates = tasks.map { "tasks/${it.id}" to null }.toMap()
-        database.updateChildren(childUpdates)
-    }
-
-    private fun addTask(taskName: String): Boolean {
-        if (taskName.isEmpty()) {
-            return false
-        }
-
-        val key: String = database.child("tasks").push().key ?: return false
-        val task = Task(
-            key,
-            projectId,
-            auth.currentUser.uid,
-            taskName,
-            Calendar.getInstance().time
-        )
-
-        tasks.add(0, task)
-
-        var i = 0
-        for (task in tasks) {
-            task.index = i++
-        }
-
-        val taskMap = tasks.map { "tasks/${it.id}" to it }.toMap()
-        database.updateChildren(taskMap)
-        return true
-    }
-
-    companion object {
-        const val DEFAULT_PROJECT_NAME = "제목 없는 목록"
-    }
+//    private fun addTask(taskName: String): Boolean {
+//        if (taskName.isEmpty()) {
+//            return false
+//        }
+//
+//        val key: String = database.child("tasks").push().key ?: return false
+//        val task = Task(
+//            key,
+//            projectId,
+//            auth.currentUser.uid,
+//            taskName,
+//            Calendar.getInstance().time
+//        )
+//
+//        tasks.add(0, task)
+//
+//        var i = 0
+//        for (task in tasks) {
+//            task.index = i++
+//        }
+//
+//        val taskMap = tasks.map { "tasks/${it.id}" to it }.toMap()
+//        database.updateChildren(taskMap)
+//        return true
+//    }
 }

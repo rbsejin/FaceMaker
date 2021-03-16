@@ -215,7 +215,7 @@ class PlannedActivity : AppCompatActivity() {
 
         if (requestCode == taskDetailRequestCode && resultCode == Activity.RESULT_OK) {
             data?.let { data ->
-                val id = data.getIntExtra(REMOVED_PROJECT_ID, 0)
+                val id = data.getIntExtra(REMOVED_TASK_ID, 0)
                 database.child("tasks/$id").removeValue()
             }
         }
