@@ -33,6 +33,19 @@ class MainActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
 
     private val projects = mutableListOf<Project>()
+    private lateinit var headerAdapter: ProjectHeaderAdapter
+    private lateinit var projectAdapter: ProjectAdapter
+
+    private val smartItemList = mutableListOf<SmartListHeader>(
+        SmartListHeader("myDay", "오늘 할 일", R.drawable.ic_wb_sunny_24px),
+        SmartListHeader("important", "중요", R.drawable.ic_star_border_purple500_24px),
+        SmartListHeader("planned", "계획된 일정", R.drawable.ic_calendar_today_24px),
+        SmartListHeader("all", "모두", R.drawable.ic_360_24px),
+        SmartListHeader("completed", "완료", R.drawable.ic_check_circle_24px),
+        SmartListHeader("tasks", "작업", R.drawable.ic_task_24px)
+    )
+    private val headerItemList = mutableListOf<SmartListHeader>()
+    private var smartListMap = mutableMapOf<String, Boolean>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,9 +57,34 @@ class MainActivity : AppCompatActivity() {
         // 프로필 정보 업데이트
         updateProfileUI()
 
+        // 스마트 리스트 필터
+        Firebase.database.reference.child("users/${Firebase.auth.currentUser.uid}/smartList")
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+
+                    snapshot.getValue<Map<String, Boolean>>()?.let {
+                        smartListMap = it as MutableMap<String, Boolean>
+                    }
+
+                    for (smartList in smartItemList) {
+                        if (smartListMap.contains(smartList.key)) {
+                            smartList.isVisible = smartListMap[smartList.key] ?: true
+                        }
+                    }
+
+                    headerItemList.clear()
+                    headerItemList.addAll(smartItemList.filter { it.isVisible })
+                    headerAdapter.notifyDataSetChanged()
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                }
+
+            })
+
         val recyclerView = findViewById<RecyclerView>(R.id.project_list_recycler_view)
-        val headerAdapter = ProjectHeaderAdapter { type -> headItemOnClick(type) }
-        val projectAdapter = ProjectAdapter(projects) { project -> adapterOnClick(project) }
+        headerAdapter = ProjectHeaderAdapter(headerItemList) { type -> headItemOnClick(type) }
+        projectAdapter = ProjectAdapter(projects) { project -> adapterOnClick(project) }
         recyclerView.adapter = ConcatAdapter(headerAdapter, projectAdapter)
 
         val projectListener = object : ValueEventListener {
@@ -146,33 +184,35 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun headItemOnClick(type: Int) {
-        when (type) {
-            0 -> {
+
+
+        when (headerItemList[type].key) {
+            "myDay" -> {
                 // 오늘 할 일
                 val intent = Intent(this, MyDayActivity()::class.java)
                 startActivity(intent)
             }
-            1 -> {
+            "important" -> {
                 // 중요
                 val intent = Intent(this, ImportantTaskListActivity()::class.java)
                 startActivity(intent)
             }
-            2 -> {
+            "planned" -> {
                 // 계획된 일정
                 val intent = Intent(this, PlannedActivity()::class.java)
                 startActivity(intent)
             }
-            3 -> {
+            "all" -> {
                 // 모두
                 val intent = Intent(this, AllTaskListActivity()::class.java)
                 startActivity(intent)
             }
-            4 -> {
+            "completed" -> {
                 // 완료
                 val intent = Intent(this, CompletedActivity()::class.java)
                 startActivity(intent)
             }
-            5 -> {
+            "tasks" -> {
                 // 작업들
                 val intent = Intent(this, EtcTaskListActivity()::class.java)
                 startActivity(intent)
@@ -184,5 +224,25 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
 
         updateProfileUI()
+
+        updateSmartList()
+
+        headerItemList.clear()
+        headerItemList.addAll(smartItemList.filter {
+            !smartListMap.containsKey(it.key) || smartListMap[it.key] == true
+        })
+
+        headerAdapter.notifyDataSetChanged()
+        projectAdapter.notifyDataSetChanged()
+    }
+
+    fun updateSmartList() {
+        for (item in smartItemList.filter { it.isVisible }) {
+            if (!headerItemList.contains(item)) {
+                headerItemList.add(item)
+            }
+        }
+
+        headerAdapter.notifyDataSetChanged()
     }
 }

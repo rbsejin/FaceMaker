@@ -21,7 +21,6 @@ class AllTaskListActivity : AppCompatActivity() {
     private lateinit var binding: ActivityTaskListBinding
     private lateinit var database: DatabaseReference
     private lateinit var groupByAdapter: GroupByAdapter
-    private lateinit var headerAdapter: PlannedHeaderAdapter
     private val tasks = mutableListOf<Task>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,21 +49,6 @@ class AllTaskListActivity : AppCompatActivity() {
         val taskListListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 tasks.clear()
-
-                // filter
-                val filterSnapshot =
-                    snapshot.child("users/${Firebase.auth.currentUser.uid}/planned/filter")
-
-                val day = (60 * 60 * 24 * 1000)
-                val week = 7
-
-                val filter: (Task) -> Boolean
-
-                // completion filter
-                val completionFilterSnapshot =
-                    snapshot.child("users/${Firebase.auth.currentUser.uid}/planned/completionFilter")
-
-                groupByAdapter.completionFilter = completionFilterSnapshot.getValue<Boolean>() ?: false
 
                 // tasks
                 val tasksSnapshot = snapshot.child("tasks")

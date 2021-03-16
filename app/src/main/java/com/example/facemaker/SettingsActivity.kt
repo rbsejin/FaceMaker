@@ -6,11 +6,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager
+import androidx.preference.SwitchPreferenceCompat
 import com.example.facemaker.game.GameActivity
 import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
@@ -40,7 +44,7 @@ class SettingsActivity : AppCompatActivity() {
             Timber.i("값 변경 감지 Preference의 key: $key")
 
             when (key) {
-                
+
             }
         }
     }
@@ -95,7 +99,6 @@ class SettingsActivity : AppCompatActivity() {
         AuthUI.getInstance()
             .delete(this)
             .addOnCompleteListener {
-                startActivity(Intent(this, FirebaseUIActivity()::class.java))
                 finish()
             }
     }
@@ -105,12 +108,50 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     class SettingsFragment : PreferenceFragmentCompat() {
+        private var smartListMap = mutableMapOf<String, Boolean>()
+
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
 
             val account: Preference = findPreference<Preference>("account_info") ?: return
             account.title = Firebase.auth.currentUser.displayName
             account.summary = Firebase.auth.currentUser.email
+
+            Firebase.database.reference.child("users/${Firebase.auth.currentUser.uid}/smartList")
+                .addValueEventListener(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        snapshot.getValue<Map<String, Boolean>>()?.let {
+                            smartListMap = it as MutableMap<String, Boolean>
+                        }
+
+                        for (smartList in smartListMap) {
+                            when (smartList.key) {
+                                "all" -> {
+                                    val preference = findPreference<SwitchPreferenceCompat>("all")!!
+                                    preference.isChecked = smartListMap["all"] ?: true
+                                }
+                                "important" -> {
+                                    val preference =
+                                        findPreference<SwitchPreferenceCompat>("important")!!
+                                    preference.isChecked = smartListMap["important"] ?: true
+                                }
+                                "planned" -> {
+                                    val preference =
+                                        findPreference<SwitchPreferenceCompat>("planned")!!
+                                    preference.isChecked = smartListMap["planned"] ?: true
+                                }
+                                "completed" -> {
+                                    val preference =
+                                        findPreference<SwitchPreferenceCompat>("completed")!!
+                                    preference.isChecked = smartListMap["completed"] ?: true
+                                }
+                            }
+                        }
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                    }
+                })
         }
 
         override fun onPreferenceTreeClick(preference: Preference?): Boolean {
@@ -128,6 +169,42 @@ class SettingsActivity : AppCompatActivity() {
                 }
                 "game" -> {
                     settingActivity.playGame()
+                }
+                "all" -> {
+                    val preference = findPreference<SwitchPreferenceCompat>("all")!!
+                    ProjectHeaderAdapter.setAllVisible(preference.isChecked)
+
+                    smartListMap["all"] = preference.isChecked
+
+                    Firebase.database.reference.child("users/${Firebase.auth.currentUser.uid}/smartList/all")
+                        .setValue(preference.isChecked)
+                }
+                "important" -> {
+                    val preference = findPreference<SwitchPreferenceCompat>("important")!!
+                    ProjectHeaderAdapter.setImportantVisible(preference.isChecked)
+
+                    smartListMap["important"] = preference.isChecked
+
+                    Firebase.database.reference.child("users/${Firebase.auth.currentUser.uid}/smartList/important")
+                        .setValue(preference.isChecked)
+                }
+                "planned" -> {
+                    val preference = findPreference<SwitchPreferenceCompat>("planned")!!
+                    ProjectHeaderAdapter.setPlannedVisible(preference.isChecked)
+
+                    smartListMap["planned"] = preference.isChecked
+
+                    Firebase.database.reference.child("users/${Firebase.auth.currentUser.uid}/smartList/planned")
+                        .setValue(preference.isChecked)
+                }
+                "completed" -> {
+                    val preference = findPreference<SwitchPreferenceCompat>("completed")!!
+                    ProjectHeaderAdapter.setCompletedVisible(preference.isChecked)
+
+                    smartListMap["completed"] = preference.isChecked
+
+                    Firebase.database.reference.child("users/${Firebase.auth.currentUser.uid}/smartList/completed")
+                        .setValue(preference.isChecked)
                 }
             }
 

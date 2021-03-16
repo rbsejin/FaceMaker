@@ -40,7 +40,7 @@ class CompletedActivity : AppCompatActivity() {
 //        binding.toolbarLayout.setExpandedTitleColor(resources.getColor(R.color.important_task_list_title_color))
 
         setSupportActionBar(binding.toolbar)
-        binding.toolbarLayout.title = getString(R.string.all)
+        binding.toolbarLayout.title = getString(R.string.completion)
 
         groupByAdapter = GroupByAdapter(TaskListener { task -> adapterOnClick(task) })
         binding.taskRecyclerView.adapter = groupByAdapter

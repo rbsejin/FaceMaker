@@ -62,8 +62,9 @@
 <!--        <SwitchPreferenceCompat-->
 <!--            app:title="나에게 할당됨" />-->
 
-<!--        <SwitchPreferenceCompat-->
-<!--            app:title="완료됨" />-->
+        <SwitchPreferenceCompat
+            android:key="completed"
+            app:title="완료" />
 
 <!--        <SwitchPreferenceCompat-->
 <!--            app:title="빈 스마트 목록 자동 숨김" />-->

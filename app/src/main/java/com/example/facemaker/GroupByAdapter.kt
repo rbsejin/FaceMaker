@@ -164,11 +164,20 @@ class GroupByAdapter(
             for (i in 0 until list.size) {
                 val task = list[i]
 
+                if (task.projectId == "etc_tasks") {
+                    continue
+                }
+
                 // 기간 해더 생성 및 추가
                 var headerItem: DataItem.HeaderItem? = null
 
                 if (i == 0 || (task.projectId) != list[i - 1].projectId) {
-                    val project = projectMap[task.projectId] ?: return@addOnSuccessListener
+                    val project = projectMap[task.projectId]
+                    if (project == null) {
+                        assert(false)
+                        continue
+                    }
+
                     val headerName = project.name
                     val headerItem = DataItem.HeaderItem(Header(true, headerName, 0))
                     itemList.add(headerItem)
