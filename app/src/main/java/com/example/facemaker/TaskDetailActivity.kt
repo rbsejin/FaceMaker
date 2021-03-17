@@ -21,6 +21,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.ConcatAdapter
 import com.example.facemaker.data.Task
 import com.example.facemaker.databinding.ActivityTaskDetailBinding
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -192,14 +193,33 @@ class TaskDetailActivity : AppCompatActivity() {
                     if (resultCode == RESULT_OK) {
                         var dataUri = data?.data
 
-                        // 리사이클러뷰 아이템에 추가
-                        val taskFileAdapter: TaskFileAdapter =
-                            (binding.taskDetailRecyclerView.adapter as ConcatAdapter).adapters[2] as TaskFileAdapter
+//                        // 리사이클러뷰 아이템에 추가
+//                        val taskFileAdapter: TaskFileAdapter =
+//                            (binding.taskDetailRecyclerView.adapter as ConcatAdapter).adapters[2] as TaskFileAdapter
+//
+//                        val filepath = dataUri.toString()
+//
+//                        taskFileAdapter.fileList.add(filepath)
+//                        taskFileAdapter.notifyDataSetChanged()
 
-                        val filepath = dataUri.toString()
+                        // upload
+                        val timeStamp =
+                            SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().time)
+                        var imageFileName = "IMAGE_" + timeStamp + "_.png"
 
-                        taskFileAdapter.fileList.add(filepath)
-                        taskFileAdapter.notifyDataSetChanged()
+                        val storageRef = Firebase.storage.reference.child("${Firebase.auth.currentUser.uid}/images")
+                            .child(imageFileName)
+
+                        storageRef.putFile(dataUri!!).addOnSuccessListener {
+                            Toast.makeText(this, "파일이 업로드되었습니다.", Toast.LENGTH_SHORT).show()
+
+                            // 리사이클러뷰 아이템에 추가
+                            val taskFileAdapter: TaskFileAdapter =
+                                (binding.taskDetailRecyclerView.adapter as ConcatAdapter).adapters[2] as TaskFileAdapter
+
+                            taskFileAdapter.fileList.add(imageFileName)
+                            taskFileAdapter.notifyDataSetChanged()
+                        }
                     }
                 }
             }
@@ -304,25 +324,23 @@ class TaskDetailActivity : AppCompatActivity() {
             Log.e("waring", "Captured Saved")
             Toast.makeText(this, "Capture Saved ", Toast.LENGTH_SHORT).show()
 
-            val storageRef = Firebase.storage.reference
 
+            var fileUri = Uri.fromFile(file)
 
-            var fileUri = Uri.fromFile(File("path/to/images/rivers.jpg"))
-            val riversRef = storageRef.child("images/${fileUri.lastPathSegment}")
-            val uploadTask = riversRef.putFile(fileUri)
+            val storageRef = Firebase.storage.reference.child("${Firebase.auth.currentUser.uid}/images")
+                .child(filename)
 
-            uploadTask.addOnFailureListener {
+            storageRef.putFile(fileUri).addOnSuccessListener {
+                Toast.makeText(this, "파일이 업로드되었습니다.", Toast.LENGTH_SHORT).show()
 
-            }.addOnSuccessListener { taskSnapshot ->
-                
+                // 리사이클러뷰 아이템에 추가
+                val taskFileAdapter: TaskFileAdapter =
+                    (binding.taskDetailRecyclerView.adapter as ConcatAdapter).adapters[2] as TaskFileAdapter
+
+                taskFileAdapter.fileList.add(filename)
+                taskFileAdapter.notifyDataSetChanged()
             }
 
-            // 리사이클러뷰 아이템에 추가
-            val taskFileAdapter: TaskFileAdapter =
-                (binding.taskDetailRecyclerView.adapter as ConcatAdapter).adapters[2] as TaskFileAdapter
-
-            taskFileAdapter.fileList.add("${storageDir.path}/$filename")
-            taskFileAdapter.notifyDataSetChanged()
 
         } catch (e: java.lang.Exception) {
             Log.w("waring", "Capture Saving Error!", e)
@@ -343,22 +361,28 @@ class TaskDetailActivity : AppCompatActivity() {
     }
 
     private fun addFileIntent() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-            != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-                REQUEST_TAKE_FILE
-            )
-            return
-        }
+//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+//            != PackageManager.PERMISSION_GRANTED
+//        ) {
+//            ActivityCompat.requestPermissions(
+//                this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+//                REQUEST_TAKE_FILE
+//            )
+//            return
+//        }
 
-        Intent(Intent.ACTION_VIEW)?.also {
-            var intent = Intent(Intent.ACTION_PICK)
-            intent.data = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-            intent.type = "image/*"
-            startActivityForResult(intent, REQUEST_TAKE_FILE)
-        }
+//        Intent(Intent.ACTION_VIEW)?.also {
+//            var intent = Intent(Intent.ACTION_PICK)
+//            intent.data = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+//            intent.type = "image/*"
+//            startActivityForResult(intent, REQUEST_TAKE_FILE)
+//        }
+
+        val photoPickerIntent = Intent(Intent.ACTION_PICK)
+        photoPickerIntent.type = "image/*"
+        startActivityForResult(photoPickerIntent, REQUEST_TAKE_FILE)
+
+
     }
 
     // 권한 요청
@@ -394,6 +418,7 @@ class TaskDetailActivity : AppCompatActivity() {
     }
 
     companion object {
+        private const val PICKER_IMAGE_FROM_ALBUM = 0
         private const val REQUEST_TAKE_PHOTO = 1
         private const val REQUEST_TAKE_FILE = 2
     }
