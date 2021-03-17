@@ -11,6 +11,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.facemaker.data.Task
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 
 class TaskFileAdapter(
     private var currentTask: Task,
@@ -95,6 +97,7 @@ class TaskFileAdapter(
 
             // 파일 아이템 삭제한다.
             currentTask.fileList.removeAt(position)
+            Firebase.database.reference.child("tasks/${currentTask!!.id}/fileList").setValue(fileList)
 
             notifyDataSetChanged()
         }

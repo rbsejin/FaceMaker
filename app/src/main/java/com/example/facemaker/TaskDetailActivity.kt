@@ -30,6 +30,7 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
+import timber.log.Timber
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
@@ -203,6 +204,8 @@ class TaskDetailActivity : AppCompatActivity() {
 //                        taskFileAdapter.notifyDataSetChanged()
 
                         // upload
+                        val filepath = dataUri.toString()
+
                         val timeStamp =
                             SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().time)
                         var imageFileName = "IMAGE_" + timeStamp + "_.png"
@@ -217,8 +220,10 @@ class TaskDetailActivity : AppCompatActivity() {
                             val taskFileAdapter: TaskFileAdapter =
                                 (binding.taskDetailRecyclerView.adapter as ConcatAdapter).adapters[2] as TaskFileAdapter
 
-                            taskFileAdapter.fileList.add(imageFileName)
+                            taskFileAdapter.fileList.add(filepath)
                             taskFileAdapter.notifyDataSetChanged()
+
+                            Firebase.database.reference.child("tasks/${currentTask!!.id}/fileList").setValue(taskFileAdapter.fileList)
                         }
                     }
                 }
@@ -337,8 +342,11 @@ class TaskDetailActivity : AppCompatActivity() {
                 val taskFileAdapter: TaskFileAdapter =
                     (binding.taskDetailRecyclerView.adapter as ConcatAdapter).adapters[2] as TaskFileAdapter
 
-                taskFileAdapter.fileList.add(filename)
+                taskFileAdapter.fileList.add("${storageDir.path}/$filename")
+
                 taskFileAdapter.notifyDataSetChanged()
+
+                Firebase.database.reference.child("tasks/${currentTask!!.id}/fileList").setValue(taskFileAdapter.fileList)
             }
 
 
@@ -354,9 +362,11 @@ class TaskDetailActivity : AppCompatActivity() {
             filepath.endsWith("JPG") || filepath.endsWith("gif") ||
             filepath.endsWith("png") || filepath.endsWith("bmp")
         ) {
+            Timber.i("openImage")
             val data = Uri.parse(filepath)
             intent.setDataAndType(data, "image/*")
             startActivity(intent)
+            Timber.i(filepath)
         }
     }
 
@@ -379,10 +389,9 @@ class TaskDetailActivity : AppCompatActivity() {
 //        }
 
         val photoPickerIntent = Intent(Intent.ACTION_PICK)
+        intent.data = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
         photoPickerIntent.type = "image/*"
         startActivityForResult(photoPickerIntent, REQUEST_TAKE_FILE)
-
-
     }
 
     // 권한 요청
