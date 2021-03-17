@@ -65,9 +65,13 @@ dependencies {
 
     // auth
     implementation 'com.firebaseui:firebase-ui-auth:6.4.0'
-//    implementation 'com.facebook.android:facebook-android-sdk:4.x'
-//    implementation 'com.twitter.sdk.android:twitter-core:3.x'
+    implementation 'com.facebook.android:facebook-android-sdk:[4,5)'
     implementation 'com.google.android.gms:play-services-auth:19.0.0' // Google Play services library
     implementation 'com.google.firebase:firebase-auth-ktx'
     implementation 'com.google.firebase:firebase-database-ktx'
+
+    // Declare the dependency for the Cloud Storage library
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation 'com.google.firebase:firebase-storage-ktx'
+
 }

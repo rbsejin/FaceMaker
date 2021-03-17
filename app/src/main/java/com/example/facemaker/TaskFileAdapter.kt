@@ -55,6 +55,7 @@ class TaskFileAdapter(
 
         holder.nameTextView.text = taskFile.substringAfterLast('/')
 
+
         // 아이템뷰 클릭했을 때
         holder.itemView.setOnClickListener {
             if (position == fileList.size) {

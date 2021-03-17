@@ -69,8 +69,14 @@ class MainActivity : AppCompatActivity() {
         database = Firebase.database.reference
         auth = Firebase.auth
 
-        // 프로필 정보 업데이트
-        updateProfileUI()
+        if (auth.currentUser == null) {
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+            return
+        } else {
+            // 프로필 정보 업데이트
+            updateProfileUI()
+        }
 
         // 소리 재생
 
@@ -80,7 +86,7 @@ class MainActivity : AppCompatActivity() {
         } else {
             SoundPool(1, AudioManager.STREAM_MUSIC, 0)
         }
-        soundManager = SoundManager (this, soundPool)
+        soundManager = SoundManager(this, soundPool)
         soundManager.addSound(0, R.raw.sound01)
 
         // 스마트 리스트 설정
@@ -282,6 +288,14 @@ class MainActivity : AppCompatActivity() {
         projectAdapter.notifyDataSetChanged()
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        if (auth.currentUser == null) {
+            startActivity(Intent(this, LoginActivity::class.java))
+        }
+    }
+
     fun updateSmartList() {
         for (item in smartItemList.filter { it.isVisible }) {
             if (!headerItemList.contains(item)) {
@@ -294,6 +308,11 @@ class MainActivity : AppCompatActivity() {
 
     fun playSound(index: Int) {
         if (generalMap["completion_sound"] != false)
-        soundManager.playSound(index)
+            soundManager.playSound(index)
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        finishAffinity()
     }
 }

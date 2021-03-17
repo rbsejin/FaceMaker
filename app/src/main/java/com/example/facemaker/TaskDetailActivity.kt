@@ -28,6 +28,7 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
@@ -302,6 +303,19 @@ class TaskDetailActivity : AppCompatActivity() {
             }
             Log.e("waring", "Captured Saved")
             Toast.makeText(this, "Capture Saved ", Toast.LENGTH_SHORT).show()
+
+            val storageRef = Firebase.storage.reference
+
+
+            var fileUri = Uri.fromFile(File("path/to/images/rivers.jpg"))
+            val riversRef = storageRef.child("images/${fileUri.lastPathSegment}")
+            val uploadTask = riversRef.putFile(fileUri)
+
+            uploadTask.addOnFailureListener {
+
+            }.addOnSuccessListener { taskSnapshot ->
+                
+            }
 
             // 리사이클러뷰 아이템에 추가
             val taskFileAdapter: TaskFileAdapter =

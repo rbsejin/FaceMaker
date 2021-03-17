@@ -54,7 +54,7 @@ class SettingsActivity : AppCompatActivity() {
         AuthUI.getInstance()
             .signOut(this)
             .addOnCompleteListener {
-                startActivity(Intent(this, FirebaseUIActivity()::class.java))
+                startActivity(Intent(this, LoginActivity()::class.java))
                 finish()
             }
     }

@@ -27,4 +27,8 @@
         <item name="android:background">@color/black_overlay</item>
         <item name="android:buttonBarStyle">?android:attr/buttonBarStyle</item>
     </style>
+
+    <style name="LoginUIStyle">
+<!--        <item name="android:windowBackground">@color/black_overlay</item>-->
+    </style>
 </resources>

@@ -7,8 +7,9 @@
     <string name="task_description">task description</string>
 
     <!-- Facebook application ID and custom URL scheme (app ID prefixed by 'fb'). -->
-    <string name="facebook_application_id" translatable="false">YOUR_APP_ID</string>
-    <string name="facebook_login_protocol_scheme" translatable="false">fbYOUR_APP_ID</string>
+    <string name="facebook_app_id" translatable="false">417172042918845</string>
+    <string name="facebook_application_id" translatable="false">417172042918845</string>
+    <string name="fb_login_protocol_scheme" translatable="false">fb417172042918845</string>
     <!-- Twitter consumer key and secret -->
     <string name="twitter_consumer_key" translatable="false">YOUR_CONSUMER_KEY</string>
     <string name="twitter_consumer_secret" translatable="false">YOUR_CONSUMER_SECRET</string>
@@ -39,9 +40,6 @@
     <string name="login_failed">"Login failed"</string>
 
     <string name="kakao_native_app_key">"0457381696664cd47588999d9e0fbb01"</string>
-
-    <string name="facebook_app_id">417172042918845</string>
-    <string name="fb_login_protocol_scheme">fb417172042918845</string>
     <string name="email_sign_up">이메일 회원가입</string>
     <string name="new_project">새 프로젝트</string>
     <string name="todo">TODO</string>
@@ -96,5 +94,4 @@
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="search">검색</string>
-
 </resources>
