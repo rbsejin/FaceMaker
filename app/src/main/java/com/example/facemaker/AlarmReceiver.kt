@@ -13,6 +13,9 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import androidx.core.app.NotificationCompat
 import com.example.facemaker.data.Task
+import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
+import com.google.firebase.ktx.Firebase
 
 
 class AlarmReceiver : BroadcastReceiver() {
@@ -41,38 +44,48 @@ class AlarmReceiver : BroadcastReceiver() {
         }
 
         // id -> task 찾는다.
-        val taskId: Int = intent!!.getIntExtra("taskId", 0)
-        val task: Task = Task(taskId.toString())
+        val taskId: String = intent!!.getStringExtra("taskId")!!
 
-        // 알람 삭제시 notification 이 취소되지 않아 임시방편으로 여기서 취소.
-        if (task.notification == null) {
-            notificationManager.cancel(taskId)
-            return
+        Firebase.database.reference.child("tasks/${taskId}").get().addOnSuccessListener {
+            val task: Task = it.getValue<Task>() ?: return@addOnSuccessListener
+
+                // 알람 삭제시 notification 이 취소되지 않아 임시방편으로 여기서 취소.
+                if (task.notification == null) {
+                    notificationManager.cancel(0)
+                    return@addOnSuccessListener
+                }
+
+            // 알림을 제거한다.
+            task.notification = null
+            // view를 갱신해주지 않아서 뷰는 그대로고, 데이터만 null인 상태
+
+            builder.setAutoCancel(true)
+                .setDefaults(NotificationCompat.DEFAULT_ALL)
+                .setWhen(System.currentTimeMillis())
+                .setTicker("{Ticker}")
+                .setContentTitle("미리 알림")
+                .setContentText(task.name)
+                .setContentInfo("INFO")
+                .setContentIntent(pendingIntent)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+
+            val vibrator = context.getSystemService(VIBRATOR_SERVICE) as Vibrator
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                vibrator.vibrate(
+                    VibrationEffect.createOneShot(
+                        1000,
+                        VibrationEffect.DEFAULT_AMPLITUDE
+                    )
+                );
+            } else {
+                vibrator.vibrate(1000);
+            }
+
+            notificationManager.notify(0, builder.build())
+        }.addOnFailureListener {
+
         }
-
-        // 알림을 제거한다.
-        task.notification = null
-        // view를 갱신해주지 않아서 뷰는 그대로고, 데이터만 null인 상태
-
-        builder.setAutoCancel(true)
-            .setDefaults(NotificationCompat.DEFAULT_ALL)
-            .setWhen(System.currentTimeMillis())
-            .setTicker("{Ticker}")
-            .setContentTitle("미리 알림")
-            .setContentText(task.name)
-            .setContentInfo("INFO")
-            .setContentIntent(pendingIntent)
-            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-
-        val vibrator = context.getSystemService(VIBRATOR_SERVICE) as Vibrator
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            vibrator.vibrate(VibrationEffect.createOneShot(1000, VibrationEffect.DEFAULT_AMPLITUDE));
-        } else {
-            vibrator.vibrate(1000);
-        }
-
-        notificationManager.notify(taskId, builder.build())
     }
 }
 

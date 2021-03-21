@@ -42,6 +42,6 @@ fun ImageView.setHeaderArrowImage(item: Header?) {
 @BindingAdapter("headerNameAndCountText")
 fun TextView.setHeaderNameAndCountText(item: Header?) {
     item?.let {
-        text = "${item.name} ${item.childCount}"
+        text = "${item.name}"
     }
 }
