@@ -1,7 +1,8 @@
 # FaceMaker
 ### [작품 소개]
 하루를 효율적으로 관리할 수 있는 To Do list 어플입니다.
-사진 및 시연영상 링크: https://rbsejin.blogspot.com/2021/07/to-do.html
+
+시연영상 링크: https://rbsejin.blogspot.com/2021/07/to-do.html
 
 ### [개발환경]
 - 플랫폼: 안드로이드
